@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>History Notes</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      body {
+        background: #f4f7fb;
+        min-height: 100vh;
+      }
+
+      /* Hero Section */
+
+      .hero {
+        background: linear-gradient(135deg, #4f46e5, #06b6d4);
+        color: white;
+        text-align: center;
+        padding: 80px 20px;
+        border-radius: 0 0 40px 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 10px;
+      }
+
+      .hero p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      /* Container */
+
+      .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 40px 20px;
+      }
+
+      /* Grid */
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+      }
+
+      /* Cards */
+
+      .card {
+        text-decoration: none;
+        color: #111827;
+        background: white;
+        border-radius: 25px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        transition: 0.35s;
+        border: 1px solid #e5e7eb;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #4f46e5, #06b6d4);
+      }
+
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .icon {
+        font-size: 55px;
+        margin-bottom: 15px;
+      }
+
+      .card h2 {
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+      }
+
+      .card p {
+        color: #64748b;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #4f46e5, #06b6d4);
+        color: white;
+        border-radius: 10px;
+        font-weight: 600;
+      }
+
+      /* Footer */
+
+      .footer {
+        text-align: center;
+        color: #64748b;
+        padding: 30px;
+      }
+
+      /* Mobile */
+
+      @media (max-width: 600px) {
+        .hero {
+          padding: 60px 20px;
+        }
+
+        .hero h1 {
+          font-size: 2rem;
+        }
+
+        .card {
+          padding: 25px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="hero">
+      <h1>🏺 Science Notes</h1>
+      <p>Biology • Chemistry • Physics</p>
+    </div>
+
+    <div class="container">
+      <div class="grid">
+        <a class="card" href="/TEST_SERIES/SCIENCE/BIOLOGY/">
+          <div class="icon">🇮🇳</div>
+
+          <h2>Biology</h2>
+
+          <span class="btn">Open Notes →</span>
+        </a>
+
+        <a class="card" href="/TEST_SERIES/SCIENCE/CHEMISTRY/">
+          <div class="icon">🏰</div>
+
+          <h2>Chemistry</h2>
+
+          <span class="btn">Open Notes →</span>
+        </a>
+
+        <a class="card" href="/TEST_SERIES/SCIENCE/PHYSICS/">
+          <div class="icon">🏺</div>
+
+          <h2>Physics</h2>
+
+          <span class="btn">Open Notes →</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer">© 2026 My Notes</div>
+  </body>
+</html>
