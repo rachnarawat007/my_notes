@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gandhian Era(Topics 4-8)</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 0;
+        padding-bottom: 90px;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 12px;
+      }
+      .card {
+        background: #fff;
+        padding: 12px;
+        border-radius: 10px;
+        margin-top: 12px;
+      }
+      .qtext {
+        font-size: 16px;
+        margin: 10px 0;
+      }
+      .opt {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 6px 0;
+        cursor: pointer;
+      }
+      .opt.selected {
+        border-color: #2ec4b6;
+      }
+      .opt.correct {
+        background: #d4edda;
+        border-color: #28a745;
+      }
+      .opt.wrong {
+        background: #f8d7da;
+        border-color: #dc3545;
+      }
+      button {
+        padding: 8px 12px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        background: #2ec4b6;
+        color: white;
+        cursor: pointer;
+      }
+      #result {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // GOVERNMENT OF INDIA ACT 1919
+
+        {
+          q: "What is another name of the Government of India Act 1919?",
+          options: [
+            "Pitt's India Act",
+            "Minto-Morley Reforms",
+            "Charter Act",
+            "Montagu-Chelmsford Reforms",
+          ],
+          answer: 3,
+          exp: "The Government of India Act 1919 is also known as the Montagu-Chelmsford Reforms.",
+        },
+        {
+          q: "Who was the Secretary of State associated with the Government of India Act 1919?",
+          options: ["Curzon", "Wellesley", "Montagu", "Chelmsford"],
+          answer: 2,
+          exp: "Edwin Montagu was the Secretary of State.",
+        },
+        {
+          q: "Who was the Viceroy associated with the Government of India Act 1919?",
+          options: ["Linlithgow", "Chelmsford", "Irwin", "Curzon"],
+          answer: 1,
+          exp: "Lord Chelmsford was the Viceroy.",
+        },
+        {
+          q: "Which system was introduced at the provincial level by the Government of India Act 1919?",
+          options: [
+            "Federal System",
+            "Unitary System",
+            "Dyarchy",
+            "Dual Government",
+          ],
+          answer: 2,
+          exp: "Dyarchy was introduced at the provincial level.",
+        },
+        {
+          q: "In Dyarchy, which subjects were controlled by the Governor and Executive Council?",
+          options: [
+            "Local subjects",
+            "Central subjects",
+            "Transferred subjects",
+            "Reserved subjects",
+          ],
+          answer: 3,
+          exp: "Reserved subjects like police and finance were controlled by the Governor.",
+        },
+        {
+          q: "Which of the following is an example of a transferred subject under Dyarchy?",
+          options: ["Finance", "Agriculture", "Law and Order", "Police"],
+          answer: 1,
+          exp: "Agriculture was a transferred subject handled by Indian ministers.",
+        },
+        {
+          q: "Which groups were given separate electorates under the Act of 1919?",
+          options: [
+            "Women",
+            "Only Hindus",
+            "Anglo-Indians and Christians",
+            "Only Muslims",
+          ],
+          answer: 2,
+          exp: "Separate electorates were extended to Anglo-Indians and Christians.",
+        },
+        {
+          q: "What system was introduced at the Centre by the Government of India Act 1919?",
+          options: ["Autocracy", "Federalism", "Bicameralism", "Unicameralism"],
+          answer: 2,
+          exp: "Bicameral legislature was introduced at the Centre.",
+        },
+
+        // ROWLATT ACT
+
+        {
+          q: "Who suggested the Rowlatt Act?",
+          options: ["Chelmsford", "Sydney Rowlatt", "Montagu", "Curzon"],
+          answer: 1,
+          exp: "Suggested by Sydney Rowlatt.",
+        },
+        {
+          q: "What was the official name of the Rowlatt Act?",
+          options: [
+            "Press Act",
+            "Public Safety Act",
+            "Anarchical and Revolutionary Crimes Act 1919",
+            "Defence of India Act",
+          ],
+          answer: 2,
+          exp: "Its official name was the Anarchical and Revolutionary Crimes Act.",
+        },
+        {
+          q: "What was the main provision of the Rowlatt Act?",
+          options: [
+            "Tax reduction",
+            "Detention without trial",
+            "Land reforms",
+            "Free education",
+          ],
+          answer: 1,
+          exp: "Allowed detention without trial.",
+        },
+        {
+          q: "The Rowlatt Act was an extension of which earlier Act?",
+          options: [
+            "Charter Act",
+            "Indian Councils Act",
+            "Defence of India Act 1915",
+            "Government of India Act 1909",
+          ],
+          answer: 2,
+          exp: "Extension of Defence of India Act 1915.",
+        },
+        {
+          q: "What did Mahatma Gandhi call the Rowlatt Act?",
+          options: ["Red Act", "Unjust Act", "Black Act", "White Act"],
+          answer: 2,
+          exp: "Called Black Act.",
+        },
+        {
+          q: "Which movement did Gandhi launch against the Rowlatt Act?",
+          options: [
+            "Quit India Movement",
+            "Civil Disobedience",
+            "Rowlatt Satyagraha",
+            "Non-Cooperation Movement",
+          ],
+          answer: 2,
+          exp: "Rowlatt Satyagraha.",
+        },
+
+        // JALLIANWALA BAGH
+
+        {
+          q: "When did the Jallianwala Bagh Massacre take place?",
+          options: [
+            "26 January 1950",
+            "1 January 1920",
+            "13 April 1919",
+            "15 August 1947",
+          ],
+          answer: 2,
+          exp: "Occurred on 13 April 1919.",
+        },
+        {
+          q: "Where did the Jallianwala Bagh Massacre occur?",
+          options: ["Kolkata", "Amritsar", "Delhi", "Lahore"],
+          answer: 1,
+          exp: "Occurred in Amritsar.",
+        },
+        {
+          q: "On which festival day did the massacre occur?",
+          options: ["Eid", "Diwali", "Baisakhi", "Holi"],
+          answer: 2,
+          exp: "Occurred on Baisakhi.",
+        },
+        {
+          q: "Why had people gathered at Jallianwala Bagh?",
+          options: [
+            "For election",
+            "For a meeting",
+            "To protest arrests and celebrate Baisakhi",
+            "To celebrate only",
+          ],
+          answer: 2,
+          exp: "They gathered for protest and Baisakhi.",
+        },
+        {
+          q: "Which leaders' arrest led to the protest at Jallianwala Bagh?",
+          options: [
+            "Tilak and Gokhale",
+            "Bose and Azad",
+            "Saifuddin Kitchlew and Dr. Satyapal",
+            "Nehru and Patel",
+          ],
+          answer: 2,
+          exp: "Arrest of Kitchlew and Satyapal.",
+        },
+        {
+          q: "Who was responsible for the Jallianwala Bagh Massacre?",
+          options: ["Mountbatten", "General Reginald Dyer", "Irwin", "Curzon"],
+          answer: 1,
+          exp: "Ordered by General Dyer.",
+        },
+        {
+          q: "What did General Dyer do during the massacre?",
+          options: [
+            "Dispersed peacefully",
+            "Warned crowd",
+            "Opened fire without warning",
+            "Arrested leaders",
+          ],
+          answer: 2,
+          exp: "Opened fire without warning.",
+        },
+        {
+          q: "What was the official number of deaths in the massacre?",
+          options: ["200", "500", "379", "1000+"],
+          answer: 2,
+          exp: "Official number was 379.",
+        },
+        // HUNTER COMMISSION
+
+        {
+          q: "In which year was the Hunter Commission set up?",
+          options: ["1922", "1915", "1919", "1920"],
+          answer: 2,
+          exp: "The Hunter Commission was set up in 1919.",
+        },
+        {
+          q: "What was the main purpose of the Hunter Commission?",
+          options: [
+            "To support British rule",
+            "To arrest leaders",
+            "To investigate Dyer’s actions",
+            "To frame a new law",
+          ],
+          answer: 2,
+          exp: "It was set up to investigate General Dyer.",
+        },
+        {
+          q: "Which of the following was a member of the Hunter Commission?",
+          options: [
+            "Bal Gangadhar Tilak",
+            "Jawaharlal Nehru",
+            "Harilal Setalvad",
+            "Motilal Nehru",
+          ],
+          answer: 2,
+          exp: "Harilal Setalvad was a member.",
+        },
+        {
+          q: "How many Indian members were there in the Hunter Commission?",
+          options: ["5", "1", "3", "2"],
+          answer: 2,
+          exp: "There were 3 Indian members.",
+        },
+        {
+          q: "What action was taken against General Dyer by the Hunter Commission?",
+          options: [
+            "Life imprisonment",
+            "No major punishment",
+            "Dismissal only",
+            "Death penalty",
+          ],
+          answer: 1,
+          exp: "No major punishment was given.",
+        },
+        {
+          q: "Which Act was passed to protect General Dyer?",
+          options: [
+            "Public Safety Act",
+            "Defence Act",
+            "Indemnity Act",
+            "Rowlatt Act",
+          ],
+          answer: 2,
+          exp: "Indemnity Act protected Dyer.",
+        },
+        {
+          q: "Which newspaper started a fund to support General Dyer?",
+          options: ["The Hindu", "Indian Express", "Morning Post", "The Times"],
+          answer: 2,
+          exp: "Morning Post started the fund.",
+        },
+        {
+          q: "Who among the following supported Dyer financially?",
+          options: ["Tilak", "Nehru", "Rudyard Kipling", "Gandhi"],
+          answer: 2,
+          exp: "Rudyard Kipling supported Dyer.",
+        },
+        {
+          q: "Who honored General Dyer as a 'Sikh'?",
+          options: ["Bhagat Singh", "Gandhi", "Arur Singh", "Udham Singh"],
+          answer: 2,
+          exp: "Arur Singh honored Dyer.",
+        },
+        {
+          q: "Which movement was triggered due to the actions of Arur Singh?",
+          options: [
+            "Non-Cooperation Movement",
+            "Quit India Movement",
+            "Gurudwara Reform Movement",
+            "Khilafat Movement",
+          ],
+          answer: 2,
+          exp: "It triggered the Gurudwara Reform Movement.",
+        },
+
+        // REVENGE
+
+        {
+          q: "Who assassinated Michael O'Dwyer in 1940?",
+          options: ["Rajguru", "Sukhdev", "Udham Singh", "Bhagat Singh"],
+          answer: 2,
+          exp: "Udham Singh assassinated him.",
+        },
+        {
+          q: "Where was Michael O'Dwyer assassinated?",
+          options: ["Delhi", "London (Caxton Hall)", "Lahore", "Amritsar"],
+          answer: 1,
+          exp: "He was assassinated in London.",
+        },
+        {
+          q: "What alias was used by Udham Singh?",
+          options: [
+            "Azad Singh",
+            "Ram Mohammed Singh Azad",
+            "Mohammed Singh",
+            "Ram Singh Azad",
+          ],
+          answer: 1,
+          exp: "He used Ram Mohammed Singh Azad.",
+        },
+        {
+          q: "Who returned his Knighthood in protest against the massacre?",
+          options: ["Tilak", "Rabindranath Tagore", "Gandhi", "Nehru"],
+          answer: 1,
+          exp: "Tagore returned Knighthood.",
+        },
+        {
+          q: "Which title did Mahatma Gandhi return after the massacre?",
+          options: [
+            "Padma Shri",
+            "Knight title",
+            "Kaisar-i-Hind",
+            "Bharat Ratna",
+          ],
+          answer: 2,
+          exp: "He returned Kaisar-i-Hind medal.",
+        },
+
+        // KHILAFAT
+
+        {
+          q: "What was the main cause of the Khilafat Movement?",
+          options: [
+            "Tax increase",
+            "Rowlatt Act",
+            "Removal of the Khalifa in Turkey",
+            "Partition of India",
+          ],
+          answer: 2,
+          exp: "Started after removal of Khalifa.",
+        },
+        {
+          q: "In which year was the Khilafat Movement started?",
+          options: ["1922", "1915", "1919", "1920"],
+          answer: 2,
+          exp: "Started in 1919.",
+        },
+        {
+          q: "Where was the All India Khilafat Committee formed?",
+          options: ["Delhi", "Calcutta", "Bombay", "Lahore"],
+          answer: 2,
+          exp: "Formed in Bombay.",
+        },
+        {
+          q: "Who were the main leaders of the Khilafat Movement?",
+          options: [
+            "Singh brothers",
+            "Das brothers",
+            "Ali Brothers",
+            "Nehru brothers",
+          ],
+          answer: 2,
+          exp: "Ali Brothers led it.",
+        },
+        {
+          q: "Who presided over the All India Khilafat Conference in 1919?",
+          options: ["Tilak", "Jinnah", "Gandhi", "Nehru"],
+          answer: 2,
+          exp: "Gandhi presided.",
+        },
+        {
+          q: "With which movement did Gandhi merge the Khilafat Movement?",
+          options: [
+            "Quit India",
+            "Civil Disobedience",
+            "Non-Cooperation Movement",
+            "Swadeshi",
+          ],
+          answer: 2,
+          exp: "Merged with NCM.",
+        },
+
+        // NON-COOPERATION MOVEMENT
+
+        {
+          q: "When was the Non-Cooperation Movement launched?",
+          options: [
+            "26 January 1920",
+            "1 January 1919",
+            "1 August 1920",
+            "15 August 1921",
+          ],
+          answer: 2,
+          exp: "Launched on 1 August 1920.",
+        },
+        {
+          q: "Which important leader died on the same day the Non-Cooperation Movement was launched?",
+          options: [
+            "Bipin Chandra Pal",
+            "Gokhale",
+            "Bal Gangadhar Tilak",
+            "Lala Lajpat Rai",
+          ],
+          answer: 2,
+          exp: "Tilak died on 1 August 1920.",
+        },
+        {
+          q: "In which session was the Non-Cooperation Movement approved?",
+          options: [
+            "Karachi Session 1931",
+            "Calcutta Special Session 1920",
+            "Nagpur Session 1920",
+            "Lahore Session 1929",
+          ],
+          answer: 1,
+          exp: "Approved in Calcutta Session.",
+        },
+        {
+          q: "In which session was the Non-Cooperation Movement finally endorsed?",
+          options: [
+            "Lucknow Session",
+            "Bombay Session",
+            "Nagpur Session 1920",
+            "Delhi Session",
+          ],
+          answer: 2,
+          exp: "Endorsed in Nagpur Session.",
+        },
+        {
+          q: "What was formed to manage Congress activities during the Non-Cooperation Movement?",
+          options: [
+            "Assembly",
+            "Executive Council",
+            "Congress Working Committee",
+            "Planning Commission",
+          ],
+          answer: 2,
+          exp: "CWC was formed.",
+        },
+        {
+          q: "Who opposed the Non-Cooperation Movement and left Congress?",
+          options: ["Patel", "Jinnah", "Rajendra Prasad", "Nehru"],
+          answer: 1,
+          exp: "Jinnah opposed and left Congress.",
+        },
+        {
+          q: "What was the target amount of the Tilak Swaraj Fund?",
+          options: ["Rs 2 crore", "Rs 10 lakh", "Rs 1 crore", "Rs 50 lakh"],
+          answer: 2,
+          exp: "Target was Rs 1 crore.",
+        },
+        {
+          q: "Which of the following was part of the constructive programme of NCM?",
+          options: [
+            "Join army",
+            "Support British rule",
+            "Boycott of British goods",
+            "Pay more taxes",
+          ],
+          answer: 2,
+          exp: "Boycott was key activity.",
+        },
+        {
+          q: "Which institution was established during the Non-Cooperation Movement?",
+          options: ["AIIMS", "JNU", "Jamia Millia Islamia", "IIT Delhi"],
+          answer: 2,
+          exp: "Jamia Millia Islamia was established.",
+        },
+
+        // LOCAL MOVEMENTS
+
+        {
+          q: "Who led the Awadh Kisan Movement (1920)?",
+          options: ["Gandhi", "Nehru", "Baba Ramchandra", "Madari Pasi"],
+          answer: 2,
+          exp: "Led by Baba Ramchandra.",
+        },
+        {
+          q: "Who led the Eka Movement (1921)?",
+          options: ["Tilak", "Madari Pasi", "Patel", "Baba Ramchandra"],
+          answer: 1,
+          exp: "Led by Madari Pasi.",
+        },
+        {
+          q: "Where did the Moplah Revolt (1921) take place?",
+          options: ["Punjab", "Bihar", "Kerala (Malabar)", "Gujarat"],
+          answer: 2,
+          exp: "Occurred in Kerala.",
+        },
+        {
+          q: "The Moplah Revolt was mainly against whom?",
+          options: [
+            "British officers",
+            "Congress leaders",
+            "Hindu landlords",
+            "Muslim rulers",
+          ],
+          answer: 2,
+          exp: "Against Hindu landlords.",
+        },
+
+        // CHAURI CHAURA
+
+        {
+          q: "When did the Chauri Chaura Incident take place?",
+          options: [
+            "1 August 1920",
+            "26 January 1930",
+            "4 February 1922",
+            "13 April 1919",
+          ],
+          answer: 2,
+          exp: "Occurred on 4 Feb 1922.",
+        },
+        {
+          q: "Where did the Chauri Chaura Incident occur?",
+          options: ["Delhi", "Amritsar", "Gorakhpur", "Lahore"],
+          answer: 2,
+          exp: "Occurred in Gorakhpur.",
+        },
+        {
+          q: "What happened during the Chauri Chaura Incident?",
+          options: [
+            "Tax refusal",
+            "Burning of police station",
+            "Peaceful protest",
+            "March",
+          ],
+          answer: 1,
+          exp: "Police station burned.",
+        },
+        {
+          q: "How many policemen were killed in the Chauri Chaura Incident?",
+          options: ["50", "22", "10", "5"],
+          answer: 1,
+          exp: "22 policemen killed.",
+        },
+        {
+          q: "What was Gandhi’s reaction to the Chauri Chaura Incident?",
+          options: [
+            "He ignored it",
+            "He suspended the movement",
+            "He supported it",
+            "He promoted violence",
+          ],
+          answer: 1,
+          exp: "He suspended the movement.",
+        },
+        {
+          q: "Where was the decision to suspend the movement taken?",
+          options: ["Bombay", "Delhi", "Bardoli", "Calcutta"],
+          answer: 2,
+          exp: "Decision taken at Bardoli.",
+        },
+        {
+          q: "What was the consequence of suspension of NCM?",
+          options: [
+            "British left India",
+            "Unity increased",
+            "Political vacuum",
+            "New law passed",
+          ],
+          answer: 2,
+          exp: "Political vacuum created.",
+        },
+        {
+          q: "When was Gandhi arrested after the suspension of NCM?",
+          options: ["August 1921", "March 1922", "January 1920", "April 1919"],
+          answer: 1,
+          exp: "Arrested in March 1922.",
+        },
+        // SWARAJ PARTY (1923)
+
+        {
+          q: "In which year was the Swaraj Party formed?",
+          options: ["1925", "1923", "1920", "1922"],
+          answer: 1,
+          exp: "The Swaraj Party was formed in 1923.",
+        },
+        {
+          q: "Who was the President of the Swaraj Party?",
+          options: ["Ajmal Khan", "Patel", "C.R. Das", "Motilal Nehru"],
+          answer: 2,
+          exp: "C.R. Das was the President of the Swaraj Party.",
+        },
+        {
+          q: "Who was the Secretary of the Swaraj Party?",
+          options: ["Motilal Nehru", "Rajendra Prasad", "Patel", "Ajmal Khan"],
+          answer: 0,
+          exp: "Motilal Nehru was the Secretary.",
+        },
+        {
+          q: "What was the ideology of Swarajists?",
+          options: [
+            "Support British",
+            "Revolution",
+            "End or mend councils",
+            "Boycott councils",
+          ],
+          answer: 2,
+          exp: "They wanted to enter councils to oppose British policies.",
+        },
+        {
+          q: "Which session led to the formation of Swaraj Party?",
+          options: [
+            "Karachi Session",
+            "Gaya Session 1922",
+            "Nagpur Session",
+            "Lahore Session",
+          ],
+          answer: 1,
+          exp: "It was formed after the Gaya Session (1922).",
+        },
+        {
+          q: "Which bill was defeated by the Swaraj Party in 1928?",
+          options: [
+            "Salt Act",
+            "Forest Act",
+            "Public Safety Bill",
+            "Rowlatt Act",
+          ],
+          answer: 2,
+          exp: "They defeated the Public Safety Bill.",
+        },
+
+        // BELGAUM SESSION 1924
+
+        {
+          q: "In which year was the Belgaum Session held?",
+          options: ["1922", "1925", "1924", "1920"],
+          answer: 2,
+          exp: "Belgaum Session was held in 1924.",
+        },
+        {
+          q: "Who presided over the Belgaum Session?",
+          options: ["Das", "Tilak", "Gandhi", "Nehru"],
+          answer: 2,
+          exp: "Mahatma Gandhi presided over the Belgaum Session.",
+        },
+        {
+          q: "Why is the Belgaum Session important?",
+          options: [
+            "Formation of party",
+            "End of Congress",
+            "Only session presided by Gandhi",
+            "First Congress session",
+          ],
+          answer: 2,
+          exp: "It was the only Congress session presided over by Gandhi.",
+        },
+        {
+          q: "Who is known as Deshbnadhu?",
+          options: [
+            "Motilal Nehru",
+            "C.R. Das",
+            "W.C. Benerjee",
+            "Maulana Abul Kalam Azad",
+          ],
+          answer: 1,
+          exp: "Chitranjan Das is known as Deshbnadhu.",
+        },
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>
