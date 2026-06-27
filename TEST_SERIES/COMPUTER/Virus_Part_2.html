@@ -1,0 +1,1440 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Virus (PART 2)</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 0;
+        padding-bottom: 90px;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 12px;
+      }
+      .card {
+        background: #fff;
+        padding: 12px;
+        border-radius: 10px;
+        margin-top: 12px;
+      }
+      .qtext {
+        font-size: 16px;
+        margin: 10px 0;
+      }
+      .opt {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 6px 0;
+        cursor: pointer;
+      }
+      .opt.selected {
+        border-color: #2ec4b6;
+      }
+      .opt.correct {
+        background: #d4edda;
+        border-color: #28a745;
+      }
+      .opt.wrong {
+        background: #f8d7da;
+        border-color: #dc3545;
+      }
+      button {
+        padding: 8px 12px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        background: #2ec4b6;
+        color: white;
+        cursor: pointer;
+      }
+      #result {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Virus
+        {
+          q: "In ............... some cyber-criminals redirect the legitimate users to different phishing sites and web pages via emails, IMs, ads and spyware.",
+          options: ["URL Redirection", "DoS", "Phishing", "MiTM attack"],
+          answer: 0,
+          exp: "URL Redirection attack redirects users from legitimate sites to fake phishing websites.",
+        },
+        {
+          q: "Phishers often develop ............... websites for tricking users & filling their personal data.",
+          options: ["Legitimate", "Illegitimate", "Genuine", "Official"],
+          answer: 1,
+          exp: "Phishers create illegitimate (fake) websites to steal user information.",
+        },
+        {
+          q: "Which of the following type of data, phishers cannot steal from its target victims?",
+          options: [
+            "Bank details",
+            "Phone number",
+            "Passwords",
+            "Apps installed in the mobile",
+          ],
+          answer: 3,
+          exp: "Phishing usually targets credentials and personal information, not installed apps.",
+        },
+        {
+          q: "Algorithm-Based Phishing was developed in the year ...............",
+          options: ["1988", "1989", "1990", "1991"],
+          answer: 1,
+          exp: "Algorithm-Based Phishing was introduced in 1989.",
+        },
+        {
+          q: "............... was the first type of phishing where the phishers developed an algorithm for generating random credit card numbers.",
+          options: [
+            "Algo-based phishing",
+            "Email-based phishing",
+            "Domain Phishing",
+            "Vishing",
+          ],
+          answer: 0,
+          exp: "Algorithm-based phishing was the earliest phishing technique.",
+        },
+        {
+          q: "Email Phishing came into origin in the year ...............",
+          options: ["1990", "2000", "2005", "2015"],
+          answer: 1,
+          exp: "Email phishing became common around the year 2000.",
+        },
+        {
+          q: "............... type of phishing became very popular as if it has been sent from a legitimate source with a legitimate link to its official website.",
+          options: [
+            "Algo-based phishing",
+            "Email-based phishing",
+            "Domain Phishing",
+            "Vishing",
+          ],
+          answer: 2,
+          exp: "Domain phishing uses fake domains that resemble legitimate websites.",
+        },
+        {
+          q: "............... refers to phishing performed over smart-phone by calling.",
+          options: [
+            "Algo-based phishing",
+            "Email-based phishing",
+            "Domain Phishing",
+            "Vishing",
+          ],
+          answer: 3,
+          exp: "Vishing (Voice Phishing) is phishing conducted through phone calls.",
+        },
+        {
+          q: "............... = voice + phishing.",
+          options: [
+            "Algo-based phishing",
+            "Vishing",
+            "Domain Phishing",
+            "Email-based phishing",
+          ],
+          answer: 1,
+          exp: "Vishing = Voice + Phishing.",
+        },
+        {
+          q: "Victims of phishing are mostly ...............",
+          options: [
+            "Tech enthusiast",
+            "Professional computer engineers",
+            "Lack of computer knowledge",
+            "Lack of management skill",
+          ],
+          answer: 2,
+          exp: "People with less computer/security awareness are more likely to become phishing victims.",
+        },
+        {
+          q: "............... is usually targeted by nature where the emails are exclusively designed to target any exact user.",
+          options: [
+            "Algo-based phishing",
+            "Vishing",
+            "Domain Phishing",
+            "Spear phishing",
+          ],
+          answer: 3,
+          exp: "Spear phishing targets a specific individual or organization.",
+        },
+        {
+          q: "............... or smishing is one of the simplest types of phishing where the target victims may get a fake order detail with a cancellation link.",
+          options: [
+            "Algo-based phishing",
+            "SMS phishing",
+            "Domain Phishing",
+            "Spear phishing",
+          ],
+          answer: 1,
+          exp: "Smishing is phishing through SMS messages.",
+        },
+        {
+          q: "............... phishing is that type of phishing where the construction of a fake webpage is done for targeting definite keywords & waiting for the searcher to land on the fake webpage.",
+          options: ["Voice", "SMS", "Search engine", "Email"],
+          answer: 2,
+          exp: "Search Engine Phishing uses fake pages indexed in search results.",
+        },
+        {
+          q: "Which of the following is not an example or type of phishing?",
+          options: [
+            "Spear phishing",
+            "Deceptive phishing",
+            "Whaling",
+            "Monkey in the Middle",
+          ],
+          answer: 3,
+          exp: "Monkey in the Middle is not a phishing type; it is a Man-in-the-Middle attack.",
+        },
+        {
+          q: "Which of the following is not an example or type of phishing?",
+          options: ["Tracking", "Vishing", "Smishing", "Pharming"],
+          answer: 0,
+          exp: "Tracking is not a phishing technique.",
+        },
+        {
+          q: "............... is data interception method used by hackers.",
+          options: ["Phishing", "DoS", "Sniffing", "MitM"],
+          answer: 2,
+          exp: "Sniffing is the interception and monitoring of network traffic.",
+        },
+        {
+          q: "Sniffing is also known as ...............",
+          options: [
+            "Network-tapping",
+            "Wiretapping",
+            "Net-tapping",
+            "Wireless-tapping",
+          ],
+          answer: 1,
+          exp: "Sniffing is commonly known as wiretapping because it intercepts network communication.",
+        },
+        {
+          q: "............... are programs or devices that capture the vital information from the target network or particular network.",
+          options: ["Routers", "Trappers", "Wireless-crackers", "Sniffers"],
+          answer: 3,
+          exp: "Sniffers are hardware/software tools used to capture network traffic.",
+        },
+        {
+          q: "Which of them is not an objective of sniffing for hackers?",
+          options: [
+            "Fetching passwords",
+            "Email texts",
+            "Types of files transferred",
+            "Geographic location of a user",
+          ],
+          answer: 3,
+          exp: "Sniffing captures network traffic, not a user's geographic location.",
+        },
+        {
+          q: "Which of the following tech-concepts cannot be sniffed?",
+          options: [
+            "Router configuration",
+            "ISP details",
+            "Email Traffic",
+            "Web Traffic",
+          ],
+          answer: 0,
+          exp: "Router configuration cannot normally be sniffed from network traffic.",
+        },
+        {
+          q: "Which of the following tech-concepts cannot be sniffed?",
+          options: [
+            "Cloud sessions",
+            "FTP passwords",
+            "Telnet passwords",
+            "Chat sessions",
+          ],
+          answer: 0,
+          exp: "FTP, Telnet and chat sessions may be sniffed if unencrypted, but cloud sessions generally cannot.",
+        },
+        {
+          q: "Which of the below-mentioned protocol is not susceptible to sniffing?",
+          options: ["HTTP", "SMTP", "POP", "TCP"],
+          answer: 3,
+          exp: "TCP is a transport protocol and is not considered an application protocol carrying readable data.",
+        },
+        {
+          q: "Which of the below-mentioned protocol is not susceptible to sniffing?",
+          options: ["NNTP", "UDP", "FTP", "IMAP"],
+          answer: 1,
+          exp: "UDP itself is a transport protocol; the others are application protocols.",
+        },
+        {
+          q: "There are ............... types of sniffing.",
+          options: ["2", "3", "4", "5"],
+          answer: 0,
+          exp: "There are two types of sniffing: Active and Passive.",
+        },
+        {
+          q: "There are ............... types of spamming.",
+          options: ["3", "4", "5", "6"],
+          answer: 2,
+          exp: "This book classifies spamming into five major types.",
+        },
+        {
+          q: "Which of the following is not a sniffing tool?",
+          options: ["Wireshark", "Dude Sniffer", "Maltego", "Look@LAN"],
+          answer: 2,
+          exp: "Maltego is an OSINT tool, not a packet sniffer.",
+        },
+        {
+          q: "There are ............... major ways of spamming.",
+          options: ["4", "2", "3", "5"],
+          answer: 0,
+          exp: "The major ways of spamming are classified into four categories.",
+        },
+        {
+          q: "A ............... on the whole turns your system's NIC to the licentious mode so that it can listen to all your data transmitted on its division.",
+          options: [
+            "Phishing site",
+            "Sniffer tool",
+            "Password cracker",
+            "NIC cracker",
+          ],
+          answer: 1,
+          exp: "A sniffer tool sets the NIC into promiscuous mode to capture all packets.",
+        },
+        {
+          q: "In ............... sniffing, the network traffic is not only supervised & looked but also can be altered in different ways to accomplish the attack.",
+          options: ["Passive", "Signal", "Network", "Active"],
+          answer: 3,
+          exp: "Active sniffing allows interception as well as manipulation of traffic.",
+        },
+        {
+          q: "............... are those devices which can be plugged into your network at the hardware level & it can monitor traffic.",
+          options: [
+            "Hardware sniffers & analyzers",
+            "Hardware protocol analyzers",
+            "Hardware protocol sniffers",
+            "Hardware traffic sniffers and observers",
+          ],
+          answer: 0,
+          exp: "Hardware sniffers and analyzers are dedicated devices used to monitor network traffic.",
+        },
+        {
+          q: "............... attack is the exploitation of the web-session & its mechanism that is usually managed with a session token.",
+          options: [
+            "Session Hacking",
+            "Session Hijacking",
+            "Session Cracking",
+            "Session Compromising",
+          ],
+          answer: 1,
+          exp: "Session hijacking exploits an active web session using the session token.",
+        },
+        {
+          q: "The most commonly used session hijacking attack is the ...............",
+          options: ["IP hacking", "IP spooling", "IP spoofing", "IP tracking"],
+          answer: 2,
+          exp: "IP spoofing is the most common technique used in session hijacking.",
+        },
+        {
+          q: "............... are required because HTTP uses a lot of diverse TCP connections, so the web server needs a means to distinguish every user's connections.",
+          options: ["Internet", "Network", "Hijacking", "Sessions"],
+          answer: 3,
+          exp: "Sessions help identify and maintain each user's connection in HTTP.",
+        },
+        {
+          q: "Since most ............... occur at the very beginning of the TCP session, this allows hackers to gain access to any system.",
+          options: [
+            "Authentications",
+            "Breaches",
+            "Integrations",
+            "Associations",
+          ],
+          answer: 0,
+          exp: "Authentication occurs at the beginning of a TCP session and is often targeted.",
+        },
+        {
+          q: "............... is done only after the target user has connected to the server.",
+          options: [
+            "Server hacking",
+            "Banner grabbing",
+            "Cracking",
+            "Hijacking",
+          ],
+          answer: 3,
+          exp: "Session hijacking is performed after the user establishes a valid session.",
+        },
+        {
+          q: "In ............... attack, the attacker doesn't actively take over another user to perform the attack.",
+          options: ["Phishing", "Spoofing", "Hijacking", "Vishing"],
+          answer: 1,
+          exp: "Spoofing impersonates another system without taking over an active session.",
+        },
+        {
+          q: "There are ............... types of session hijacking.",
+          options: ["2", "3", "4", "5"],
+          answer: 0,
+          exp: "Session hijacking is mainly of two types: Active and Passive.",
+        },
+        {
+          q: "With ............... attack, an attacker hijacks a session but does not alter anything. They just sit back and watch or record all the traffic and data being sent forth.",
+          options: [
+            "Network session hijacking",
+            "Passive session hijacking",
+            "Active session hijacking",
+            "Social-networking session hijacking",
+          ],
+          answer: 1,
+          exp: "Passive session hijacking only monitors traffic without modifying it.",
+        },
+        {
+          q: "In an ............... attack, an attacker finds an active session & takes over that session.",
+          options: [
+            "Network session hijacking",
+            "Passive session hijacking",
+            "Active session hijacking",
+            "Social-networking session hijacking",
+          ],
+          answer: 2,
+          exp: "Active session hijacking involves taking control of an active session.",
+        },
+        {
+          q: "Session hijacking takes place at ............... number of levels.",
+          options: ["Five", "Four", "Three", "Two"],
+          answer: 2,
+          exp: "Session hijacking is commonly categorized into three levels.",
+        },
+        {
+          q: "The ............... hijacking is implemented on the data flow of protocol shared by all web applications.",
+          options: [
+            "Network level",
+            "Physical level",
+            "Application level",
+            "Data level",
+          ],
+          answer: 2,
+          exp: "Application-level hijacking targets web application sessions.",
+        },
+        {
+          q: "Which of the following example does not come under network level session hijacking?",
+          options: [
+            "TCP/IP Hijacking",
+            "RST Hijacking",
+            "Domain Hijacking",
+            "Blind Hijacking",
+          ],
+          answer: 2,
+          exp: "Domain hijacking is different from network-level session hijacking.",
+        },
+        {
+          q: "In ............... session hijacking, hackers gain session ID for taking control of existing session or even create a new unauthorized session.",
+          options: [
+            "Network level",
+            "Physical level",
+            "Application level",
+            "Data level",
+          ],
+          answer: 2,
+          exp: "Application-level session hijacking involves stealing or forging session IDs.",
+        },
+        {
+          q: "Which of them is not a session hijacking tool?",
+          options: [
+            "Juggernaut",
+            "IP Watcher",
+            "Wireshark",
+            "Paros HTTP Hijacker",
+          ],
+          answer: 1,
+          exp: "IP Watcher is a monitoring tool, not a session hijacking tool.",
+        },
+        {
+          q: "Which of the following is a session hijacking tool?",
+          options: ["T-Sight", "Wireshark", "Maltego", "Nessus"],
+          answer: 1,
+          exp: "Wireshark can capture session packets and is widely used in session hijacking analysis.",
+        },
+        {
+          q: "Which of the following is not a proper way of how spammers get the email IDs?",
+          options: [
+            "When a user registers to online services, blogs and sites",
+            "Databases formed by spiders fetching email IDs from different sources",
+            "From offline form fill-up documents",
+            "Online ad-tracking tools",
+          ],
+          answer: 2,
+          exp: "Offline form fill-up documents are not a common source for collecting email IDs for spam.",
+        },
+        {
+          q: "Which of the following is not an appropriate way to compromise web servers?",
+          options: [
+            "Misconfiguration in OS",
+            "Using network vulnerabilities",
+            "Misconfiguration in networks",
+            "Bugs in OS which allow commands to run on web servers",
+          ],
+          answer: 2,
+          exp: "Network misconfiguration itself is not considered a direct web-server compromise technique.",
+        },
+        {
+          q: "Which of the following is not an appropriate method of defacing web server?",
+          options: [
+            "Fetching credentials through MiTM",
+            "Brute-forcing Admin Password",
+            "IP address spoofing",
+            "DNS Attack through cache poisoning",
+          ],
+          answer: 2,
+          exp: "IP spoofing alone is not used to deface a web server.",
+        },
+        {
+          q: "Which of the following is not an appropriate method of defacing web server?",
+          options: [
+            "Mail server intrusion",
+            "Web application bugs",
+            "Web shares misconfiguration",
+            "Sessions hijacking",
+          ],
+          answer: 3,
+          exp: "Session hijacking is different from web-server defacement techniques.",
+        },
+        {
+          q: "............... is one of the most widely used web server platforms.",
+          options: ["IIS", "IAS", "ISS", "AIS"],
+          answer: 0,
+          exp: "IIS (Internet Information Services) is Microsoft's web server platform.",
+        },
+        {
+          q: "IIS stands for ...............",
+          options: [
+            "Interconnected Information Server",
+            "Interconnected Information Services",
+            "Internet Information Server",
+            "Internet Information Services",
+          ],
+          answer: 3,
+          exp: "IIS stands for Internet Information Services.",
+        },
+        {
+          q: "............... is a tiny script that if uploaded to a web server can give hacker complete control of a remote PC.",
+          options: ["Spyware", "ASP Trojan", "Web ransomware", "Stuxnet"],
+          answer: 1,
+          exp: "ASP Trojan is a malicious web shell script used to control a remote system.",
+        },
+        {
+          q: "............... logs all the visits in log files which is located at <%systemroot%>\\logfiles.",
+          options: ["IIS", "Microsoft Server", "Linux", "IAS"],
+          answer: 0,
+          exp: "IIS stores web server logs under %systemroot%\\logfiles.",
+        },
+        {
+          q: "Which of the following is not a web server attack type?",
+          options: [
+            "DoS attack",
+            "Website Defacement using SQLi",
+            "Directory Traversal",
+            "Password guessing",
+          ],
+          answer: 3,
+          exp: "Password guessing is an authentication attack, not a web-server attack type.",
+        },
+        {
+          q: "............... tool clears the log entries in the IIS log files filtered by an IP address.",
+          options: [
+            "CleanIISLoging",
+            "CleanLogger",
+            "CleanIISLog",
+            "ClearIISLog",
+          ],
+          answer: 2,
+          exp: "CleanIISLog is used to clear IIS log entries.",
+        },
+        {
+          q: "............... are used which crawl web pages looking for email IDs and copies them to the database.",
+          options: ["Caches", "Cookies", "Bots", "Spiders"],
+          answer: 3,
+          exp: "Spiders crawl websites and collect email addresses.",
+        },
+        {
+          q: "Which of the following is not an appropriate countermeasure for web server hacking?",
+          options: [
+            "Patch updates need to be done regularly",
+            "Not to use default configurations",
+            "Use IDS and firewalls with signature updates",
+            "Use low-speed internet",
+          ],
+          answer: 3,
+          exp: "Internet speed has no role in protecting a web server.",
+        },
+        {
+          q: "Which of the following is not an appropriate countermeasure for web server hacking?",
+          options: [
+            "Using OS or antivirus without updates",
+            "Scan web server applications for vulnerabilities",
+            "Using secure protocols",
+            "Follow strict access control policy",
+          ],
+          answer: 0,
+          exp: "Running outdated OS or antivirus reduces security.",
+        },
+        {
+          q: "A ............... is a program application which is stored on a remote-server & distributed over the Internet when a user uses a browser interface to request for such applications.",
+          options: [
+            "Android application",
+            "Web application",
+            "PC application",
+            "Cloud application",
+          ],
+          answer: 1,
+          exp: "A web application runs on a remote server and is accessed through a browser.",
+        },
+        {
+          q: "Which of the following is not an example of web application hacking?",
+          options: [
+            "Defacing websites",
+            "Stealing credit card information",
+            "Reverse engineering PC apps",
+            "Exploiting server-side scripting",
+          ],
+          answer: 2,
+          exp: "Reverse engineering PC applications is not web application hacking.",
+        },
+        {
+          q: "............... hacking refers to mistreatment of applications through HTTP or HTTPS that can be done by manipulating the web application through its graphical web interface or by tampering the Uniform Resource Identifier (URI).",
+          options: [
+            "Android application",
+            "Web application",
+            "PC application",
+            "Cloud application",
+          ],
+          answer: 1,
+          exp: "Web application hacking targets applications running over HTTP/HTTPS.",
+        },
+        {
+          q: "Which of the following is not an appropriate method of web application hacking?",
+          options: ["XSS", "CSRF", "SQLi", "Brute-force"],
+          answer: 3,
+          exp: "Brute-force is a password attack, not a web application attack method.",
+        },
+        {
+          q: "XSS stands for ...............",
+          options: [
+            "Crack Site Scripting",
+            "Cross Site Server",
+            "Cross Site Scripting",
+            "Crack Server Scripting",
+          ],
+          answer: 2,
+          exp: "XSS stands for Cross Site Scripting.",
+        },
+        {
+          q: "Which of the following is not an example of web application hacking?",
+          options: [
+            "DNS Attack",
+            "Dumpster diving",
+            "Injecting Malicious code",
+            "Using the shell to destroy web application data",
+          ],
+          answer: 1,
+          exp: "Dumpster diving is a physical information gathering technique.",
+        },
+        {
+          q: "Which of the following is not a threat of web application?",
+          options: [
+            "Reverse engineering",
+            "Command injection",
+            "DMZ protocol attack",
+            "Buffer Overflow",
+          ],
+          answer: 2,
+          exp: "DMZ protocol attack is not considered a standard web application threat.",
+        },
+        {
+          q: "Which of the following is not a threat of web application?",
+          options: [
+            "Session poisoning",
+            "Phishing",
+            "Cryptographic interception",
+            "Cookie snooping",
+          ],
+          answer: 2,
+          exp: "Cryptographic interception is not a common web application threat.",
+        },
+        {
+          q: "............... Injection attack is a special attack done through character elements 'Carriage Return' or 'Line Feed'.",
+          options: ["XSS", "CSRF", "CRLF", "SQL"],
+          answer: 2,
+          exp: "CRLF Injection exploits carriage return and line feed characters.",
+        },
+        {
+          q: "Which of the following scripting language is used for injecting executable malicious code for web-app hacking?",
+          options: ["C++", "Tcl", "Frame-Script", "JavaScript"],
+          answer: 3,
+          exp: "JavaScript is commonly used in client-side web attacks like XSS.",
+        },
+        {
+          q: "............... takes advantage if hidden fields that work as the only security measure in some applications.",
+          options: [
+            "Parameter tampering",
+            "Data tampering",
+            "Tampering of network topology",
+            "Protocol tampering",
+          ],
+          answer: 0,
+          exp: "Parameter tampering modifies hidden fields or URL parameters.",
+        },
+        {
+          q: "............... is the attack method for decoding user credentials. Using this technique an attacker can log on as a user & gain access to unauthorized data.",
+          options: [
+            "Cache Snooping",
+            "Cookie-jacking",
+            "Cookie Snooping",
+            "Cache-compromising",
+          ],
+          answer: 2,
+          exp: "Cookie snooping captures authentication cookies to impersonate users.",
+        },
+        {
+          q: "Which of the following is not an example of web application hacking technique?",
+          options: [
+            "LDAP injection",
+            "Cryptanalysis",
+            "Race condition attack",
+            "OS command injection",
+          ],
+          answer: 1,
+          exp: "Cryptanalysis is a cryptographic attack, not a web application hacking technique.",
+        },
+        {
+          q: "............... are unwanted software intended to pitch advertisements upon the user's screen, most often within a web browser.",
+          options: ["Shareware", "Adware", "Bloatware", "Ransomware"],
+          answer: 1,
+          exp: "Adware displays unwanted advertisements to users.",
+        },
+        {
+          q: "PUP is abbreviated as ...............",
+          options: [
+            "Potentially Useless Programs",
+            "Potentially Unwanted Protocols",
+            "Potentially Unwanted Programs",
+            "Partial Unwanted Programs",
+          ],
+          answer: 2,
+          exp: "PUP stands for Potentially Unwanted Programs.",
+        },
+        {
+          q: "Users might invite some bogus virus in his/her system by clicking the ...............",
+          options: ["Shareware", "Spyware", "URL", "Adware"],
+          answer: 2,
+          exp: "Clicking malicious URLs may infect a system.",
+        },
+        {
+          q: "Which among the following is not an abnormal symptom found once you click any malicious adware?",
+          options: [
+            "Automatic opening of new tabs in the browser",
+            "Automatic updates of antivirus",
+            "Changes in home page",
+            "Popping up of new Search engines on your browser",
+          ],
+          answer: 1,
+          exp: "Automatic antivirus updates are normal behavior.",
+        },
+        {
+          q: "Once ............... hijacks your system, it might perform different sorts of unwanted tasks.",
+          options: ["Server hacking", "Banner grabbing", "Cracking", "Adware"],
+          answer: 3,
+          exp: "Adware hijacks browsers and performs unwanted activities.",
+        },
+        {
+          q: "Creators of ............... also sell your browsing behaviour & information to 3rd parties.",
+          options: ["Shareware", "Spyware", "URL", "Adware"],
+          answer: 3,
+          exp: "Adware developers often monetize user browsing data.",
+        },
+        {
+          q: "Modern ............... can even use it to target users with additional advertisements that are customized to the browsing habits.",
+          options: [
+            "Smart shareware",
+            "Smart adware",
+            "Smart bloatware",
+            "Smart spyware",
+          ],
+          answer: 1,
+          exp: "Modern adware delivers personalized advertisements.",
+        },
+        {
+          q: "Which of the following is not a technique used by spanners?",
+          options: [
+            "Spoofing the domain",
+            "Sending attached virus in spams",
+            "Junk tags associated with spam-emails",
+            "Making important deals through such emails",
+          ],
+          answer: 3,
+          exp: "Spam emails are generally not used for genuine important deals.",
+        },
+        {
+          q: "Which among the following is not a symptom of your system compromised with adware?",
+          options: [
+            "Website links redirect to unintended sites",
+            "Web browser acts slow",
+            "System restarts frequently",
+            "Browser crashes frequently",
+          ],
+          answer: 2,
+          exp: "Frequent system restart is generally not a typical symptom of adware.",
+        },
+        {
+          q: "Malicious adware may sneak into your system by ............... different ways.",
+          options: ["five", "four", "three", "two"],
+          answer: 0,
+          exp: "Adware can enter a system through five common methods.",
+        },
+        {
+          q: "Which of the following term is not a valid terminology and type of adware?",
+          options: [
+            "Mobile adware",
+            "Mac Adware",
+            "Smart-home adware",
+            "Windows adware",
+          ],
+          answer: 2,
+          exp: "Smart-home adware is not a standard adware category.",
+        },
+        {
+          q: "............... technique is also used in product advertisement.",
+          options: ["Phishing", "Cookies", "e-Banners", "Spamming"],
+          answer: 2,
+          exp: "e-Banners are commonly used for online product advertisements.",
+        },
+        {
+          q: "............... are unnecessary software which infiltrates user's system, spy on user's activities, stealing internet usage data & sensitive information.",
+          options: ["Shareware", "Spyware", "Ransomware", "Freeware"],
+          answer: 1,
+          exp: "Spyware secretly monitors users and steals sensitive information.",
+        },
+        {
+          q: "They spy on our digital habits and spy on which data is more sensitive or useful for its creator. Who are they referring to here?",
+          options: ["Shareware", "Ransomware", "Spyware", "Freeware"],
+          answer: 2,
+          exp: "Spyware tracks user behavior and collects sensitive information.",
+        },
+        {
+          q: "Spyware collects user's personal data & spreads it to ............... data-firms, or its creator.",
+          options: [
+            "advertisers",
+            "dark-market",
+            "antivirus company",
+            "share market",
+          ],
+          answer: 0,
+          exp: "Spyware often sells collected information to advertisers.",
+        },
+        {
+          q: "Which of the following activity is not done by spyware?",
+          options: [
+            "sell internet usage data",
+            "capture credit card details",
+            "user's personal identity",
+            "steal signature of the different virus",
+          ],
+          answer: 3,
+          exp: "Spyware does not steal virus signatures.",
+        },
+        {
+          q: "Which of the following activity is not done by spyware?",
+          options: [
+            "Monitors your internet activity",
+            "Track user's login details and passwords",
+            "Uninstalls your mobile browser",
+            "Spy on sensitive information",
+          ],
+          answer: 2,
+          exp: "Spyware does not normally uninstall browsers.",
+        },
+        {
+          q: "............... is populating the inbox of any target victim with unsolicited or junk emails.",
+          options: ["Phishing", "Spamming", "Hooking", "DoS"],
+          answer: 1,
+          exp: "Spamming means sending unsolicited bulk emails.",
+        },
+        {
+          q: "It actually infects your device easily & makes it hard to ...............",
+          options: ["delete", "identify", "modify", "copy"],
+          answer: 1,
+          exp: "Spyware is often difficult to identify after infection.",
+        },
+        {
+          q: "There are ............... main types of spyware.",
+          options: ["2", "3", "4", "5"],
+          answer: 2,
+          exp: "Spyware is commonly classified into four major types.",
+        },
+        {
+          q: "............... track the user's online activities like search queries, history pages & downloads, for selling purposes.",
+          options: [
+            "Ad-based spyware",
+            "System Monitors",
+            "Spy-trojans",
+            "Tracking cookies",
+          ],
+          answer: 3,
+          exp: "Tracking cookies monitor browsing behavior for advertising.",
+        },
+        {
+          q: "............... tracks your data and displays those products as ads for promotions.",
+          options: [
+            "Ad-based spyware",
+            "System Monitors",
+            "Spy-trojans",
+            "Tracking cookies",
+          ],
+          answer: 0,
+          exp: "Ad-based spyware shows targeted advertisements.",
+        },
+        {
+          q: "............... disguises them as legitimate software & appear as Java or Flash Player updates.",
+          options: [
+            "Ad-based spyware",
+            "System Monitors",
+            "Spy-trojans",
+            "Tracking cookies",
+          ],
+          answer: 2,
+          exp: "Spy-trojans often disguise themselves as software updates.",
+        },
+        {
+          q: "............... records all your keystrokes, chat-room dialogs, program run in your system, and system details.",
+          options: [
+            "Ad-based spyware",
+            "System Monitors",
+            "Spy-trojans",
+            "Tracking cookies",
+          ],
+          answer: 1,
+          exp: "System monitors (keyloggers) record user activity.",
+        },
+        {
+          q: "Which of the following do not lead you to invite spyware into your system?",
+          options: [
+            "Accepting fishy prompt or pop-ups",
+            "Downloading apps from an unreliable source",
+            "Opening unknown attachments",
+            "Installing antivirus patches",
+          ],
+          answer: 3,
+          exp: "Installing genuine antivirus patches helps protect against spyware.",
+        },
+        {
+          q: "Many social media sites and services provide ............... for legitimate account verification.",
+          options: [
+            "Retina scanning",
+            "Fingerprint scanning",
+            "CAPTCHA",
+            "2-step verification",
+          ],
+          answer: 3,
+          exp: "Most social media platforms use two-step verification for account security.",
+        },
+        {
+          q: "Which of the following is not an anti-spyware tool?",
+          options: [
+            "MalwareBytes Anti-Malware",
+            "SpyBot Search and Destroy",
+            "Emsisoft Emergency Kit",
+            "MS Firewall Defender",
+          ],
+          answer: 3,
+          exp: "MS Firewall Defender is a firewall, not a dedicated anti-spyware tool.",
+        },
+        {
+          q: "If you've accidentally clicked any pop-up which seems malicious, it is recommended to take steps to remove it and proactively change your ............... and delete browsing activities from web browser.",
+          options: ["passwords", "email ID", "name", "address"],
+          answer: 0,
+          exp: "Changing passwords is recommended after interacting with suspicious pop-ups.",
+        },
+        {
+          q: "............... can be defined as the duplication of another creator's or developer's product trailing a thorough examination of its production or development.",
+          options: [
+            "Reverse hacking",
+            "Cracking",
+            "Social engineering",
+            "Reverse engineering",
+          ],
+          answer: 3,
+          exp: "Reverse engineering studies a product to understand or recreate it.",
+        },
+        {
+          q: "............... can be made functional to diverse aspects of software development & hardware improvement activities.",
+          options: [
+            "Reverse hacking",
+            "Cracking",
+            "Reverse engineering",
+            "Social engineering",
+          ],
+          answer: 2,
+          exp: "Reverse engineering is widely used in software and hardware improvement.",
+        },
+        {
+          q: "RE is often defined as the crafting technique of ............... who uses his skills to remove copy protection or trial versions from software or media.",
+          options: [
+            "crackers",
+            "risk assessment team",
+            "auditors",
+            "surveillance monitoring team",
+          ],
+          answer: 0,
+          exp: "Crackers often use reverse engineering to bypass protections.",
+        },
+        {
+          q: "Which of the following activity is a good aspect of reverse engineering in ethical hacking?",
+          options: [
+            "Cracking the trial version of the product to make it full-version",
+            "Removing the product key insertion step",
+            "Jumping the code for premium facilities",
+            "Determining the vulnerabilities in the product",
+          ],
+          answer: 3,
+          exp: "Ethical reverse engineering helps identify security vulnerabilities.",
+        },
+        {
+          q: "Which of the following is not an appropriate measure for securing social networking accounts?",
+          options: [
+            "Strong passwords",
+            "Link your account with a phone number",
+            "Never write your password anywhere",
+            "Always maintain a soft copy of all your passwords in your PC",
+          ],
+          answer: 3,
+          exp: "Keeping passwords in a soft copy on a PC is insecure.",
+        },
+        {
+          q: "Which of the following is not a proper use of RE for ethical hackers?",
+          options: [
+            "Check for poorly designed protocols",
+            "Check for error conditions",
+            "Cracking for making paid apps free for use",
+            "Testing for boundary conditions",
+          ],
+          answer: 2,
+          exp: "Cracking paid software is unethical and illegal.",
+        },
+        {
+          q: "............... is the opposite of assembler.",
+          options: ["Reassembler", "Disassembler", "Compiler", "Interpreter"],
+          answer: 1,
+          exp: "A disassembler performs the reverse operation of an assembler.",
+        },
+        {
+          q: "............... comes under tools for reverse engineering (RE).",
+          options: ["Reassembler", "Compiler", "Disassembler", "Interpreter"],
+          answer: 2,
+          exp: "A disassembler is a standard reverse engineering tool.",
+        },
+        {
+          q: "De-compilation is not done for ...............",
+          options: [
+            "Recovery of lost source code",
+            "Migration of assembly language",
+            "Determining the existence of malicious code in any app",
+            "Targeting users with stealing code",
+          ],
+          answer: 3,
+          exp: "Decompilation is not meant for stealing code.",
+        },
+        {
+          q: "Which of the following is not a disassembler tool?",
+          options: ["IDA Pro", "PE Explorer", "Turbo C", "W32DASM"],
+          answer: 2,
+          exp: "Turbo C is a compiler, not a disassembler.",
+        },
+        {
+          q: "There are ............... types of reverse engineering methodologies.",
+          options: ["6", "2", "5", "3"],
+          answer: 1,
+          exp: "Reverse engineering methodologies are commonly classified into two types.",
+        },
+        {
+          q: "Which of the following is not an actual Reverse Engineering tool?",
+          options: ["Debugger", "Disassembler", "Text Editor", "Hex Editor"],
+          answer: 2,
+          exp: "A text editor is not a reverse engineering tool.",
+        },
+        {
+          q: "Part of the social media sites are the various games & 3rd party applications which helps ............... to get access to your data.",
+          options: [
+            "ethical hackers",
+            "penetration testers",
+            "security auditors",
+            "cyber-criminals",
+          ],
+          answer: 3,
+          exp: "Malicious third-party apps can help cyber-criminals access user data.",
+        },
+        {
+          q: "PE & Resource Viewer permits programmers to inspect & alter resources which are entrenched in the EXE file of any software.",
+          options: [
+            "PE & Resource Viewer",
+            "Debugger",
+            "Disassembler",
+            "Hex Editor",
+          ],
+          answer: 0,
+          exp: "PE & Resource Viewer is specifically designed for editing EXE resources.",
+        },
+        {
+          q: "IDAPro is used as a ............... in manual binary code analysis and also used a debugger.",
+          options: [
+            "PE & Resource Viewer",
+            "Debugger",
+            "Disassembler",
+            "Hex Editor",
+          ],
+          answer: 2,
+          exp: "IDA Pro is primarily a disassembler with debugging capabilities.",
+        },
+        {
+          q: "............... is a type of reverse engineering tool that is used to dissect binary codes into assembly codes.",
+          options: [
+            "PE & Resource Viewer",
+            "Debugger",
+            "Disassembler",
+            "Hex Editor",
+          ],
+          answer: 2,
+          exp: "Disassemblers convert binary code into assembly language.",
+        },
+        {
+          q: "Which of the following is not a function or use of disassembler?",
+          options: [
+            "Extracting functions & libraries",
+            "Extracting strings and values",
+            "Assemble medium-level codes",
+            "Dissect binary codes",
+          ],
+          answer: 2,
+          exp: "Disassemblers do not assemble code.",
+        },
+        {
+          q: "Which of the following is not a feature of IDAPro?",
+          options: [
+            "Instant debugging",
+            "Connect local and remote systems easily",
+            "Explore in-depth binary data",
+            "Convert machine language to high-level code",
+          ],
+          answer: 3,
+          exp: "IDA Pro does not directly convert machine code into high-level code.",
+        },
+        {
+          q: "A ............... takes executable file as input and tries to generate high level code.",
+          options: ["Debugger", "Decompiler", "Disassembler", "Hex Editor"],
+          answer: 1,
+          exp: "A decompiler converts executable code into high-level source code.",
+        },
+        {
+          q: "............... does not attempt to reverse the actions of compiler; rather it transforms the input program repeatedly until HLL code is achieved.",
+          options: ["Debugger", "Hex Editor", "Disassembler", "Decompiler"],
+          answer: 3,
+          exp: "A decompiler reconstructs high-level language from executable code.",
+        },
+        {
+          q: "............... will not recreate the original source file created by the compiler.",
+          options: ["Debugger", "Hex Editor", "Decompiler", "Disassembler"],
+          answer: 2,
+          exp: "A decompiler cannot perfectly recreate the original source code.",
+        },
+        {
+          q: "Which of the following is not a decompiler tool?",
+          options: [
+            "DCC decompiler",
+            "Borland C",
+            "Boomerang Decompiler",
+            "ExeToC",
+          ],
+          answer: 1,
+          exp: "Borland C is a compiler, not a decompiler.",
+        },
+        {
+          q: "REC stands for ...............",
+          options: [
+            "Reverse Engineering Compiler",
+            "Reverse Engineering Computer",
+            "Return-to-Code Engineering Compiler",
+            "Reversing Engineered Compiler",
+          ],
+          answer: 0,
+          exp: "REC stands for Reverse Engineering Compiler.",
+        },
+        {
+          q: "............... is a universal interactive program environment for reverse engineering.",
+          options: ["TurboC", "Andromeda Decompiler", "IDAPro", "PE Explorer"],
+          answer: 2,
+          exp: "IDA Pro is one of the most widely used reverse engineering environments.",
+        },
+        {
+          q: "Which one is not an example of .Net application decompiler?",
+          options: ["Salamander", "Dis#", "Decompiler.Net", "MultiRipper"],
+          answer: 3,
+          exp: "MultiRipper is not a .NET decompiler.",
+        },
+        {
+          q: "............... is a naming system given to different computers which adapt to human-readable domain names.",
+          options: ["HTTP", "DNS", "WWW", "ISP"],
+          answer: 1,
+          exp: "DNS translates domain names into IP addresses.",
+        },
+        {
+          q: "DNS stands for ...............",
+          options: [
+            "Data Name System",
+            "Domain Name Server",
+            "Domain Name System",
+            "Domain's Naming System",
+          ],
+          answer: 2,
+          exp: "DNS stands for Domain Name System.",
+        },
+        {
+          q: "Some security issues might exist owing to misconfigured ............... which can direct to disclosure of information regarding the domain.",
+          options: ["DNS names", "HTTP setup", "ISP setup", "FTP-unsecured"],
+          answer: 0,
+          exp: "Misconfigured DNS records can expose domain information.",
+        },
+        {
+          q: "............... is a form of nasty online attack in which a user gets redirected to a DNS because of override of system's TCP/IP settings.",
+          options: [
+            "DNS malfunctioning",
+            "DNS cracking",
+            "DNS redirecting",
+            "DNS hijacking",
+          ],
+          answer: 3,
+          exp: "DNS hijacking redirects users by modifying DNS settings.",
+        },
+        {
+          q: "............... can be attained by the use of malware or by changing the server's settings.",
+          options: [
+            "DNS poisoning",
+            "DNS cracking",
+            "DNS hijacking",
+            "DNS redirecting",
+          ],
+          answer: 2,
+          exp: "DNS hijacking is commonly achieved using malware or DNS setting changes.",
+        },
+        {
+          q: "There are ............... main types of DNS hijacking.",
+          options: ["4", "2", "3", "5"],
+          answer: 0,
+          exp: "There are four major types of DNS hijacking.",
+        },
+        {
+          q: "Increase your security for social media account by always ............... as you step away from the system.",
+          options: ["signing in", "logging out", "signing up", "logging in"],
+          answer: 1,
+          exp: "Always log out when leaving a device.",
+        },
+        {
+          q: "The ............... matches and maps to the user friendly domain name.",
+          options: ["HTTP", "DNS", "WWW", "ISP"],
+          answer: 1,
+          exp: "DNS maps domain names to IP addresses.",
+        },
+        {
+          q: "Which of the following is not an example of DNS hijacking?",
+          options: [
+            "ISP DNS hijacking",
+            "DNS hijacking for phishing",
+            "DNS hijacking for pharming",
+            "HTTP-based DNS hacking",
+          ],
+          answer: 3,
+          exp: "HTTP-based DNS hacking is not a recognized DNS hijacking type.",
+        },
+        {
+          q: "A ............... is essentially a text file residing on the server that hosts different domain containing entries for dissimilar resource records.",
+          options: ["Zone file", "Robot file", "Bot file", "DNS file"],
+          answer: 0,
+          exp: "A DNS zone file stores resource records.",
+        },
+        {
+          q: "............... which is also termed as DNS spoofing, is a kind of attack that uses DNS based vulnerabilities for diverting the traffic of the internet.",
+          options: [
+            "DNS poisoning",
+            "DNS re-routing",
+            "DNS cracking",
+            "Domain link poisoning",
+          ],
+          answer: 0,
+          exp: "DNS poisoning is also called DNS spoofing.",
+        },
+        {
+          q: "DNS poisoning is very dangerous because it can extend its reach from one ............... to another.",
+          options: ["ISP server", "DNS server", "Linux server", "Domain user"],
+          answer: 1,
+          exp: "Poisoned DNS entries can spread between DNS servers.",
+        },
+        {
+          q: "A ............... can be poisoned if it is having an erroneous entry where the invader gets to organize the DNS server & change different kinds of information on it.",
+          options: ["Server data", "Domain name", "DNS cache", "System file"],
+          answer: 2,
+          exp: "DNS cache poisoning inserts false DNS records.",
+        },
+        {
+          q: "The ............... Domain Name Server data will get spread to the ISPs & will be cached there.",
+          options: ["working", "compromised", "corrupted", "poisoned"],
+          answer: 3,
+          exp: "Poisoned DNS records propagate through caching.",
+        },
+        {
+          q: "Try to keep your passwords without meaning so that ............... attack becomes almost impossible to perform successfully.",
+          options: [
+            "social engineering",
+            "phishing",
+            "password guessing",
+            "brute force",
+          ],
+          answer: 2,
+          exp: "Strong, unpredictable passwords help prevent password guessing attacks.",
+        },
+        {
+          q: "Which of the following data is not appropriate here, if you delete cache, cookies, and browser history?",
+          options: [
+            "Address bar predictions",
+            "Saved passwords",
+            "Browser plug-ins",
+            "Shopping cart content",
+          ],
+          answer: 2,
+          exp: "Browser plug-ins are not removed by clearing cache, cookies, or history.",
+        },
+        {
+          q: "............... are tiny files which get downloaded to your system when you visit a website.",
+          options: ["Cookies", "Caches", "Bots", "Crawlers"],
+          answer: 0,
+          exp: "Cookies are small files stored by websites on your device.",
+        },
+        {
+          q: "Browser ............... are impermanent internet files which helps the browsers download web images, data & documents for rapid performance & viewing in the future.",
+          options: ["plug-ins", "cache", "add-on", "history"],
+          answer: 1,
+          exp: "Browser cache stores temporary files for faster browsing.",
+        },
+        {
+          q: "............... is just a group of data downloaded for helping in displaying a web page faster.",
+          options: ["plug-ins", "cache", "add-ons", "history"],
+          answer: 1,
+          exp: "Cache stores downloaded data to speed up page loading.",
+        },
+        {
+          q: "Attackers could steal ............... to achieve illegitimate accessing to online accounts & disturbs the personal information.",
+          options: ["plug-ins", "cache", "cookies", "history"],
+          answer: 2,
+          exp: "Stolen cookies can be used to hijack user sessions.",
+        },
+        {
+          q: "Which of the following is not an example of browsing data?",
+          options: [
+            "Forms and Search-bar data",
+            "Cache data",
+            "Downloading history",
+            "Start bar search data",
+          ],
+          answer: 3,
+          exp: "Start bar search data is not browser browsing data.",
+        },
+        {
+          q: "............... is a popular tool to block social-media websites to track your browsing activities.",
+          options: ["Fader", "Blur", "Social-Media Blocker", "Ad-blocker"],
+          answer: 2,
+          exp: "Social-Media Blocker prevents social sites from tracking browsing.",
+        },
+        {
+          q: "Which of them is a proper measure of securing social networking account?",
+          options: [
+            "Never keep your password with any relevant names",
+            "Keep written records of your passwords",
+            "Keep records of your password in audio format in your personal cell-phone",
+            "Passwords are kept smaller in size to remember",
+          ],
+          answer: 0,
+          exp: "Passwords should not contain personal or easily guessed information.",
+        },
+        {
+          q: "There are ............... that are designed to track your browsing habits & aim ads that are relevant to the user.",
+          options: ["plug-ins", "cache", "cookies", "history"],
+          answer: 2,
+          exp: "Cookies are widely used for tracking and targeted advertising.",
+        },
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>
