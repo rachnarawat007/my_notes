@@ -1,0 +1,1132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MS WORD (PART 2)</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 0;
+        padding-bottom: 90px;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 12px;
+      }
+      .card {
+        background: #fff;
+        padding: 12px;
+        border-radius: 10px;
+        margin-top: 12px;
+      }
+      .qtext {
+        font-size: 16px;
+        margin: 10px 0;
+      }
+      .opt {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 6px 0;
+        cursor: pointer;
+      }
+      .opt.selected {
+        border-color: #2ec4b6;
+      }
+      .opt.correct {
+        background: #d4edda;
+        border-color: #28a745;
+      }
+      .opt.wrong {
+        background: #f8d7da;
+        border-color: #dc3545;
+      }
+      button {
+        padding: 8px 12px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        background: #2ec4b6;
+        color: white;
+        cursor: pointer;
+      }
+      #result {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Microsoft Word
+        {
+          q: "Selecting text means, selecting?",
+          options: [
+            "A word",
+            "An entire sentence",
+            "Whole document",
+            "Any of the above",
+          ],
+          answer: 3,
+          exp: "Text selection can be a word, sentence or the whole document.",
+        },
+
+        {
+          q: "The _____ on the right side of the menu bar lets users type free-form questions, such as how do I save, or terms, such as copy, and Word responds by displaying a list of topics related to the word or phrase entered.",
+          options: [
+            "Type a question for help box",
+            "Question Mark button",
+            "What's this? Command",
+            "Index sheet",
+          ],
+          answer: 0,
+          exp: "The 'Type a question for help' box is used to search Help topics.",
+        },
+
+        {
+          q: "To move to the end of the document, press the _____ key(s).",
+          options: ["Down arrow", "End", "Ctrl + down arrow", "Ctrl + End"],
+          answer: 3,
+          exp: "Ctrl + End moves the cursor to the end of the document.",
+        },
+
+        {
+          q: "Which of the following can be used to navigate documents?",
+          options: ["Frames", "Hyperlinks", "Web toolbar", "All of the above"],
+          answer: 3,
+          exp: "All the listed options can be used for document navigation.",
+        },
+
+        {
+          q: "Which of the following symbol sets would be most likely to contain a mathematical symbol such as a degree sign, greater than or equal to, or a Greek letter?",
+          options: ["Wingdings", "Wingdings 3", "Webdings", "Symbol"],
+          answer: 3,
+          exp: "Mathematical and Greek symbols are available in the Symbol font.",
+        },
+
+        {
+          q: "The scroll box on the vertical scroll bar indicates the ____.",
+          options: [
+            "Position of the insertion point from the top of the page",
+            "Distance of the insertion point from the left margin",
+            "Current relative location of the document portion displayed in the window",
+            "Rank of the word in which the insertion point is found",
+          ],
+          answer: 2,
+          exp: "The scroll box indicates the current relative position in the document.",
+        },
+
+        {
+          q: "Headers and footers can include text and graphics, as well as the _____.",
+          options: [
+            "Current date",
+            "Page number",
+            "Current time",
+            "All of the above",
+          ],
+          answer: 3,
+          exp: "Headers and footers can contain date, page number and time.",
+        },
+
+        {
+          q: "Text boundary can be displayed or hidden from _____.",
+          options: [
+            "Auto text option from Insert menu",
+            "Options from Tools menu",
+            "Customize from Tools menu",
+            "All of the above",
+          ],
+          answer: 1,
+          exp: "Text boundaries are controlled through the Tools → Options settings.",
+        },
+
+        {
+          q: "_____ are types of changes that occur when text has been omitted from a document and must be inserted later.",
+          options: ["Copy", "Paste", "Cut", "Paste Special"],
+          answer: 2,
+          exp: "Cut removes text so it can be inserted elsewhere later.",
+        },
+
+        {
+          q: "Which would you choose to move selected text from one place to another?",
+          options: [
+            "Move and Paste",
+            "Copy and Paste",
+            "Cut and Paste",
+            "Delete and Paste",
+          ],
+          answer: 2,
+          exp: "Cut and Paste is used to move selected text.",
+        },
+        {
+          q: "Ctrl + X",
+          options: [
+            "Close Document",
+            "Close Word Application",
+            "Cut the Selected Contents",
+            "Copy the Selected Contents",
+          ],
+          answer: 2,
+          exp: "Ctrl + X cuts the selected contents.",
+        },
+
+        {
+          q: "Which is not a data source component?",
+          options: [
+            "Mail merge toolbar",
+            "Header row",
+            "Data fields",
+            "Data records",
+          ],
+          answer: 0,
+          exp: "Mail Merge Toolbar is not a data source component.",
+        },
+
+        {
+          q: "In Word, the mailing list is known as the _____.",
+          options: ["Data sheet", "Source", "Data source", "Sheet"],
+          answer: 2,
+          exp: "The mailing list is called the data source.",
+        },
+
+        {
+          q: "On the horizontal ruler, an upside down T indicates a _____ tab stop.",
+          options: [
+            "left-aligned",
+            "right-aligned",
+            "decimal-aligned",
+            "Centred",
+          ],
+          answer: 1,
+          exp: "The inverted T symbol represents a right tab stop.",
+        },
+
+        {
+          q: "To erase a character to the right of the insertion point, press the _____ key.",
+          options: ["Cancel", "Backspace", "Delete", "Either b or c"],
+          answer: 2,
+          exp: "Delete removes the character to the right of the cursor.",
+        },
+
+        {
+          q: "Ctrl + D",
+          options: [
+            "Delete Dialog Box",
+            "Font Dialog Box",
+            "Delete All",
+            "Do nothing",
+          ],
+          answer: 1,
+          exp: "Ctrl + D opens the Font dialog box.",
+        },
+
+        {
+          q: "Ctrl + Y",
+          options: [
+            "Undo the last Action",
+            "Redo the last Action",
+            "Delete the last page",
+            "Delete the first page",
+          ],
+          answer: 1,
+          exp: "Ctrl + Y redoes the last action.",
+        },
+
+        {
+          q: "Ctrl + Delete is used to",
+          options: [
+            "Delete the word just after the cursor",
+            "Delete the word just before the cursor",
+            "Delete the single letter just after the cursor",
+            "Delete the single letter just before the cursor",
+          ],
+          answer: 0,
+          exp: "Ctrl + Delete deletes the next word.",
+        },
+
+        {
+          q: "Ctrl + Backspace is used to",
+          options: [
+            "Delete the single letter just before the cursor",
+            "Delete the single letter just after the cursor",
+            "Delete the word just before the cursor",
+            "Delete the word just after the cursor",
+          ],
+          answer: 2,
+          exp: "Ctrl + Backspace deletes the previous word.",
+        },
+
+        {
+          q: "Auto text and Auto correct are _____ tools.",
+          options: ["Styling", "Editing", "Designing", "None of the above"],
+          answer: 1,
+          exp: "AutoText and AutoCorrect are editing tools.",
+        },
+
+        {
+          q: "In normal view, automatic page breaks _____.",
+          options: [
+            "Do not display",
+            "Display on the screen as a single dotted horizontal line",
+            "Display on the screen above the header and beneath the footer",
+            "Display on the screen as a line separated by the words Page Break",
+          ],
+          answer: 1,
+          exp: "In Normal view, automatic page breaks appear as a dotted horizontal line.",
+        },
+
+        {
+          q: "Before creating a master document, you must switch to _____?",
+          options: [
+            "Normal View",
+            "Outline View",
+            "Web Layout View",
+            "Print Layout View",
+          ],
+          answer: 1,
+          exp: "Master documents are created in Outline View.",
+        },
+
+        {
+          q: "Before moving a subdocument to another location within a master document, you must switch to ______.",
+          options: [
+            "Normal View",
+            "Outline View",
+            "Web Layout View",
+            "Print Layout View",
+          ],
+          answer: 2,
+          exp: "Subdocuments ko move ya arrange karne ke liye Master Document ko Outline View me open kiya jata hai.",
+        },
+        {
+          q: "To open Columns dialog box quickly",
+          options: [
+            "Double click on the left margin area of ruler",
+            "Double click the space between area on ruler",
+            "Double click the right margin in ruler",
+            "All of above",
+          ],
+          answer: 4,
+          exp: "Columns dialog box ko ruler ke kisi bhi margin area se quickly access kiya ja sakta hai.",
+        },
+        {
+          q: "To cancel a job that is printing or one that is waiting to be printed ______.",
+          options: [
+            "Click the Print button on the Standard toolbar",
+            "Click the printer icon on the taskbar",
+            "Double-click the Print button on the Standard toolbar",
+            "Double-click the printer icon on the taskbar",
+          ],
+          answer: 4,
+          exp: "Print queue kholne ke liye taskbar ke printer icon par double-click kiya jata hai, jahan se print job cancel ki ja sakti hai.",
+        },
+        {
+          q: "Which of the following enables you to make multiple changes in a document at once?",
+          options: [
+            "Find command",
+            "Replace command",
+            "Drag and Drop",
+            "Copy command",
+          ],
+          answer: 2,
+          exp: "Replace command ek hi baar me document ke multiple words ya text ko replace kar deta hai.",
+        },
+        {
+          q: "Which of the following is best for quick copy operation?",
+          options: [
+            "Copy and Paste",
+            "Windows Clipboard",
+            "Drag and Drop",
+            "Auto Text",
+          ],
+          answer: 3,
+          exp: "Same document ke andar text ko jaldi copy/move karne ke liye Drag and Drop sabse fast method hai.",
+        },
+        {
+          q: "Suppose you wanted to create an AutoCorrect entry that would type the words 'We regret to inform you that your submission has been declined'. Which would be the best name you could assign to this entry?",
+          options: [
+            "regret",
+            "Subject",
+            "We regret to inform you that your submission has been declined",
+            "11",
+          ],
+          answer: 1,
+          exp: "AutoCorrect shortcut hamesha chhota aur easy type hone wala word hona chahiye.",
+        },
+        {
+          q: "Which of the following operations moves text from clipboard?",
+          options: ["Copy", "Paste", "Drag and Drop", "Cut"],
+          answer: 2,
+          exp: "Clipboard me rakhe gaye text ko document me lane ke liye Paste operation use hota hai.",
+        },
+        {
+          q: "To select a group of words, ______.",
+          options: [
+            "Click the Group button on the Formatting toolbar",
+            "Double-click anywhere within the group to be selected",
+            "Drag the mouse pointer through the characters to be selected",
+            "Right-click the first and last characters of the group to be selected",
+          ],
+          answer: 3,
+          exp: "Words ya characters ke group ko select karne ke liye mouse pointer ko drag kiya jata hai.",
+        },
+        {
+          q: "On which toolbar can find Format Painter tool?",
+          options: [
+            "Standard toolbar",
+            "Formatting toolbar",
+            "Drawing Toolbar",
+            "Picture Toolbar",
+          ],
+          answer: 1,
+          exp: "Classic MS Word me Format Painter Standard Toolbar par available hota hai.",
+        },
+
+        {
+          q: "What must be used to control the layering of objects?",
+          options: [
+            "Formatting toolbar",
+            "Picture toolbar",
+            "Drawing toolbar",
+            "Image toolbar",
+          ],
+          answer: 3,
+          exp: "Objects ki layering (Bring to Front/Send to Back) Drawing Toolbar se control ki jaati hai.",
+        },
+        {
+          q: "Where can you find the Draw Table tool button?",
+          options: [
+            "Standard toolbar",
+            "Formatting toolbar",
+            "Drawing toolbar",
+            "Tables and Formatting toolbar",
+          ],
+          answer: 4,
+          exp: "Draw Table tool Tables and Formatting toolbar me available hota hai.",
+        },
+        {
+          q: "Which toolbar has Crop button?",
+          options: [
+            "Standard toolbar",
+            "Formatting toolbar",
+            "Drawing toolbar",
+            "Picture Toolbar",
+          ],
+          answer: 4,
+          exp: "Crop option MS Word me Picture Toolbar par hota hai.",
+        },
+        {
+          q: "Which of the following is graphics solution for Word Processors?",
+          options: ["Clipart", "WordArt", "Drop Cap", "All of above"],
+          answer: 4,
+          exp: "ClipArt, WordArt aur Drop Cap teeno document ko attractive banane ke graphics features hain.",
+        },
+        {
+          q: "Which of the following is not the merge process?",
+          options: [
+            "Sort the data source records",
+            "Format a main document",
+            "Edit a data source",
+            "Merge the two files to print or create a new document",
+          ],
+          answer: 1,
+          exp: "Mail Merge ke main steps me main document banana, data source banana/edit karna aur merge karna shamil hota hai. Data source ko sort karna essential merge process nahi hai.",
+        },
+        {
+          q: "What would you do when you want to update the data in an embedded worksheet range?",
+          options: [
+            "Double click the worksheet range object",
+            "Right click worksheet range object & choose Format Object",
+            "Edit the data in the destination document",
+            "Edit the data in the source document",
+          ],
+          answer: 1,
+          exp: "Embedded worksheet ko edit karne ke liye us object par double-click kiya jata hai.",
+        },
+        {
+          q: "Which command is used to establish a link between a source document and a destination document?",
+          options: [
+            "Tools, Link, Documents",
+            "Tools, Link",
+            "Edit, Link",
+            "Edit, Paste Special",
+          ],
+          answer: 3,
+          exp: "MS Word me source aur destination document ke beech link banane ke liye Edit → Links command use hoti hai.",
+        },
+        {
+          q: "To select multiple cells, rows, or columns in a table that are not adjacent to one another, select the first cell and then hold down the _____ key while selecting the next cell, row, or column.",
+          options: ["Alt", "Shift", "Enter", "Ctrl"],
+          answer: 4,
+          exp: "Non-adjacent cells ya rows select karne ke liye Ctrl key hold ki jaati hai.",
+        },
+        {
+          q: "The paragraph mark (¶) is a formatting mark that indicates where the _____ was pressed.",
+          options: ["Tab key", "Spacebar", "Enter key", "Shift key"],
+          answer: 3,
+          exp: "Paragraph mark (¶) Enter key press karne par insert hota hai.",
+        },
+        {
+          q: "Which of the following option in File pull down menu is used to close a MS Word document?",
+          options: ["Quit", "Close", "Exit", "New"],
+          answer: 2,
+          exp: "Document ko band karne ke liye File menu ka Close option use hota hai.",
+        },
+        {
+          q: "Which keystroke is used for updating a field?",
+          options: ["F6", "F9", "F11", "F12"],
+          answer: 2,
+          exp: "MS Word me field update karne ke liye F9 key use hoti hai.",
+        },
+        {
+          q: "Pressing the _____ key instructs Word to replace an AutoText entry name with the stored AutoText entry.",
+          options: ["F1", "F2", "F3", "F4"],
+          answer: 3,
+          exp: "AutoText entry ko expand karne ke liye uska naam likhne ke baad F3 press kiya jata hai.",
+        },
+
+        {
+          q: "Which of the following function key activates the speller?",
+          options: ["F5", "F7", "F9", "Shift + F7"],
+          answer: 2,
+          exp: "MS Word me Spelling & Grammar check shuru karne ke liye F7 key use hoti hai.",
+        },
+        {
+          q: "Which simplifies the process of formatting text if the same formatting is required in more than one location?",
+          options: [
+            "Auto Text",
+            "Format Painter",
+            "Font dialog box",
+            "None of the above",
+          ],
+          answer: 2,
+          exp: "Format Painter ek jagah ki formatting ko copy karke dusri jagah apply karta hai.",
+        },
+        {
+          q: "Formatting is performed on?",
+          options: ["Text", "Table", "Menu", "Both (a) and (b)"],
+          answer: 4,
+          exp: "Formatting text aur tables dono par apply ki ja sakti hai.",
+        },
+        {
+          q: "There can be many ways to insert page number in a document. Which of the following lets you insert page number?",
+          options: [
+            "Page Number from Insert menu",
+            "Page Setup from File menu",
+            "Footnote from Insert menu",
+            "Both (a) & (c)",
+          ],
+          answer: 1,
+          exp: "Page Number insert karne ka standard option Insert → Page Number hai.",
+        },
+        {
+          q: "The MLA style specifies that a superscript be used for a note reference mark to signal an explanatory note exists either at the bottom of the page as a ______.",
+          options: [
+            "Footnote or at the end of the document as a start note",
+            "Headnote or at the end of the document as an endnote",
+            "Footnote or at the end of the document as an endnote",
+            "Headnote or at the end of the document as a start note",
+          ],
+          answer: 3,
+          exp: "MLA style me explanatory notes Footnote ya Endnote ke roop me diye ja sakte hain.",
+        },
+        {
+          q: "If you need to change the typeface of a document, which menu will you choose?",
+          options: ["Edit", "View", "Format", "Tools"],
+          answer: 3,
+          exp: "Typeface (Font) badalne ke liye Format menu ka use kiya jata hai.",
+        },
+        {
+          q: "Although it is not shown in normal view, to view a header, click ___ on the menu bar and then click Header and Footer.",
+          options: ["View", "Edit", "Format", "Tools"],
+          answer: 1,
+          exp: "Header/Footer ko dekhne ke liye View → Header and Footer use hota hai.",
+        },
+        {
+          q: "To change margin settings, click ___ on the menu bar and then point to the Page Setup command.",
+          options: ["File", "Edit", "Format", "Tools"],
+          answer: 1,
+          exp: "Classic MS Word me margins File → Page Setup se change kiye jate hain.",
+        },
+        {
+          q: "Which menu in MS Word can be used to change character size and typeface?",
+          options: ["View", "Tools", "Format", "Data"],
+          answer: 3,
+          exp: "Character size aur typeface Format menu se badle jate hain.",
+        },
+        {
+          q: "From which menu can you insert Header and Footer?",
+          options: ["Insert Menu", "View Menu", "Format Menu", "Tools Menu"],
+          answer: 2,
+          exp: "MS Word me Header and Footer View menu se insert kiye jate hain.",
+        },
+        {
+          q: "What is the tool in Word that copies only the format of selected text so that you can apply it on other text?",
+          options: ["Copy", "Paste", "Format Painter", "Paste Special"],
+          answer: 3,
+          exp: "Format Painter sirf formatting copy karta hai, text nahi.",
+        },
+        {
+          q: "Select a _____ to apply a predefined format to a Word 2007 table.",
+          options: [
+            "Table Style",
+            "Table Format",
+            "Format Style",
+            "None of above",
+          ],
+          answer: 1,
+          exp: "Word 2007 me predefined table formatting ke liye Table Styles use ki jati hain.",
+        },
+
+        {
+          q: "_____ is types of wizards and templates in the Resume Wizard dialog box.",
+          options: [
+            "Standard, Contemporary and Sophisticated",
+            "Professional, Contemporary, and Elegant",
+            "Formatted, Unformatted, and Graphic",
+            "Basic, Comprehensive, and Formatted",
+          ],
+          answer: 1,
+          exp: "Resume Wizard me Standard, Contemporary aur Sophisticated template styles available hote hain.",
+        },
+        {
+          q: "Changing the appearance of a document is called",
+          options: ["Proofing", "Editing", "Formatting", "All of the above"],
+          answer: 3,
+          exp: "Document ka look ya appearance badalne ko Formatting kehte hain.",
+        },
+        {
+          q: "Which language does MS-Word use to create Macros?",
+          options: ["Visual C++", "Visual Basic", "FoxPro", "Access"],
+          answer: 2,
+          exp: "MS Word me Macros Visual Basic for Applications (VBA) language me likhe jate hain.",
+        },
+        {
+          q: "Word stores all frames associated with a Web page in a single file called the _____.",
+          options: [
+            "Authoring page",
+            "Text page",
+            "Frames page",
+            "Hyperlink page",
+          ],
+          answer: 3,
+          exp: "Web page ke sabhi frames ek Frames Page me store kiye jate hain.",
+        },
+        {
+          q: "You wished to justify text over the height of paper, which option will you choose?",
+          options: [
+            "Page Setup from File menu",
+            "Paragraph from Format menu",
+            "From Formatting toolbar",
+            "Font from Format menu",
+          ],
+          answer: 1,
+          exp: "Vertical alignment (justify over page height) File → Page Setup se set kiya jata hai.",
+        },
+        {
+          q: "If you need to hide some paragraphs, how can you do it?",
+          options: [
+            "From Paragraph dialog box",
+            "From Font dialog box",
+            "From Options Dialog box",
+            "None of above",
+          ],
+          answer: 2,
+          exp: "Hidden text option Font dialog box me hota hai.",
+        },
+        {
+          q: "To display more of the document on the screen in print layout view, the _____ can be hidden.",
+          options: [
+            "White space at the top of the pages",
+            "White space at the bottom of the pages",
+            "Grey space between pages",
+            "All of the above",
+          ],
+          answer: 1,
+          exp: "Print Layout View me top white space hide karke document ka zyada hissa dikhaya ja sakta hai.",
+        },
+        {
+          q: "Which of the following is Page Orientation?",
+          options: ["Landscape", "Portrait", "Gutter", "Only A & B"],
+          answer: 4,
+          exp: "Page Orientation ke do types hote hain: Portrait aur Landscape.",
+        },
+        {
+          q: "Which indent marker controls all the lines except first line?",
+          options: [
+            "First Line Indent Marker",
+            "Left Indent Marker",
+            "Hanging Indent Marker",
+            "Right Indent Marker",
+          ],
+          answer: 3,
+          exp: "Hanging Indent marker first line ko chhodkar baaki sabhi lines ko control karta hai.",
+        },
+        {
+          q: "Which of the following typically appear at the end of document for citation of source?",
+          options: ["Endnotes", "Footnotes", "Header", "Footer"],
+          answer: 1,
+          exp: "Document ke end me source references dene ke liye Endnotes use kiye jate hain.",
+        },
+        {
+          q: "MS Office provides help in many ways, which of these is one of them?",
+          options: [
+            "What is this?",
+            "Office Assistant",
+            "Help menu",
+            "All of the above",
+          ],
+          answer: 4,
+          exp: "MS Office me What is This?, Office Assistant aur Help Menu teeno help provide karte hain.",
+        },
+        {
+          q: "To advance rightward from one cell to the next in a table, press the _____ key.",
+          options: ["Tab", "Backspace", "Home", "Enter"],
+          answer: 1,
+          exp: "Table ke next cell me jane ke liye Tab key use hoti hai.",
+        },
+        {
+          q: "Which key deletes the character to the left of the cursor?",
+          options: ["End", "Backspace", "Home", "Delete"],
+          answer: 2,
+          exp: "Backspace cursor ke left wala character delete karta hai.",
+        },
+        {
+          q: "Which key deletes the character to the right of the cursor?",
+          options: ["End", "Backspace", "Home", "Delete"],
+          answer: 4,
+          exp: "Delete key cursor ke right wala character delete karti hai.",
+        },
+        {
+          q: "Where is the Quick Access Toolbar and when should you use it?",
+          options: [
+            "Upper-left corner and use it for your favourite commands",
+            "Floats over your text and use it when you need formatting changes",
+            "Home tab and use it when you need to quickly launch or start new document",
+            "None of above",
+          ],
+          answer: 1,
+          exp: "Quick Access Toolbar title bar ke upper-left me hota hai aur frequently used commands ke liye use hota hai.",
+        },
+        {
+          q: "When you save a file as a Web page, Word converts the contents of the document into _____.",
+          options: ["Java", "Perl", "HTML", "Unix"],
+          answer: 3,
+          exp: "Web Page ke roop me save karne par document HTML format me convert hota hai.",
+        },
+        {
+          q: "By default, Word automatically formats each heading in a table of contents as _____.",
+          options: [
+            "Bookmarks",
+            "Cross-references",
+            "Hyperlinks",
+            "Word-fields",
+          ],
+          answer: 3,
+          exp: "Table of Contents ke headings default roop se hyperlinks hote hain.",
+        },
+        {
+          q: "Footnotes, endnotes, and indexes are all inserted as _____.",
+          options: [
+            "Bookmarks",
+            "Cross-references",
+            "Hyperlinks",
+            "Word-fields",
+          ],
+          answer: 4,
+          exp: "Ye sab Word me fields ke roop me insert kiye jate hain.",
+        },
+        {
+          q: "Which of the following is not the part of standard office suite?",
+          options: [
+            "Word Processor",
+            "Database",
+            "Image Editor",
+            "File manager",
+          ],
+          answer: 4,
+          exp: "File Manager standard Office Suite ka part nahi hota.",
+        },
+        {
+          q: "Use of Ctrl + L",
+          options: [
+            "Left Align",
+            "Left Indent",
+            "Increase Left Margin",
+            "Decrease Left Margin",
+          ],
+          answer: 1,
+          exp: "Ctrl + L selected paragraph ko Left Align karta hai.",
+        },
+        {
+          q: "The keystrokes Ctrl + I is used to",
+          options: [
+            "Increase font size",
+            "Inserts a line break",
+            "Indicate the text should be bold",
+            "Applies italic format to selected text",
+          ],
+          answer: 4,
+          exp: "Ctrl + I selected text ko Italic format deta hai.",
+        },
+        {
+          q: "Ctrl + K",
+          options: [
+            "Insert Page Number",
+            "Insert Hyperlink",
+            "Insert Header",
+            "Insert Footer",
+          ],
+          answer: 2,
+          exp: "Ctrl + K ka use MS Word me Hyperlink insert karne ke liye hota hai.",
+        },
+        {
+          q: "Which of the following can Not be used to create parallel style column?",
+          options: [
+            "Format Tabs",
+            "Table Insert Table",
+            "Insert Textbox",
+            "Format Columns",
+          ],
+          answer: 1,
+          exp: "Parallel/Newspaper style columns banane ke liye Format Columns use hota hai, Format Tabs nahi.",
+        },
+        {
+          q: "Which of the following is used to create newspaper style columns?",
+          options: [
+            "Format Tabs",
+            "Table Insert Table",
+            "Insert Textbox",
+            "Format Columns",
+          ],
+          answer: 4,
+          exp: "Newspaper style columns banane ke liye Format → Columns use kiya jata hai.",
+        },
+        {
+          q: "Which menu do you choose to create footer in MS Office?",
+          options: [
+            "Format, Header and Footer",
+            "View, Footer",
+            "Insert, Header and Footer",
+            "View, Header and Footer",
+          ],
+          answer: 4,
+          exp: "Classic MS Word me View → Header and Footer se Footer create kiya jata hai.",
+        },
+        {
+          q: "Which menu do you choose to create header in MS Office?",
+          options: [
+            "Format, Header and Footer",
+            "View, Header",
+            "Insert, Header and Footer",
+            "View, Header and Footer",
+          ],
+          answer: 4,
+          exp: "Header create karne ke liye View → Header and Footer use hota hai.",
+        },
+        {
+          q: "What happens when you insert an AutoShape by simply clicking in the document?",
+          options: [
+            "It appears near the insertion point",
+            "It is inserted in its default size",
+            "Is selected",
+            "All of the above",
+          ],
+          answer: 4,
+          exp: "AutoShape click karne par default size me insert hota hai aur selected rehta hai.",
+        },
+        {
+          q: "What does EXT indicator on status bar of MS Word indicate?",
+          options: [
+            "It indicates whether the external text is pasted on document or not",
+            "It indicates whether extended add-ons are installed on MS Word or not",
+            "It indicates whether Extended Selection mode is turned on or off",
+            "None of above",
+          ],
+          answer: 3,
+          exp: "EXT indicator batata hai ki Extended Selection mode ON hai ya OFF.",
+        },
+        {
+          q: "What happens when you click on Insert >> Picture >> Clip Art?",
+          options: [
+            "It inserts a clipart picture into document",
+            "It lets you choose clipart to insert into document",
+            "It opens Clip Art task pane",
+            "None of above",
+          ],
+          answer: 3,
+          exp: "Insert → Picture → Clip Art par click karne se Clip Art Task Pane open hota hai.",
+        },
+        {
+          q: "What happens if you press Ctrl + Shift + F8?",
+          options: [
+            "It activates extended selection",
+            "It activates the rectangular selection",
+            "It selects the paragraph on which the insertion line is",
+            "None of above",
+          ],
+          answer: 2,
+          exp: "Ctrl + Shift + F8 se Rectangular (Column) Selection mode activate hota hai.",
+        },
+        {
+          q: "What is the use of 'All Caps' feature in MS-Word?",
+          options: [
+            "It changes all selected text into Capital Letter",
+            "It adds captions for selected Image",
+            "It shows all the image captions",
+            "None of the above",
+          ],
+          answer: 1,
+          exp: "All Caps feature selected text ko UPPERCASE (Capital Letters) me convert kar deta hai.",
+        },
+        {
+          q: "The feature of Word that automatically adjusts the amount of space between certain combinations of characters so that an entire word looks more evenly spaced. What is that feature called?",
+          options: ["Spacing", "Scaling", "Kerning", "Positioning"],
+          answer: 3,
+          exp: "Kerning characters ke beech ki spacing automatically adjust karta hai.",
+        },
+        {
+          q: "Gutter position can be set in following positions",
+          options: ["Left & Right", "Left & Top", "Left & Bottom", "Left Only"],
+          answer: 2,
+          exp: "MS Word me Gutter position Left ya Top par set ki ja sakti hai.",
+        },
+        {
+          q: "The ___ indents all the lines of a paragraph except first line.",
+          options: [
+            "First Line Indent Marker",
+            "Hanging Indent Marker",
+            "Left Indent Marker",
+            "Right Indent Marker",
+          ],
+          answer: 2,
+          exp: "Hanging Indent first line ko chhodkar baaki sabhi lines ko indent karta hai.",
+        },
+        {
+          q: "A document in portrait orientation prints ____.",
+          options: [
+            "The same characters per line with the same document in landscape",
+            "More characters per line than the same document in landscape",
+            "Less characters per line than the same document in landscape",
+            "Smaller fonts in order to fit the same amount of characters per line with landscape",
+          ],
+          answer: 3,
+          exp: "Portrait page ki width kam hoti hai, isliye har line me kam characters aate hain.",
+        },
+        {
+          q: "A ___ is a formatting mark at the end of a line that moves the insertion point to the beginning of the next physical line.",
+          options: [
+            "Paragraph breaks character",
+            "Nonbreaking space",
+            "Line breaks character",
+            "Nonbreaking hyphen",
+          ],
+          answer: 3,
+          exp: "Line Break character cursor ko next line me le jata hai bina naya paragraph banaye.",
+        },
+        {
+          q: "Which option enables automatic updates in destination documents?",
+          options: ["Embedding", "Objects", "Links", "Relationships"],
+          answer: 3,
+          exp: "Linked objects source change hone par destination document me automatically update ho jate hain.",
+        },
+        {
+          q: "Which of the following position is not available for fonts on MS Word?",
+          options: ["Normal", "Raised", "Lowered", "Centered"],
+          answer: 4,
+          exp: "Font Position me Normal, Raised aur Lowered hote hain, Centered nahi.",
+        },
+        {
+          q: "Which corner of the Word window has the zoom control?",
+          options: ["Upper-left", "Upper-right", "Lower-left", "Lower-right"],
+          answer: 4,
+          exp: "MS Word ka Zoom Slider window ke lower-right corner me hota hai.",
+        },
+        {
+          q: "When you point to the _____ corner of a table, the table move handle appears.",
+          options: ["Upper-right", "Lower-left", "Lower-right", "Upper-left"],
+          answer: 4,
+          exp: "Table Move Handle table ke upper-left corner par hota hai.",
+        },
+        {
+          q: "The ability to combine name and addresses with a standard document is called _____.",
+          options: [
+            "Document formatting",
+            "Database management",
+            "Mail merge",
+            "Form letters",
+          ],
+          answer: 3,
+          exp: "Mail Merge ki madad se ek standard document ko multiple names aur addresses ke saath combine kiya jata hai.",
+        },
+        {
+          q: "Which enables us to send the same letter to different persons?",
+          options: ["Macros", "Template", "Mail merge", "None"],
+          answer: 3,
+          exp: "Mail Merge ka use ek hi letter ko alag-alag recipients ko bhejne ke liye kiya jata hai.",
+        },
+        {
+          q: "A word processor would most likely be used to do",
+          options: [
+            "Keep an account of money spent",
+            "Do a computer search in media centre",
+            "Maintain an inventory",
+            "Type a biography",
+          ],
+          answer: 4,
+          exp: "Word Processor ka main use documents, letters aur biography jaise text documents type karna hai.",
+        },
+        {
+          q: "What is gutter margin?",
+          options: [
+            "Margin that is added to the left margin when printing",
+            "Margin that is added to right margin when printing",
+            "Margin that is added to the binding side of page when printing",
+            "Margin that is added to the outside of the page when printing",
+          ],
+          answer: 3,
+          exp: "Gutter margin binding ke liye extra space provide karta hai.",
+        },
+        {
+          q: "Which can be used for quick access to commonly used commands and tools?",
+          options: ["Status bar", "Tool bar", "Menu bar", "Title bar"],
+          answer: 2,
+          exp: "Toolbar commonly used commands aur tools ko quickly access karne ke liye hota hai.",
+        },
+        {
+          q: "Which of the following is not essential component to perform a mail merge operation?",
+          options: [
+            "Main document",
+            "Data source",
+            "Merge fields",
+            "Word fields",
+          ],
+          answer: 4,
+          exp: "Mail Merge ke liye Main Document, Data Source aur Merge Fields zaruri hote hain. Word Fields essential component nahi hai.",
+        },
+        {
+          q: "When the Language bar is _____, it means that you do not see it on the screen but it will be displayed the next time you start your computer.",
+          options: ["Restored", "Hidden", "Minimized", "Closed"],
+          answer: 4,
+          exp: "Language Bar ko Close karne par woh current session me hide ho jata hai aur next startup par dobara dikh sakta hai.",
+        },
+        {
+          q: "AutoCorrect was originally designed to replace _____ words as you type.",
+          options: [
+            "Short, repetitive",
+            "Grammatically incorrect",
+            "Misspelled",
+            "None of the above",
+          ],
+          answer: 3,
+          exp: "AutoCorrect typing ke dauran galat spelling (misspelled words) ko automatically sahi karta hai.",
+        },
+        {
+          q: "Home Key",
+          options: [
+            "Moves the cursor beginning of the document",
+            "Moves the cursor beginning of the paragraph",
+            "Moves the cursor beginning of the screen",
+            "Moves the cursor beginning of the line",
+          ],
+          answer: 4,
+          exp: "Home key cursor ko current line ke beginning me le jati hai.",
+        },
+        {
+          q: "'Ctrl + Right Arrow' is used to",
+          options: [
+            "Moves the cursor one word right",
+            "Moves the cursor end of the line",
+            "Moves the cursor end of the document",
+            "Moves the cursor one paragraph down",
+          ],
+          answer: 1,
+          exp: "Ctrl + Right Arrow cursor ko next word ke beginning par le jata hai.",
+        },
+        {
+          q: "End Key",
+          options: [
+            "Moves the cursor end of the line",
+            "Moves the cursor end of the document",
+            "Moves the cursor end of the paragraph",
+            "Moves the cursor end of the screen",
+          ],
+          answer: 1,
+          exp: "End key current line ke end par cursor ko le jati hai.",
+        },
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

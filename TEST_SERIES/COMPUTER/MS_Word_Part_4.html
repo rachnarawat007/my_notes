@@ -1,0 +1,1124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MS WORD (PART 4)</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 0;
+        padding-bottom: 90px;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 12px;
+      }
+      .card {
+        background: #fff;
+        padding: 12px;
+        border-radius: 10px;
+        margin-top: 12px;
+      }
+      .qtext {
+        font-size: 16px;
+        margin: 10px 0;
+      }
+      .opt {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 6px 0;
+        cursor: pointer;
+      }
+      .opt.selected {
+        border-color: #2ec4b6;
+      }
+      .opt.correct {
+        background: #d4edda;
+        border-color: #28a745;
+      }
+      .opt.wrong {
+        background: #f8d7da;
+        border-color: #dc3545;
+      }
+      button {
+        padding: 8px 12px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        background: #2ec4b6;
+        color: white;
+        cursor: pointer;
+      }
+      #result {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Microsoft Word
+        {
+          q: "A bookmark is an item or location in a document that you identify as a name for future reference. Which of the following task is accomplished by using bookmarks?",
+          options: [
+            "To add anchors in web page",
+            "To mark the ending of a paragraph of document",
+            "To quickly jump to specific location in document",
+            "To add hyperlinks in webpage",
+          ],
+          answer: 3,
+          exp: "Bookmarks let you quickly navigate to a specific location in a document.",
+        },
+
+        {
+          q: "What is the use of bookmarks in Microsoft Word?",
+          options: [
+            "To easily correct the spelling errors",
+            "To quickly jump to a specific location in the document",
+            "To quickly jump to the ending of the document",
+            "To create a link within the document",
+          ],
+          answer: 2,
+          exp: "Bookmarks are used for quick navigation to a saved location.",
+        },
+
+        {
+          q: "What is the use of Document Map?",
+          options: [
+            "To quickly format the document",
+            "To quickly print required page",
+            "To quickly navigate the document",
+            "To quickly correct spelling mistakes",
+          ],
+          answer: 3,
+          exp: "Document Map (Navigation Pane) helps navigate through headings in a document.",
+        },
+
+        {
+          q: "Which bar is usually located below the Title Bar that provides categorized options?",
+          options: ["Menu bar", "Status Bar", "Tool bar", "Scroll bar"],
+          answer: 3,
+          exp: "The Toolbar is located below the Menu/Title Bar and provides categorized commands.",
+        },
+
+        {
+          q: "The formats defined by _____ include character formatting, paragraph formatting, table formatting and list formatting.",
+          options: ["Options", "Styles", "Toolbars", "Tabs"],
+          answer: 2,
+          exp: "Styles store predefined formatting for text, paragraphs, tables and lists.",
+        },
+
+        {
+          q: "To get to the 'Symbol' dialog box, click on the _____ menu and choose 'Symbol'.",
+          options: ["Insert", "Format", "Tools", "Table"],
+          answer: 1,
+          exp: "The Symbol command is available under the Insert menu.",
+        },
+
+        {
+          q: "To insert a drop cap in one of the paragraph you should access",
+          options: ["Insert Menu", "Format", "Tools", "None of above"],
+          answer: 2,
+          exp: "In older versions of Word, Drop Cap is available under the Format menu.",
+        },
+
+        {
+          q: "To set an exception to an AutoCorrect rule, click _____ on the menu bar and then click AutoCorrect Options.",
+          options: ["Format", "Edit", "Tools", "View"],
+          answer: 3,
+          exp: "AutoCorrect Options are available under the Tools menu.",
+        },
+
+        {
+          q: "How do you magnify your document?",
+          options: [
+            "View, Zoom",
+            "Format, Font",
+            "Tools, Options",
+            "Tools, Customize",
+          ],
+          answer: 1,
+          exp: "The Zoom command is available from the View menu.",
+        },
+
+        {
+          q: "Which would you choose to list Synonyms & Antonyms of a selected word?",
+          options: [
+            "Tools, Spelling & Grammar",
+            "Tools, Language",
+            "Tools, Options",
+            "Insert, Cross-reference",
+          ],
+          answer: 2,
+          exp: "The Thesaurus is accessed through Tools → Language.",
+        },
+
+        {
+          q: "Which would you choose to display the statistics about a document?",
+          options: [
+            "Tools, Word Count",
+            "Insert, Statistics",
+            "Tools, Spelling and Grammar",
+            "Tools, Statistics",
+          ],
+          answer: 1,
+          exp: "Word Count displays document statistics.",
+        },
+
+        {
+          q: "Which is an Office feature that makes it easy to edit embedded objects?",
+          options: [
+            "Pasting",
+            "Visual editing",
+            "Tools, Update, Links",
+            "Edit, Links",
+          ],
+          answer: 4,
+          exp: "Edit → Links manages and updates linked/embedded objects.",
+        },
+        {
+          q: "When using the MLA style, position explanatory notes either at the _____.",
+          options: [
+            "Top of the page as head notes or at the end of the paper as endnotes",
+            "Bottom of the page as footnotes or at the end of the paper as endnotes",
+            "Top of the page as head notes or at the beginning of the paper as front notes",
+            "Bottom of the page as footnotes or at the beginning of the paper as front notes",
+          ],
+          answer: 2,
+          exp: "MLA style uses footnotes or endnotes for explanatory notes.",
+        },
+
+        {
+          q: "If you want to keep track of different editions of a document which features will you use?",
+          options: ["Editions", "Versions", "Track Change", "All of above"],
+          answer: 2,
+          exp: "Versions feature keeps different editions of a document.",
+        },
+
+        {
+          q: "Which feature is used for monitoring all document changes?",
+          options: [
+            "Edit Document",
+            "Monitor Change",
+            "Track Change",
+            "Track all",
+          ],
+          answer: 3,
+          exp: "Track Changes records and monitors all document modifications.",
+        },
+
+        {
+          q: "Which of the following line spacing is invalid?",
+          options: ["Single", "Double", "Triple", "Multiple"],
+          answer: 3,
+          exp: "MS Word provides Single, Double, 1.5 and Multiple spacing. 'Triple' is not a standard option.",
+        },
+
+        {
+          q: "How many margins are there on a page?",
+          options: [
+            "Two (header and footer)",
+            "Four (top, bottom, right and left)",
+            "Two (landscape and portrait)",
+            "Four (centre, top, left and bottom)",
+          ],
+          answer: 2,
+          exp: "A page has four margins: Top, Bottom, Left and Right.",
+        },
+
+        {
+          q: "Which of the following is correct regarding Underline in MS-Word?",
+          options: [
+            "Colour of Underline can be changed",
+            "Style of Underline can be changed",
+            "Underline can be set using shortcut key",
+            "All of the above",
+          ],
+          answer: 4,
+          exp: "Word supports underline color, underline style and Ctrl+U shortcut.",
+        },
+
+        {
+          q: "On the works cited page, list works by each author's last name and ____ the title of the work.",
+          options: [
+            "Italicize or underline",
+            "Boldface or italicize",
+            "Underline or boldface",
+            "Enlarge or underline",
+          ],
+          answer: 1,
+          exp: "MLA formatting uses italics (or underline in older formats) for titles.",
+        },
+
+        {
+          q: "Ctrl + U",
+          options: [
+            "Undelete the previously deleted text",
+            "Undo the last changes",
+            "Underline the document name",
+            "Underline the selected text",
+          ],
+          answer: 4,
+          exp: "Ctrl + U applies underline formatting to selected text.",
+        },
+
+        {
+          q: "When a hyperlink is created, Word formats the Web address as _____.",
+          options: [
+            "Italicized and colored red",
+            "Italicized and colored blue",
+            "Underlined and colored red",
+            "Underlined and colored blue",
+          ],
+          answer: 4,
+          exp: "By default hyperlinks appear blue and underlined.",
+        },
+
+        {
+          q: "What is the name of the feature that will allow you to take a step backward if you've made a mistake?",
+          options: ["Redo", "Cancel", "Undo", "Backspace"],
+          answer: 3,
+          exp: "Undo reverses the last action.",
+        },
+
+        {
+          q: "To read through a document you may",
+          options: [
+            "Use the arrow key",
+            "Dragging the scroll box on the scroll bar",
+            "Use your ENTER key to go down line by line",
+            "Only A & B",
+          ],
+          answer: 4,
+          exp: "You can navigate using arrow keys or the scroll bar.",
+        },
+
+        {
+          q: "Which of the following can you change using the Page Setup dialog box?",
+          options: [
+            "Margins",
+            "Page orientation",
+            "Vertical alignment",
+            "All of the above",
+          ],
+          answer: 4,
+          exp: "Page Setup controls margins, orientation and vertical alignment.",
+        },
+
+        {
+          q: "The Header & Footer command are located on the _____ tab.",
+          options: ["Home", "Insert", "View", "Header"],
+          answer: 2,
+          exp: "Header & Footer are inserted from the Insert tab.",
+        },
+
+        {
+          q: "The Column command is located on the _____ tab.",
+          options: ["Insert", "Home", "View", "Page Layout"],
+          answer: 4,
+          exp: "Columns are available in the Page Layout/Layout tab.",
+        },
+
+        {
+          q: "Using the Ribbon where should you go to activate the ruler on your document?",
+          options: [
+            "View >> Toolbars",
+            "File >> Open",
+            "View >> Ruler",
+            "Insert >> Reference",
+          ],
+          answer: 3,
+          exp: "The Ruler option is enabled from the View tab.",
+        },
+
+        {
+          q: "Which menu do you choose to shade words and paragraph?",
+          options: [
+            "Format, Borders and Shading",
+            "Insert, Borders and Shading",
+            "View, Shading",
+            "None of the above",
+          ],
+          answer: 1,
+          exp: "Borders and Shading is available under the Format menu in older versions.",
+        },
+
+        {
+          q: "FrontPage is a package of MS Office, what is it used to create?",
+          options: [
+            "Application Programs",
+            "Web Pages",
+            "Wireless Files",
+            "Spreadsheet Files",
+          ],
+          answer: 2,
+          exp: "Microsoft FrontPage is used for creating websites/web pages.",
+        },
+
+        {
+          q: "How many types of ruler are there in MS Word?",
+          options: ["1", "2", "3", "4"],
+          answer: 2,
+          exp: "MS Word has Horizontal and Vertical rulers.",
+        },
+
+        {
+          q: "By default, on which page the header or footer is printed?",
+          options: [
+            "First page only",
+            "Last page only",
+            "On alternative pages only",
+            "On every page",
+          ],
+          answer: 4,
+          exp: "Headers and footers appear on every page by default.",
+        },
+
+        {
+          q: "In MS Word 'Ctrl + =' key is used for",
+          options: ["Font Size", "Superscript", "All Caps", "Subscript"],
+          answer: 4,
+          exp: "Ctrl + = applies Subscript formatting.",
+        },
+        {
+          q: "When you insert an Excel file into a Word document, the data are-",
+          options: [
+            "Placed in a Word table",
+            "Linked",
+            "Hyperlinked",
+            "Embedded",
+          ],
+          answer: 4,
+          exp: "Excel worksheets inserted into Word are typically embedded objects.",
+        },
+
+        {
+          q: "In Microsoft Word 2016, Watermark option is available in _____ menu.",
+          options: ["Insert", "View", "Review", "Design"],
+          answer: 4,
+          exp: "In Word 2016, Watermark is available under the Design tab.",
+        },
+
+        {
+          q: "Verdana is a type of ________.",
+          options: ["Font Style", "Font Size", "Font Alignment", "Font Art"],
+          answer: 1,
+          exp: "Verdana is a font (font style/typeface).",
+        },
+
+        {
+          q: "To move to the next cell in a table, press the _____ key.",
+          options: ["Enter", "Tab", "End", "Insert"],
+          answer: 2,
+          exp: "Pressing Tab moves the cursor to the next table cell.",
+        },
+
+        {
+          q: "In MS Word, when the page margins are altered or when the text does not fit in the current line, which feature automatically moves the text to the next line?",
+          options: ["Word Enter", "Word Format", "Word Scroll", "Word Wrap"],
+          answer: 4,
+          exp: "Word Wrap automatically shifts text to the next line.",
+        },
+
+        {
+          q: "Ctrl + Y is used to-",
+          options: [
+            "Undo last action",
+            "Align a paragraph",
+            "Close a document",
+            "Redo or repeat last action",
+          ],
+          answer: 4,
+          exp: "Ctrl + Y repeats or redoes the last action.",
+        },
+
+        {
+          q: "Portrait and Landscape are options of-",
+          options: [
+            "Paper Size",
+            "Page Orientation",
+            "Page Layout",
+            "Page Size",
+          ],
+          answer: 2,
+          exp: "Portrait and Landscape are page orientation options.",
+        },
+
+        {
+          q: "Choose the correct match from the following.",
+          options: [
+            "(I)-(R), (II)-(P), (III)-(Q)",
+            "(I)-(P), (II)-(R), (III)-(Q)",
+            "(I)-(R), (II)-(Q), (III)-(P)",
+            "(I)-(R), (II)-(P), (III)-(Q)",
+          ],
+          answer: 3,
+          exp: "MS Word→Document, MS Excel→Sheet, MS PowerPoint→Slides.",
+        },
+
+        {
+          q: "Shortcut key to save a document in MS Word is-",
+          options: ["Ctrl + O", "Ctrl + S", "Ctrl + F", "Ctrl + P"],
+          answer: 2,
+          exp: "Ctrl + S saves the current document.",
+        },
+
+        {
+          q: "Usage of Microsoft Clip Gallery-",
+          options: [
+            "To remove slide",
+            "To add Word Art",
+            "To spell check",
+            "To add Clip Art pictures",
+          ],
+          answer: 4,
+          exp: "Clip Gallery is used to insert Clip Art.",
+        },
+
+        {
+          q: "What is the smallest and largest font size available in Font Size toolbar?",
+          options: ["6 and 72", "8 and 72", "6 and 68", "8 and 68"],
+          answer: 1,
+          exp: "The classic formatting toolbar provides sizes from 6 pt to 72 pt.",
+        },
+
+        {
+          q: "What should be used if a company wants to include its company name and logo at the bottom of every page of a brochure?",
+          options: ["Header", "Macro", "Footer", "None of these"],
+          answer: 3,
+          exp: "Information shown at the bottom of every page is placed in the Footer.",
+        },
+
+        {
+          q: "What is the difference between pressing Ctrl + X and Ctrl + C in MS Word?",
+          options: [
+            "Ctrl + X pastes and Ctrl + C copies",
+            "Ctrl + X cuts and Ctrl + C copies",
+            "Ctrl + X copies and Ctrl + C cuts",
+            "Ctrl + X selects and Ctrl + C copies",
+          ],
+          answer: 2,
+          exp: "Ctrl + X cuts selected content, while Ctrl + C copies it.",
+        },
+
+        {
+          q: "How can you save an MS Office document in PDF format?",
+          options: [
+            "Select Save As, choose PDF in Save As type",
+            "Using Voice over IP",
+            "By writing an E-Mail",
+            "Using Print Preview",
+          ],
+          answer: 1,
+          exp: "Choose Save As and select PDF as the file type.",
+        },
+
+        {
+          q: "Saving is a process-",
+          options: [
+            "To copy the document from memory to storage",
+            "To print the present status of the document",
+            "To change entire form",
+            "All of these",
+          ],
+          answer: 1,
+          exp: "Saving stores the document from memory onto permanent storage.",
+        },
+        {
+          q: "Consider the following statements in context of MS-Word 2019 document:\nI. Hidden format symbols can be viewed by pressing Ctrl + Shift + 8.\nII. A line break can be inserted by pressing Ctrl + Enter.\nThe valid statement(s) is/are:",
+          options: ["Only II", "Neither I nor II", "Both I and II", "Only I"],
+          answer: 4,
+          exp: "Ctrl + Shift + 8 shows formatting marks. Ctrl + Enter inserts a page break, not a line break.",
+        },
+
+        {
+          q: "In context of MS-Word 2019, the keystroke to go the location of the last change is-",
+          options: ["Alt + F6", "Ctrl + F7", "Shift + F5", "Ctrl + Shift + F8"],
+          answer: 3,
+          exp: "Shift + F5 jumps to the last edited location.",
+        },
+
+        {
+          q: "Consider following statements, in context of MS-Word 2019 keys for moving around documents:\nI. Pressing END takes you to the end of the document.\nII. Pressing PgDn takes you down one screen.\nIII. Pressing Ctrl + Home takes you to the top of the document.\nWhich statements are true?",
+          options: ["I and II", "I and III", "II and III", "I, II and III"],
+          answer: 3,
+          exp: "END goes to the end of the current line, PgDn moves one screen down, Ctrl + Home goes to the beginning of the document.",
+        },
+
+        {
+          q: "While working with MS-Word, which option is not available in File menu?",
+          options: ["Print Preview", "Save", "Header & Footer", "Save As"],
+          answer: 3,
+          exp: "Header & Footer is available from the Insert tab, not File.",
+        },
+
+        {
+          q: "By default, the margin for a blank document in MS Office Word 2007 are ____ on the left and right.",
+          options: ["0.75 inch", "1 inch", "1.25 inch", "2 inch"],
+          answer: 2,
+          exp: "The default left and right margins are 1 inch.",
+        },
+
+        {
+          q: "In MS Word, how can you increase the font size of selected text by one point every time?",
+          options: ["Ctrl + ]", "Ctrl + [", "Ctrl + }", "Ctrl + {"],
+          answer: 1,
+          exp: "Ctrl + ] increases font size by 1 point; Ctrl + [ decreases it.",
+        },
+
+        {
+          q: "In MS-Word, we can change case of selected text (upper case, lower case, sentence case) using-",
+          options: ["Shift + F3", "Ctrl + F3", "Shift + F5", "Ctrl + F7"],
+          answer: 1,
+          exp: "Shift + F3 cycles through text case options.",
+        },
+
+        {
+          q: "In MS Word, shortcut key 'Ctrl + =' is used to-",
+          options: [
+            "Create subscript",
+            "Create superscript",
+            "Increase indent",
+            "Add numbers",
+          ],
+          answer: 1,
+          exp: "Ctrl + = applies Subscript formatting.",
+        },
+
+        {
+          q: "Which key is used to check spelling?",
+          options: ["F3", "F5", "F7", "F9"],
+          answer: 3,
+          exp: "F7 opens the Spelling & Grammar checker.",
+        },
+
+        {
+          q: "Which shortcut key is used to close the active document in MS Office?",
+          options: ["Ctrl + F1", "Ctrl + P", "Ctrl + F7", "Ctrl + F4"],
+          answer: 4,
+          exp: "Ctrl + F4 closes the active document.",
+        },
+
+        {
+          q: "Create a ________ to assign a name to a specific point in a document.",
+          options: ["Clip Art", "Cross-reference", "Hyperlink", "Bookmark"],
+          answer: 4,
+          exp: "Bookmarks mark named locations inside a document.",
+        },
+
+        {
+          q: "Microsoft Word is an example of-",
+          options: [
+            "Hardware",
+            "DBMS",
+            "Application software",
+            "System software",
+          ],
+          answer: 3,
+          exp: "MS Word is application software.",
+        },
+
+        {
+          q: "Which of the following is a Sans Serif font?",
+          options: ["Arial", "Times New Roman", "Courier", "Gothic"],
+          answer: 1,
+          exp: "Arial is a Sans Serif font.",
+        },
+
+        {
+          q: "Which of the following cannot be done using the Paragraph command group in Microsoft Word 2019?",
+          options: [
+            "Preparation of bulleted list",
+            "Preparation of numbered list",
+            "Indentation and line spacing",
+            "Fonts and effects settings",
+          ],
+          answer: 4,
+          exp: "Font and text effects are managed in the Font group, not Paragraph.",
+        },
+
+        {
+          q: "In MS-Word 'Gutter' is related to-",
+          options: ["Orientation", "Page size", "Margins", "Equation"],
+          answer: 3,
+          exp: "Gutter is an extra margin added for binding.",
+        },
+
+        {
+          q: "Decorative text in MS Word document is called-",
+          options: ["Bookmark", "WordArt", "SmartArt", "Clip Art"],
+          answer: 2,
+          exp: "Decorative text is created using WordArt.",
+        },
+
+        {
+          q: "Which keyboard shortcut displays the Object dialog box for inserting file objects into a document?",
+          options: [
+            "Alt + N, J, J",
+            "Ctrl + H",
+            "Ctrl + Shift + V",
+            "Ctrl + Shift + C",
+          ],
+          answer: 1,
+          exp: "Alt + N, J, J opens the Object dialog in newer versions of Word.",
+        },
+
+        {
+          q: "Which keyboard shortcut is used to center align paragraphs in MS Word?",
+          options: ["Ctrl + E", "Ctrl + J", "Ctrl + L", "Ctrl + M"],
+          answer: 1,
+          exp: "Ctrl + E centers the selected paragraph.",
+        },
+
+        {
+          q: "Which keyboard shortcut is used to remove paragraph indent in MS Word?",
+          options: [
+            "Ctrl + Shift + M",
+            "Ctrl + T",
+            "Ctrl + Shift + T",
+            "Ctrl + Q",
+          ],
+          answer: 1,
+          exp: "Ctrl + Shift + M decreases/removes paragraph indent.",
+        },
+        {
+          q: "Which of the following alignment option aligns a paragraph along both the margins in an MS Word document?",
+          options: ["Left", "Right", "Justify", "Centre"],
+          answer: 3,
+          exp: "Justify aligns text evenly with both left and right margins.",
+        },
+
+        {
+          q: "Which keyboard shortcut is used to align paragraphs to the left in MS Word?",
+          options: ["Ctrl + L", "Ctrl + R", "Ctrl + 2", "Ctrl + 0"],
+          answer: 1,
+          exp: "Ctrl + L applies left alignment.",
+        },
+
+        {
+          q: "What is the keyboard shortcut to display Print options in MS Word?",
+          options: ["Alt + P", "Alt + R", "Ctrl + P", "Ctrl + R"],
+          answer: 3,
+          exp: "Ctrl + P opens the Print dialog.",
+        },
+
+        {
+          q: "Which keyboard shortcut selects text and graphics from the current cursor position to the end of the current paragraph?",
+          options: [
+            "Ctrl + Shift + Down Arrow",
+            "Shift + Page Up",
+            "Shift + Page Down",
+            "Ctrl + Shift + Home",
+          ],
+          answer: 1,
+          exp: "Ctrl + Shift + Down Arrow extends selection to the end of the paragraph.",
+        },
+
+        {
+          q: "Which formatting option draws a line through selected text in MS Word?",
+          options: ["Superscript", "Bold Italic", "Strikethrough", "Underline"],
+          answer: 3,
+          exp: "Strikethrough draws a line through text.",
+        },
+
+        {
+          q: "Which keyboard shortcut is used to move around the preview page while zooming in MS Word?",
+          options: ["Arrow keys", "Ctrl + Home", "Ctrl + Alt + I", "Ctrl + P"],
+          answer: 1,
+          exp: "Arrow keys are used to move around the zoomed preview.",
+        },
+
+        {
+          q: "Which menu in MS Word 365 includes the 'Reuse Files' option?",
+          options: ["Insert", "Draw", "Design", "Layout"],
+          answer: 2,
+          exp: "The Reuse Files feature is available under the Draw interface in newer Microsoft 365 versions.",
+        },
+
+        {
+          q: "Which shortcut key is used to adjust the zoom magnification in MS Word?",
+          options: [
+            "Alt + W + Q",
+            "Ctrl + Z",
+            "Ctrl + Alt + S",
+            "Alt + Shift + C",
+          ],
+          answer: 1,
+          exp: "Alt + W followed by Q opens the Zoom dialog.",
+        },
+
+        {
+          q: "Which shortcut key decreases the font size by one point in MS Word?",
+          options: [
+            "Ctrl + Shift + {",
+            "Alt + Ctrl + -",
+            "Ctrl + ]",
+            "Ctrl + [",
+          ],
+          answer: 4,
+          exp: "Ctrl + [ decreases font size by one point.",
+        },
+
+        {
+          q: "Which shortcut key opens Spelling and Grammar in MS Word?",
+          options: ["F7", "Ctrl + F2", "Shift + Ctrl + J", "Shift + F8"],
+          answer: 1,
+          exp: "F7 starts Spelling and Grammar checking.",
+        },
+
+        {
+          q: "What is the purpose of Ctrl + Alt + PgDown in MS Word 2013?",
+          options: [
+            "Move cursor to next page",
+            "Move cursor to previous page",
+            "Move cursor to next word",
+            "Move cursor to the last visible character",
+          ],
+          answer: 1,
+          exp: "Ctrl + Alt + PgDown moves the cursor to the next page.",
+        },
+
+        {
+          q: "Which file is responsible for starting MS Word?",
+          options: ["winword.exe", "win.exe", "word.exe", "wordwin.exe"],
+          answer: 1,
+          exp: "WINWORD.EXE is the executable file for Microsoft Word.",
+        },
+
+        {
+          q: "In MS Word 2019, Ctrl + Shift + F5 is related to-",
+          options: ["Mail Merge", "Bookmarks", "Footnotes", "Macros"],
+          answer: 2,
+          exp: "Ctrl + Shift + F5 opens the Bookmark dialog.",
+        },
+
+        {
+          q: "Consider the following statements:\nI. Ctrl + N creates a new document.\nII. Templates provide the formats that give a document its appearance.\nWhich statement(s) is/are true?",
+          options: ["Only I", "Only II", "Both I and II", "Neither I nor II"],
+          answer: 3,
+          exp: "Both statements are correct.",
+        },
+
+        {
+          q: "Which tab is used to change the colour of document content area in Microsoft Office 365 Word?",
+          options: ["File", "Home", "Insert", "Design"],
+          answer: 4,
+          exp: "Design tab contains Page Color options.",
+        },
+
+        {
+          q: "What is the maximum font size that can be applied to any character in MS Word?",
+          options: ["163", "168", "1638", "16308"],
+          answer: 3,
+          exp: "The maximum font size supported is 1638 pt.",
+        },
+
+        {
+          q: "For which group of commands does only one dialog box appear?",
+          options: [
+            "Find, Go To",
+            "Go To, Replace, Find",
+            "Find, Clear, Go To",
+            "Clear, Go To, Replace",
+          ],
+          answer: 2,
+          exp: "Find, Replace and Go To share the Find and Replace dialog.",
+        },
+
+        {
+          q: "Which shortcut is used to reduce the font size?",
+          options: ["Ctrl + ]", "Ctrl + [", "Ctrl + Shift + <", "Both B and C"],
+          answer: 4,
+          exp: "Ctrl + [ and Ctrl + Shift + < both reduce font size.",
+        },
+
+        {
+          q: "In MS Word, what is gutter margin?",
+          options: [
+            "Extra margin added to the left",
+            "Extra margin added to the right",
+            "Extra margin added on the binding side",
+            "Extra margin added outside the page",
+          ],
+          answer: 3,
+          exp: "Gutter margin provides extra space for binding.",
+        },
+
+        {
+          q: "Consider the following statements:\nI. The last 1 or 2 lines of a paragraph at the top of a page are called widow.\nII. Footnote can be inserted using Ctrl + Alt + F.\nWhich statement(s) is/are true?",
+          options: ["Only I", "Only II", "Both I and II", "Neither I nor II"],
+          answer: 2,
+          exp: "Statement I is incorrect (those lines are called orphan), while Ctrl + Alt + F inserts a footnote.",
+        },
+        {
+          q: "Consider the following definitions:\n(a) Create and print a batch of personalized letters\n(b) Challenge-response mechanism\n(c) Series of commands or instructions\n(a), (b) and (c) are related respectively to-",
+          options: [
+            "Hyperlink, Macro, Captcha",
+            "Macro, Mail Merge, Wizard",
+            "Captcha, Mail Merge, Hibernation",
+            "Mail Merge, Captcha, Macro",
+          ],
+          answer: 4,
+          exp: "Personalized letters = Mail Merge, Challenge-response = CAPTCHA, Series of commands = Macro.",
+        },
+
+        {
+          q: "To insert a watermark in an MS Office Word 2016 document, which tab should you choose?",
+          options: ["Home", "Insert", "Page Layout", "View"],
+          answer: 3,
+          exp: "In Word 2016, Watermark is available under the Design tab, but in many exam keys based on older layout it is treated under Page Layout.",
+        },
+
+        {
+          q: "Which of the following is NOT an essential component to perform a Mail Merge operation?",
+          options: [
+            "Data Source",
+            "Merge Fields",
+            "Word Fields",
+            "Main Document",
+          ],
+          answer: 3,
+          exp: "Word Fields are not an essential component of Mail Merge.",
+        },
+
+        {
+          q: "________ can be used to set predefined formatting like size, color, etc. on text in MS Word.",
+          options: ["Smart Art", "Styles", "Ribbon", "Word Art"],
+          answer: 2,
+          exp: "Styles provide predefined formatting.",
+        },
+
+        {
+          q: "Word processing, spreadsheet and photo editing are examples of-",
+          options: [
+            "Platform Software",
+            "Application Software",
+            "System Software",
+            "None of these",
+          ],
+          answer: 2,
+          exp: "These are Application Software.",
+        },
+
+        {
+          q: "If you accidentally make a mistake while working in an MS Word document, how can you recover it?",
+          options: ["Ctrl + Y", "Ctrl + U", "Ctrl + X", "Ctrl + Z"],
+          answer: 4,
+          exp: "Ctrl + Z performs Undo.",
+        },
+
+        {
+          q: "The forward and back icons for scrolling through pages appear in the ________ view of MS Word.",
+          options: ["Print Layout", "Outline", "Read Mode", "Web Layout"],
+          answer: 3,
+          exp: "Read Mode provides forward/back navigation arrows.",
+        },
+
+        {
+          q: "Which shortcut key is used to paste clipboard contents in MS Word and MS Excel?",
+          options: ["Ctrl + V", "Ctrl + C", "Ctrl + X", "Ctrl + S"],
+          answer: 1,
+          exp: "Ctrl + V is the Paste shortcut.",
+        },
+
+        {
+          q: "Which of the following is NOT a valid data source in Mail Merge?",
+          options: [
+            "Excel Worksheet",
+            "Outlook Contacts List",
+            "MS Access Database",
+            "Microsoft PowerPoint",
+          ],
+          answer: 4,
+          exp: "PowerPoint cannot be used as a Mail Merge data source.",
+        },
+
+        {
+          q: "What is the shortcut key to open a new MS Word document?",
+          options: ["Ctrl + O", "Ctrl + N", "Ctrl + W", "Ctrl + M"],
+          answer: 2,
+          exp: "Ctrl + N creates a new document.",
+        },
+
+        {
+          q: "Which shortcut key is used to copy selected content to the clipboard in MS Word?",
+          options: ["Ctrl + V", "Ctrl + C", "Ctrl + X", "Ctrl + M"],
+          answer: 2,
+          exp: "Ctrl + C copies selected content.",
+        },
+
+        {
+          q: "Which activity is most appropriate to perform using MS Word?",
+          options: [
+            "Maintain Database",
+            "Creation of Websites",
+            "Writing Reports",
+            "Internet Connection",
+          ],
+          answer: 3,
+          exp: "MS Word is primarily used for document creation.",
+        },
+
+        {
+          q: "In MS Word 2016, the button to make selected text bold is found in which tab?",
+          options: ["Home", "Insert", "Draw", "Design"],
+          answer: 1,
+          exp: "Bold is in the Font group on the Home tab.",
+        },
+
+        {
+          q: "Which shortcut key opens a new blank document in MS Word?",
+          options: ["Ctrl + B", "Ctrl + N", "Ctrl + D", "Ctrl + M"],
+          answer: 2,
+          exp: "Ctrl + N creates a new document.",
+        },
+
+        {
+          q: "Which option in MS Word splits a cell in a table into multiple cells?",
+          options: ["Merge Cells", "Split Cells", "Split Table", "AutoFit"],
+          answer: 2,
+          exp: "Split Cells divides a selected cell into multiple cells.",
+        },
+
+        {
+          q: "________ is used to insert virtual text in the background of a page in MS Word.",
+          options: ["Ghost", "Comment", "Watermark", "Hyperlink"],
+          answer: 3,
+          exp: "Watermark appears behind the document text.",
+        },
+
+        {
+          q: "What is the full form of WYSIWYG?",
+          options: [
+            "What You See Is Why You Got",
+            "Why You See Is When You Get",
+            "What You Saw is Why You Get",
+            "What You See Is What You Get",
+          ],
+          answer: 4,
+          exp: "WYSIWYG = What You See Is What You Get.",
+        },
+
+        {
+          q: "Which option in MS Word allows you to join two or more table cells?",
+          options: ["Distribute Rows", "Split Rows", "Merge Rows", "Join Rows"],
+          answer: 3,
+          exp: "Merge combines selected cells.",
+        },
+
+        {
+          q: "Which of the following cannot be inserted using the Insert menu in MS Word?",
+          options: ["Table", "Line Spacing", "Shapes", "Header"],
+          answer: 2,
+          exp: "Line Spacing is a formatting option, not an Insert option.",
+        },
+
+        {
+          q: "Which of the following is NOT an option in the MS Word 2016 menu?",
+          options: ["Insert", "References", "Formulas", "Home"],
+          answer: 3,
+          exp: "Formulas is an Excel tab, not an MS Word tab.",
+        },
+
+        {
+          q: "What is the shortcut key to start Spell Check in MS Word?",
+          options: ["F7", "F2", "Ctrl + S", "Ctrl + Alt + S"],
+          answer: 1,
+          exp: "F7 starts Spelling & Grammar.",
+        },
+
+        {
+          q: "Which shortcut key is used to Undo changes in MS Word?",
+          options: ["Ctrl + Z", "Ctrl + N", "Ctrl + H", "Ctrl + Y"],
+          answer: 1,
+          exp: "Ctrl + Z performs Undo.",
+        },
+
+        {
+          q: "Which option is used to make the formatting of sum columns different from subject columns in a table?",
+          options: [
+            "Banded Rows",
+            "First Column",
+            "Banded Columns",
+            "Last Column",
+          ],
+          answer: 3,
+          exp: "Banded Columns applies alternating formatting to columns.",
+        },
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

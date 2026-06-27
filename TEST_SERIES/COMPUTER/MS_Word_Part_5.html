@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MS WORD (PART 5)</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 0;
+        padding-bottom: 90px;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 12px;
+      }
+      .card {
+        background: #fff;
+        padding: 12px;
+        border-radius: 10px;
+        margin-top: 12px;
+      }
+      .qtext {
+        font-size: 16px;
+        margin: 10px 0;
+      }
+      .opt {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 6px 0;
+        cursor: pointer;
+      }
+      .opt.selected {
+        border-color: #2ec4b6;
+      }
+      .opt.correct {
+        background: #d4edda;
+        border-color: #28a745;
+      }
+      .opt.wrong {
+        background: #f8d7da;
+        border-color: #dc3545;
+      }
+      button {
+        padding: 8px 12px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        background: #2ec4b6;
+        color: white;
+        cursor: pointer;
+      }
+      #result {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Microsoft Word
+        {
+          q: "In MS Word, to make a capital letter at the beginning of a paragraph, ________ is used?",
+          options: [
+            "Insert > Object",
+            "Insert > WordArt",
+            "Insert > Symbol",
+            "Insert > Drop Cap",
+          ],
+          answer: 4,
+          exp: "Drop Cap enlarges the first letter of a paragraph.",
+        },
+
+        {
+          q: "Which dialog box opens by using F12 key in MS Word?",
+          options: [
+            "Save As",
+            "Mail Merge Wizard",
+            "Insert Table",
+            "Insert Picture",
+          ],
+          answer: 1,
+          exp: "F12 opens the Save As dialog box.",
+        },
+
+        {
+          q: "Microsoft Office is an example of which type of software?",
+          options: [
+            "System and Utility Software",
+            "Application Software",
+            "System Software",
+            "Utility Software",
+          ],
+          answer: 2,
+          exp: "MS Office is application software.",
+        },
+
+        {
+          q: "By default, the MS Office header or footer is displayed-",
+          options: [
+            "On first page",
+            "On every page",
+            "On last page",
+            "None of these",
+          ],
+          answer: 2,
+          exp: "Headers and footers appear on every page by default.",
+        },
+
+        {
+          q: "A file prepared in MS Word is called-",
+          options: ["Log", "Archive", "Text", "Document"],
+          answer: 4,
+          exp: "A Word file is called a document.",
+        },
+
+        {
+          q: "A device which is NOT suitable with Microsoft Word is-",
+          options: ["Mouse", "E-Pen Stylus", "Keypad", "Joystick"],
+          answer: 4,
+          exp: "Joystick is not used for word processing.",
+        },
+
+        {
+          q: "Which one is the shortcut key for Print?",
+          options: ["Ctrl + C", "Ctrl + P", "Ctrl + S", "Ctrl + Shift + P"],
+          answer: 2,
+          exp: "Ctrl + P opens the Print dialog.",
+        },
+
+        {
+          q: "AutoCorrect was originally designed to replace ________ words as you type.",
+          options: [
+            "Short, repetitive",
+            "Grammatically incorrect",
+            "Misspelled",
+            "Duplicate",
+          ],
+          answer: 3,
+          exp: "AutoCorrect mainly fixes misspelled words.",
+        },
+
+        {
+          q: "Ctrl + Right Arrow is used to-",
+          options: [
+            "Move the cursor one word right",
+            "Move the cursor to the end of line",
+            "Move the cursor to the end of document",
+            "Move the cursor one paragraph down",
+          ],
+          answer: 1,
+          exp: "Ctrl + Right Arrow jumps to the next word.",
+        },
+
+        {
+          q: "Which feature of MS Word enables a person to send the same letter to different persons?",
+          options: ["Macros", "Mail Merge", "Template", "Thesaurus"],
+          answer: 2,
+          exp: "Mail Merge creates personalized letters.",
+        },
+
+        {
+          q: "Which MS Word feature enlarges the first letter at the beginning of a text block to two or more lines?",
+          options: ["WordArt", "Drop Cap", "Footnotes", "Tab Stop"],
+          answer: 2,
+          exp: "Drop Cap enlarges the first letter.",
+        },
+
+        {
+          q: "Which of the following entities does NOT belong to word processing?",
+          options: ["Characters", "Words", "Cells", "Paragraphs"],
+          answer: 3,
+          exp: "Cells belong to spreadsheets.",
+        },
+
+        {
+          q: "Which of the following is NOT a valid version of MS Office?",
+          options: [
+            "Office XP",
+            "Office 2010",
+            "Office Manager",
+            "None of these",
+          ],
+          answer: 3,
+          exp: "Office Manager is not an MS Office version.",
+        },
+
+        {
+          q: "Which function provides a list of words having similar meanings?",
+          options: ["Find", "Replace", "Thesaurus", "Spelling and Grammar"],
+          answer: 3,
+          exp: "Thesaurus provides synonyms.",
+        },
+
+        {
+          q: "You can use the Format Painter multiple times before turning it off by-",
+          options: [
+            "Clicking it once",
+            "Double-clicking the Format Painter button",
+            "Holding Ctrl while clicking",
+            "Holding Alt while clicking",
+          ],
+          answer: 2,
+          exp: "Double-click keeps Format Painter active.",
+        },
+
+        {
+          q: "In MS Word 2010, Watermark option is found in-",
+          options: [
+            "Insert tab → Illustration group",
+            "Insert tab → Links group",
+            "Page Layout tab → Page Background group",
+            "Page Layout tab → Themes group",
+          ],
+          answer: 3,
+          exp: "Watermark is in the Page Background group.",
+        },
+
+        {
+          q: "Ctrl + R can be used for-",
+          options: [
+            "Reopen last closed document",
+            "Reprint last page",
+            "Reapply last paragraph formatting",
+            "Right align selected paragraph",
+          ],
+          answer: 4,
+          exp: "Ctrl + R applies right alignment.",
+        },
+
+        {
+          q: "In MS Word, Ctrl + S is used for-",
+          options: ["Scenario", "Size", "Save", "Spelling Check"],
+          answer: 3,
+          exp: "Ctrl + S saves the document.",
+        },
+
+        {
+          q: "Microsoft Word automatically guesses the correct spelling of the month after typing the first ______ letters.",
+          options: ["Two", "Three", "Four", "None"],
+          answer: 2,
+          exp: "Word predicts month names after the first three letters.",
+        },
+
+        {
+          q: "Word Wrap feature-",
+          options: [
+            "Automatically moves text to the next line",
+            "Appears at the bottom of the document",
+            "Allows typing over text",
+            "None of these",
+          ],
+          answer: 1,
+          exp: "Word Wrap shifts text automatically to the next line.",
+        },
+
+        {
+          q: "Which option in the File menu is used to close an MS Word document?",
+          options: ["Quit", "Exit", "Close", "New"],
+          answer: 3,
+          exp: "Close closes the current document.",
+        },
+
+        {
+          q: "Microsoft Word is a part of which of the following?",
+          options: [
+            "Microsoft Publisher",
+            "Microsoft Office",
+            "Microsoft Access",
+            "Microsoft Windows",
+          ],
+          answer: 2,
+          exp: "MS Word is a component of Microsoft Office.",
+        },
+
+        {
+          q: "________ is graphics for word processor.",
+          options: ["Execute", "Peripheral", "Clip Art", "Highlight"],
+          answer: 3,
+          exp: "Clip Art provides ready-made graphics.",
+        },
+
+        {
+          q: "Which shortcut key is used for 'Save As'?",
+          options: ["F1", "F5", "F10", "F12"],
+          answer: 4,
+          exp: "F12 opens Save As.",
+        },
+
+        {
+          q: "Maximum zoom range in MS Word 2007 is-",
+          options: ["100%", "200%", "400%", "500%"],
+          answer: 4,
+          exp: "Maximum zoom is 500%.",
+        },
+        {
+          q: "Maximum zoom range in MS Word 2007 is?",
+          options: ["100%", "200%", "400%", "500%"],
+          answer: 4,
+          exp: "The maximum zoom level in MS Word 2007 is 500%.",
+        },
+
+        {
+          q: "Header and Footer option in MS Word 2007 is present in which menu?",
+          options: ["Home", "Formula", "View", "None of these"],
+          answer: 3,
+          exp: "In older versions of MS Word, Header & Footer is available under the View menu.",
+        },
+
+        {
+          q: "Which of the following is the shortcut key for Spelling and Grammar?",
+          options: ["F1", "F5", "F7", "F12"],
+          answer: 3,
+          exp: "F7 starts the Spelling & Grammar checker.",
+        },
+
+        {
+          q: "F1 key is used for-",
+          options: ["View", "Print", "Help", "None of these"],
+          answer: 3,
+          exp: "F1 opens Microsoft Word Help.",
+        },
+
+        {
+          q: "Which of the following is an example of Automatic Text Formatting?",
+          options: [
+            "Replacing two hyphens (--) with a single dash (-)",
+            "Underlining hyperlinks",
+            "Adjusting extra spaces automatically",
+            "All of these",
+          ],
+          answer: 4,
+          exp: "All these are examples of automatic formatting.",
+        },
+
+        {
+          q: "In which menu is the 'Drop Cap' option used in MS Word 2007?",
+          options: ["Home", "Insert", "Review", "Reference"],
+          answer: 2,
+          exp: "Drop Cap is available under the Insert tab.",
+        },
+        {
+          q: "In MS Word, which shortcut key is used to Double Underline the selected text?",
+          options: [
+            "Ctrl + Shift + U",
+            "Ctrl + U",
+            "Ctrl + Shift + D",
+            "None of the above",
+          ],
+          answer: 3,
+          exp: "Ctrl + Shift + D applies Double Underline.",
+        },
+
+        {
+          q: "To permanently delete a file or folder from the computer, we use-",
+          options: [
+            "Enter + Delete",
+            "Ctrl + Delete",
+            "Shift + Delete",
+            "Alt + Delete",
+          ],
+          answer: 3,
+          exp: "Shift + Delete permanently deletes a file without moving it to the Recycle Bin.",
+        },
+
+        {
+          q: "If both the left and right sides of a paragraph are aligned, it is called-",
+          options: [
+            "Left Right Aligned",
+            "Centre Aligned",
+            "Right Left Aligned",
+            "Justified",
+          ],
+          answer: 4,
+          exp: "Justified alignment aligns text evenly on both left and right margins.",
+        },
+
+        {
+          q: "Which of the following is NOT a font style?",
+          options: ["Bold", "Border", "Italic", "Underline"],
+          answer: 2,
+          exp: "Border is not a font style.",
+        },
+
+        {
+          q: "Which shortcut key is used to repeat the last action in MS Office 2007?",
+          options: ["F6", "F4", "F2", "F8"],
+          answer: 2,
+          exp: "F4 repeats the last action.",
+        },
+
+        {
+          q: "In the Tools menu of MS Office, which option is used for finding synonyms of a word?",
+          options: [
+            "Language & Synonyms",
+            "Grammar",
+            "Spelling & Grammar",
+            "Language & Thesaurus",
+          ],
+          answer: 4,
+          exp: "The Thesaurus option is used to find synonyms.",
+        },
+
+        {
+          q: "Which shortcut is used for Print Preview of a file in MS Word?",
+          options: [
+            "Alt + F + V",
+            "Ctrl + F + V",
+            "Alt + F + U",
+            "Ctrl + F + U",
+          ],
+          answer: 1,
+          exp: "Alt → F → V opens Print Preview in older versions of MS Word.",
+        },
+
+        {
+          q: "In MS Word, page margins are set in-",
+          options: ["File Menu", "Insert Menu", "Edit Menu", "View Menu"],
+          answer: 1,
+          exp: "In older versions of Word, Page Setup (Margins) is accessed through the File menu.",
+        },
+
+        {
+          q: "Which shortcut sequence is used to insert a table in MS Word?",
+          options: [
+            "Alt + I + A + T",
+            "Alt + N + I + T",
+            "Alt + I + T + A",
+            "None of the above",
+          ],
+          answer: 1,
+          exp: "In classic MS Word menus, Alt + I + A + T inserts a table.",
+        },
+
+        {
+          q: "What does Ctrl + I do in MS Word?",
+          options: [
+            "Converts selected text to a larger size",
+            "Moves to the next line",
+            "Makes selected text bold",
+            "Italicizes selected text",
+          ],
+          answer: 4,
+          exp: "Ctrl + I toggles Italic formatting.",
+        },
+
+        {
+          q: "What is the extension of MS Word files?",
+          options: [".dot", ".doc", ".dom", ".txt"],
+          answer: 2,
+          exp: "The traditional MS Word document extension is .doc (.docx in newer versions).",
+        },
+
+        {
+          q: "Which key is used to check spelling in MS Word?",
+          options: ["F1", "F2", "F7", "F9"],
+          answer: 3,
+          exp: "F7 starts the Spelling & Grammar checker.",
+        },
+
+        {
+          q: "What does Ctrl + B do in MS Word?",
+          options: [
+            "Converts selected text to a larger size",
+            "Moves to the next line",
+            "Makes selected text bold",
+            "Italicizes selected text",
+          ],
+          answer: 3,
+          exp: "Ctrl + B toggles Bold formatting.",
+        },
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

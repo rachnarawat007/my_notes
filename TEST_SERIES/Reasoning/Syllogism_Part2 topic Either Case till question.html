@@ -1,0 +1,414 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Syllogism Complete</title>
+    <style>
+      body {
+        font-family: Arial;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 0;
+        padding: 10px;
+      }
+      .card {
+        background: #fff;
+        max-width: 900px;
+        margin: 10px auto;
+        padding: 15px;
+        border-radius: 12px;
+      }
+      .opt {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 6px 0;
+        cursor: pointer;
+      }
+      .sel {
+        background: #dff7f5;
+        border-color: #2ec4b6;
+      }
+      button {
+        padding: 10px 14px;
+        margin: 5px;
+        border: none;
+        border-radius: 8px;
+        background: #2ec4b6;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Syllogism Practice (19 Questions)</h2>
+      <div id="num"></div>
+      <pre id="q" style="white-space: pre-wrap"></pre>
+      <div id="ops"></div>
+    </div>
+    <div class="card">
+      <button onclick="prev()">Prev</button
+      ><button onclick="next()">Next</button
+      ><button onclick="submitQuiz()">Submit</button>
+    </div>
+    <div id="res" class="card" style="display: none"></div>
+    <script>
+      const questions = [
+        {
+          q: `Statement:
+
+      All Cars are Bikes.`,
+          options: [
+            "Some Cars are Bikes.",
+            "All Bikes are Cars.",
+            "No Cars is Bikes.",
+            "Some Bikes are not Cars.",
+            "No Bikes is Cars.",
+            "Some Cars are not Bikes.",
+            "Some Bikes are Cars.",
+          ],
+          answer: [0, 6],
+        },
+        {
+          q: `Statement:
+      Some P are B.`,
+          options: [
+            "All P are B.",
+            "No P is B.",
+            "All B are P.",
+            "Some B are P.",
+            "No B is P.",
+            "Some P are not B.",
+            "Some B are not P.",
+          ],
+          answer: [3],
+        },
+        {
+          q: `Statement:
+      No Red is Blue.`,
+          options: [
+            "All Reds are Blues.",
+            "No Blue is Red.",
+            "Some Reds are not Blues.",
+            "Some Blues are not Reds.",
+            "All Blues are Reds.",
+          ],
+          answer: [1, 2, 3],
+        },
+        {
+          q: `Statement:
+      Some Apples are not Grapes.
+      Consclusions:`,
+          options: [
+            "All Apples are Grapes.",
+            "No Apple is Grape",
+            "Some Grapes are not Apples.",
+            "No Grape is Apple.",
+            "All Grapes are Apples.",
+            "Some Grapes are Apples.",
+            "Some Apples are Grapes.",
+          ],
+          answer: [],
+        },
+        // TWO STATEMENT AND FOLLOW CONCLUSION
+        // questions 5
+        {
+          q: `All detergents are towels.
+      All detergents are conditioners.
+
+      Conclusions:
+
+      1) Some towals are conditioners.
+      2) All conditioners are detergents.`,
+          options: [
+            "Neither conclusion I nor II follows",
+            "Both conclusions I and II follow",
+            "Only conclusion II follows",
+            "Only conclusion I follows",
+          ],
+          answer: [3],
+        },
+        {
+          q: `All meters are compasses.
+      All compasses are scales.
+
+      Conclusions+
+      1) Some scales are compasses.
+      2) All meters are scales.`,
+          options: [
+            "Neither conclusion I nor II follows",
+            "Both conclusions I and II follow",
+            "Only conclusion II follows",
+            "Only conclusion I follows",
+          ],
+          answer: [1],
+        },
+        {
+          q: `Some guns are roses.
+      All roses are bats.
+      Conclusions:
+      (1) Some guns are bats.
+      2) All bats are roses.`,
+          options: [
+            "Only conclusion I follows",
+            "Only conclusion II follows",
+            "Neither conclusion I nor II follows",
+            "Both conclusions I and II follow",
+          ],
+          answer: [0],
+        },
+        {
+          q: `Some boxes are bags.
+      All pouches are bags.
+      Conclusions:
+
+      1) Some bags are boxes.
+      2) Some pouches are boxes
+      `,
+          options: [
+            "Both conclusions I and II follow",
+            "Only conclusion I follows",
+            "Neither conclusion I nor II follows",
+            "Only conclusion II follows",
+          ],
+          answer: [1],
+        },
+        {
+          q: `All keys are locks.
+      Some locks are doors.
+
+      Conclusions
+      1) Some door are keys.
+      2) Some doors are locks.
+      `,
+          options: [
+            "Both the conclusions follow",
+            "Neither conclusion I nor II follows",
+            "Only conclusion II follows",
+            "Only conclusion I follows",
+          ],
+          answer: [2],
+        },
+        {
+          q: `Some penguins are sharks.
+      Some sharks are dolphins.
+      Conclusions:
+      1) No shark is a penguin.
+      2) Some penguins are dolphins.`,
+          options: [
+            "Neither conclusion 1 nor 2 follows",
+            "Only conclusion 2 follows",
+            "Only conclusion 1 follows",
+            "Both conclusions follow",
+          ],
+          answer: [0],
+        },
+        //Q-11:---------------
+        {
+          q: `Statements:
+      All rocks are bangles
+      Some rings are chains.
+
+      Conclusions:
+      1. Some bangles are rocks.
+      2.Some chains are bangles.
+      `,
+          options: [
+            "Neither conclusion I nor II follows",
+            "Only conclusion I follows",
+            "Both conclusions I and II follow",
+            "Only conclusion II follows",
+          ],
+          answer: [1],
+        },
+        {
+          q: `All teas are bigs.
+      No tea is a sock.
+
+      Conclusions:
+      1) Some socks are bins.
+      2) All bins are socks.
+      `,
+          options: [
+            "Either conclusion I or II follows",
+            "Only conclusion I follows",
+            "Neither conclusion I nor II follows",
+            "Only conclusion II follows",
+          ],
+          answer: [2],
+        },
+        {
+          q: `No dog is cat.
+      All cats are lion.
+
+      Conclusion:
+      1) No dog is lion.
+      2) No lion is dog. lw
+      3) Some lions are not dog.
+      4) Some lions are cats.
+      `,
+          options: [
+            "Only I and II follows",
+            "Only I, II and III follows",
+            "Only one follows",
+            "Only III & IV follows",
+          ],
+          answer: [3],
+        },
+        {
+          q: `Some kites are hats.
+      No hat is a bat.
+
+      Conclusions:
+      1) Some kites are bats.
+      2) Some hats are kites
+      `,
+          options: [
+            "Neither conclusion 1 nor 2 follows",
+            "Only conclusion 2 follows",
+            "Only conclusion 1 follows",
+            "Both conclusions follow",
+          ],
+          answer: [1],
+        },
+        {
+          q: `No tree is barren.
+      Some barren are land.
+
+      Conclusion:
+      1) Some trees are land.
+      2) Some trees are barren.
+      `,
+          options: [
+            "Neither conclusion I nor II follows",
+            "Only conclusion I follows",
+            "Only conclusion II follows",
+            "Both conclusions follow",
+          ],
+          answer: [0],
+        },
+        {
+          q: `No lion is tiger.
+      No tiger is leopard.
+
+      Conclusion:
+      1) No lion is a leopard.
+      2) All leopards are lions.
+      `,
+          options: [
+            "Neither conclusion I nor II follows",
+            "Only conclusion I follows",
+            "Only conclusion II follows",
+            "Both conclusions follow",
+          ],
+          answer: [0],
+        },
+        {
+          q: `No car is ball.
+      No ball is table.
+
+      Conclusion:
+      1) No car is table.
+      2) All tables are car.
+      `,
+          options: [
+            "Neither conclusion I nor II follows",
+            "Only conclusion I is appropriate",
+            "Only conclusion II is appropriate",
+            "Either conclusion 1 or 2 follows",
+          ],
+          answer: [0],
+        },
+        {
+          q: `Some A are B.
+      All B are C.
+
+      Conclusion:
+      I. 75% A are C.
+      II. 100% A are C.
+      `,
+          options: [
+            "Neither conclusion I nor II follows",
+            "Only conclusion I is appropriate",
+            "Only conclusion II is appropriate",
+            "Either conclusion 1 or 2 follows",
+          ],
+          answer: [0],
+        },
+        {
+          q: `65% A are B.
+      All B are C.
+      Conclusion:
+      I. Some A are С.
+      II. 55% A are C.
+      `,
+          options: [
+            "Neither conclusion I nor II follows",
+            "Only conclusion I is appropriate",
+            "Only conclusion II is appropriate",
+            "Either conclusion 1 or 2 follows",
+          ],
+          answer: [1], // iska answer check krna hai
+        },
+        {
+          q: `Statement:
+      1) Only A are B.
+      2) Some B are C.
+      Conclusion:
+      I. Only A are C.
+      II. Some A are C.
+
+      `,
+          options: [
+            "Neither conclusion I nor II follows",
+            "Only conclusion I is appropriate",
+            "Only conclusion II is appropriate",
+            "Either conclusion 1 or 2 follows",
+          ],
+          answer: [1], // iska answer check krna hai
+        },
+
+        // Either & Case
+      ];
+
+      let i = 0,
+        sel = {};
+      function load() {
+        num.innerText = "Question " + (i + 1) + "/" + questions.length;
+        q.textContent = questions[i].q;
+        ops.innerHTML = "";
+        questions[i].options.forEach((o, k) => {
+          let d = document.createElement("div");
+          d.className = "opt " + ((sel[i] || []).includes(k) ? "sel" : "");
+          d.innerText = o;
+          d.onclick = () => toggle(k);
+          ops.appendChild(d);
+        });
+      }
+      function toggle(k) {
+        sel[i] = sel[i] || [];
+        let p = sel[i].indexOf(k);
+        if (p > -1) sel[i].splice(p, 1);
+        else sel[i].push(k);
+        load();
+      }
+      function next() {
+        if (i < questions.length - 1) i++;
+        load();
+      }
+      function prev() {
+        if (i > 0) i--;
+        load();
+      }
+      function submitQuiz() {
+        let s = 0;
+        questions.forEach((q, n) => {
+          if ((sel[n] || []).sort().join() == q.answer.sort().join()) s++;
+        });
+        res.style.display = "block";
+        res.innerHTML = "<h3>Score: " + s + "/" + questions.length + "</h3>";
+      }
+      load();
+    </script>
+  </body>
+</html>

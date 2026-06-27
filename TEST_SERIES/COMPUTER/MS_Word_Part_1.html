@@ -1,0 +1,1111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MS WORD (PART 1)</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 0;
+        padding-bottom: 90px;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 12px;
+      }
+      .card {
+        background: #fff;
+        padding: 12px;
+        border-radius: 10px;
+        margin-top: 12px;
+      }
+      .qtext {
+        font-size: 16px;
+        margin: 10px 0;
+      }
+      .opt {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 6px 0;
+        cursor: pointer;
+      }
+      .opt.selected {
+        border-color: #2ec4b6;
+      }
+      .opt.correct {
+        background: #d4edda;
+        border-color: #28a745;
+      }
+      .opt.wrong {
+        background: #f8d7da;
+        border-color: #dc3545;
+      }
+      button {
+        padding: 8px 12px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        background: #2ec4b6;
+        color: white;
+        cursor: pointer;
+      }
+      #result {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Microsoft Word
+
+        {
+          q: "How many different positions can you set for drop cap?",
+          options: ["1", "2", "4", "6"],
+          answer: 1,
+          exp: "Drop Cap provides two position options.",
+        },
+
+        {
+          q: "Which of the following statement is false?",
+          options: [
+            "You can set different header footer for even and odd pages",
+            "You can set different page number formats for different sections",
+            "You can set different header footer for first page of a section",
+            "You can set different header and footer for last page of a section",
+          ],
+          answer: 3,
+          exp: "There is no option to set a different header/footer only for the last page of a section.",
+        },
+
+        {
+          q: "What is the maximum number of lines you can set for lines to drop box?",
+          options: ["3", "5", "10", "15"],
+          answer: 2,
+          exp: "The maximum value available for Lines to Drop is 10.",
+        },
+
+        {
+          q: "Single spacing in MS-WORD document causes ____ point line spacing?",
+          options: ["10", "12", "14", "16"],
+          answer: 1,
+          exp: "Single spacing corresponds to approximately 12-point line spacing.",
+        },
+
+        {
+          q: "What is the default number of lines to drop for drop cap?",
+          options: ["3", "10", "15", "20"],
+          answer: 0,
+          exp: "The default Lines to Drop value is 3.",
+        },
+
+        {
+          q: "_____ can not be used in ms office?",
+          options: ["Joystick", "Scanner", "Light Pen", "Mouse"],
+          answer: 0,
+          exp: "Joystick is not used as an MS Office input device.",
+        },
+
+        {
+          q: "Microsoft word is _____ software?",
+          options: ["Application", "Compiler", "System", "Utility"],
+          answer: 0,
+          exp: "Microsoft Word is application software.",
+        },
+
+        {
+          q: "In a document what is the maximum number of columns that can be inserted in MS Word Table?",
+          options: ["35", "15", "63", "65"],
+          answer: 2,
+          exp: "MS Word allows up to 63 columns in a table.",
+        },
+
+        {
+          q: "What is the maximum scale percentage available in Scale drop down box?",
+          options: ["500", "200", "100", "90"],
+          answer: 0,
+          exp: "The Scale drop-down allows a maximum of 500%.",
+        },
+
+        {
+          q: "What is the maximum font size you can apply for any character?",
+          options: ["163", "1638", "16038", "None"],
+          answer: 1,
+          exp: "The maximum font size supported is 1638.",
+        },
+
+        {
+          q: "Word, by default, places a tab stop at every ____ mark on the ruler.",
+          options: ['.25"', '.5"', '.75"', '1"'],
+          answer: 1,
+          exp: "By default, tab stops are set every 0.5 inch.",
+        },
+
+        {
+          q: "What is the default file extension for all Word documents?",
+          options: [".txts", ".word", ".docs", ".docx"],
+          answer: 3,
+          exp: "The default Word document extension is .docx.",
+        },
+        {
+          q: "The file type _____ indicates the file is a Word document.",
+          options: [".msw", ".wor", ".wrd", ".doc"],
+          answer: 3,
+          exp: "'.doc' is the Word document file type given in the PDF.",
+        },
+
+        {
+          q: "With Word's AutoCorrect entries, to display an indifferent face ( ) type _____.",
+          options: [":)", ":(", ":|", ":/"],
+          answer: 2,
+          exp: "According to the PDF, ':|' displays the indifferent face.",
+        },
+
+        {
+          q: "Which of the following button will allow you to add, delete, or change records in your Data Source?",
+          options: [
+            "'Data Source' button",
+            "'Edit' button",
+            "'Edit Data Source' button",
+            "'Data editing' button",
+          ],
+          answer: 2,
+          exp: "'Edit Data Source' is used to modify records in the data source.",
+        },
+
+        {
+          q: "How much space is minimum must be provided between columns?",
+          options: ['0"', '0.5"', '1"', '1.5"'],
+          answer: 1,
+          exp: "The minimum spacing between columns is 0.5 inch.",
+        },
+
+        {
+          q: "What is the smallest width of a column?",
+          options: ['0"', '0.5"', '1"', '1.5"'],
+          answer: 1,
+          exp: "The smallest column width is 0.5 inch.",
+        },
+
+        {
+          q: "By default, your document prints with:",
+          options: [
+            "1 inch top and bottom margins",
+            "A portrait orientation",
+            "1.25 inches left and right margins",
+            "All of the above",
+          ],
+          answer: 3,
+          exp: "All the listed default settings are given in the PDF.",
+        },
+
+        {
+          q: "Word is preset to use standard 8.5-by-11-inch paper with _____ margins.",
+          options: [
+            "1-inch left, right, top, and bottom",
+            "1.25-inch left, right, top, and bottom",
+            "1.25-inch left and right margins and 1-inch top and bottom",
+            "1-inch left and right margins and 1.25-inch top and bottom",
+          ],
+          answer: 2,
+          exp: "The preset margins are 1.25-inch left/right and 1-inch top/bottom.",
+        },
+
+        {
+          q: "What is the default left margin in Word 2003 document?",
+          options: ['1"', '1.25"', '1.5"', '2"'],
+          answer: 1,
+          exp: "The default left margin is 1.25 inch.",
+        },
+
+        {
+          q: "What is the smallest and largest font size available in Font Size tool on formatting toolbar?",
+          options: ["8 and 72", "8 and 64", "12 and 72", "None of above"],
+          answer: 0,
+          exp: "The formatting toolbar provides font sizes from 8 to 72.",
+        },
+
+        {
+          q: "The Footnote Text style defines characters as _____.",
+          options: [
+            "12-point Times New Roman and paragraphs as single-spaced and right-aligned",
+            "10-point Times New Roman and paragraphs as double-spaced and left-aligned",
+            "12-point Times New Roman and paragraphs as double-spaced and right-aligned",
+            "10-point Times New Roman and paragraphs as single-spaced and left-aligned",
+          ],
+          answer: 3,
+          exp: "Footnote Text uses 10-point Times New Roman with single-spaced, left-aligned paragraphs.",
+        },
+
+        {
+          q: "What is the default font size of a new Word document based on Normal template in Word 2003?",
+          options: ["10 pt", "11 pt", "14 pt", "None of above"],
+          answer: 1,
+          exp: "The Normal template uses 11 pt by default according to the PDF.",
+        },
+        {
+          q: "The minimum number of rows and columns in MS Word document is",
+          options: ["1 and 1", "2 and 1", "2 and 2", "None of above"],
+          answer: 0,
+          exp: "An MS Word table can be created with a minimum of 1 row and 1 column.",
+        },
+
+        {
+          q: "How will MS Word will respond in repeated word?",
+          options: [
+            "A Red wavy line under the repeated word",
+            "A Green wavy line under the repeated word",
+            "A Blue wavy line under the repeated word",
+            "None of the above",
+          ],
+          answer: 2,
+          exp: "Repeated words are indicated with a blue wavy underline.",
+        },
+
+        {
+          q: "In mail merge operation which of the following might represent the main document?",
+          options: [
+            "A sales brochure",
+            "A form letter",
+            "A database of Names and Addresses",
+            "All of above",
+          ],
+          answer: 3,
+          exp: "Any listed document can serve as the main document depending on the mail merge.",
+        },
+
+        {
+          q: "Pressing F8 key for three times selects",
+          options: ["a word", "a sentence", "a paragraph", "entire document"],
+          answer: 2,
+          exp: "Pressing F8 three times selects the current paragraph.",
+        },
+
+        {
+          q: "What do you call a collection of character and paragraph formatting commands?",
+          options: ["the defaults", "a template", "a style", "a boilerplate"],
+          answer: 2,
+          exp: "A style is a collection of character and paragraph formatting settings.",
+        },
+
+        {
+          q: "What is a Document Outline View?",
+          options: [
+            "A preview in a full screen",
+            "A preview with margins",
+            "A View with a margins and gutter",
+            "A view with a structure of heading at various levels",
+          ],
+          answer: 3,
+          exp: "Outline View displays the document based on heading levels.",
+        },
+
+        {
+          q: "Ctrl + Z",
+          options: [
+            "Undo the last Action",
+            "Redo the last Action",
+            "Add the new page",
+            "Paste the contents from clipboard",
+          ],
+          answer: 0,
+          exp: "Ctrl + Z is the Undo shortcut.",
+        },
+
+        {
+          q: "The_in the Resume Wizard dialog box indicates the wizard is ready to create the document.",
+          options: [
+            "Start panel",
+            "Address panel",
+            "Add/Sort Heading panel",
+            "Finish panel",
+          ],
+          answer: 3,
+          exp: "The Finish panel indicates the Resume Wizard is ready to create the document.",
+        },
+
+        {
+          q: "What does Ctrl + = key effect?",
+          options: ["Superscript", "Subscript", "All Caps", "Shadow"],
+          answer: 1,
+          exp: "Ctrl + = applies subscript formatting.",
+        },
+
+        {
+          q: "The spike",
+          options: [
+            "Allows you to combine text from several documents and then insert all the text into one document at one time",
+            "Allows you to edit auto text entries",
+            "Allows you to format auto text entries",
+            "All of above",
+          ],
+          answer: 0,
+          exp: "Spike collects text so it can be inserted together later.",
+        },
+
+        {
+          q: "The word wrap feature",
+          options: [
+            "Automatic move text to the next line when necessary",
+            "Appears at the bottom of the document",
+            "Allows you to type over text",
+            "is the short horizontal line",
+          ],
+          answer: 0,
+          exp: "Word Wrap automatically moves text to the next line.",
+        },
+        {
+          q: "How can you make the selected character superscripted?",
+          options: [
+            "Ctrl + =",
+            "Ctrl + Shift + =",
+            "Alt + Ctrl + Shift + =",
+            "None of above",
+          ],
+          answer: 1,
+          exp: "Ctrl + Shift + = applies superscript formatting.",
+        },
+
+        {
+          q: "When typing in a word field manually, what must you press to insert the code's braces?",
+          options: ["Ctrl + F6", "Ctrl + F9", "Alt + F11", "Shift + F12"],
+          answer: 1,
+          exp: "Ctrl + F9 inserts field code braces.",
+        },
+
+        {
+          q: "What is the short cut key to open the Open dialog box?",
+          options: ["F12", "Shift F12", "Alt + F12", "Ctrl + F12"],
+          answer: 3,
+          exp: "Ctrl + F12 opens the Open dialog box.",
+        },
+
+        {
+          q: "What is the shortcut key to split a table?",
+          options: [
+            "Ctrl + Alt + Enter",
+            "Ctrl + Shift + Enter",
+            "Alt + Shift + Enter",
+            "Alt + Space + Enter",
+          ],
+          answer: 0,
+          exp: "Ctrl + Alt + Enter splits the table.",
+        },
+
+        {
+          q: "Which key is used to increase left indent?",
+          options: ["Ctrl+I", "Ctrl+M", "Alt+I", "F10"],
+          answer: 1,
+          exp: "Ctrl + M increases the left indent.",
+        },
+
+        {
+          q: "When the same word is used in multiple locations or a word is used that was not quite appropriate, a thesaurus can be used to look up a __ or a word similar in meaning.",
+          options: ["synonym", "homonym", "antonym", "metronym"],
+          answer: 0,
+          exp: "A thesaurus provides synonyms.",
+        },
+
+        {
+          q: "How many different documents you can open at one time?",
+          options: [
+            "No more than three",
+            "Only one",
+            "As many as your computer memory will hold",
+            "As many as your taskbar can display",
+          ],
+          answer: 2,
+          exp: "The number depends on available system memory.",
+        },
+
+        {
+          q: "Which of the following is the second step in creating a macro?",
+          options: [
+            "Start recording",
+            "Using your mouse or keyboard, perform the task you want to automate",
+            "Assign a keyboard shortcut to the macro",
+            "Give the macro a name",
+          ],
+          answer: 1,
+          exp: "After starting recording, perform the actions to automate.",
+        },
+
+        {
+          q: "When assigning a shortcut key to a symbol, you should always try to select a key or key combination that is:",
+          options: [
+            "Unassigned",
+            "Located on the ten-key pad section of your keyboard",
+            "Assigned to another task",
+            "From the same font family as the symbol",
+          ],
+          answer: 0,
+          exp: "Choose an unassigned shortcut to avoid conflicts.",
+        },
+
+        {
+          q: "Which feature is used to replace straight quotes with smart quotes as you type?",
+          options: ["Samrt Tags", "Auto Change", "Auto Format", "Auto Correct"],
+          answer: 2,
+          exp: "AutoFormat replaces straight quotes with smart quotes while typing.",
+        },
+
+        {
+          q: "Which of the following command is not available in Tools menu?",
+          options: ["Auto text", "Autocorrect", "Auto summarize", "Macro"],
+          answer: 0,
+          exp: "AutoText is not available directly in the Tools menu.",
+        },
+        // Data Processing
+
+        {
+          q: "Word has a list of predefined typing, spelling, capitalization, and grammar errors that -- can detect and correct",
+          options: ["Auto Entry", "AutoCorrect", "Auto Add", "Auto Spell"],
+          answer: 1,
+          exp: "AutoCorrect detects and corrects predefined typing, spelling and grammar errors.",
+        },
+
+        {
+          q: "If you want to convert a symbol or several lines of text into an AutoCorrect entry, you should",
+          options: [
+            "Insert the symbol or type the text in a Word document first. Then, select the text or symbol and go to the AutoCorrect dialog box.",
+            "Click the Tools menu and choose AutoCorrect Options. Then, click the Insert menu and choose Symbol (or click the Format menu and choose Paragraph) to add the symbol or paragraph to AutoCorrect.",
+            "AutoCorrect can only accommodate one line of text. It is not possible to convert a symbol or multiple lines of text into an AutoCorrect entry.",
+            "Insert the symbol or type the text in a Word document first. Then, select the text or symbol and click the Edit menu followed by Paste Special. Select New AutoCorrect Entry and then click OK.",
+          ],
+          answer: 0,
+          exp: "Create the text/symbol first, then add it through the AutoCorrect dialog.",
+        },
+        {
+          q: "Which option is not available in Insert Table Auto fit behaviour?",
+          options: [
+            "Fixed Column Width",
+            "AutoFit to Contents",
+            "Auto fit to Window",
+            "Auto fit to Column",
+          ],
+          answer: 3,
+          exp: "'Auto fit to Column' is not available in Insert Table AutoFit behaviour.",
+        },
+
+        {
+          q: "When you click on File menu in Word 2010, it opens",
+          options: [
+            "File menu",
+            "File Commands",
+            "Backstage View",
+            "File Ribbon",
+          ],
+          answer: 2,
+          exp: "In Word 2010, clicking the File tab opens Backstage View.",
+        },
+
+        {
+          q: "Tabs stop position cannot be the following alignment",
+          options: [
+            "Decimal Alignment",
+            "Centre Alignment",
+            "Bar Alignment",
+            "Justify Alignment",
+          ],
+          answer: 3,
+          exp: "Justify Alignment is not a tab stop alignment.",
+        },
+
+        {
+          q: "Why the document you created at home displays with a different font at school?",
+          options: [
+            "Because you have a different printer at school than at home",
+            "Because you have a different monitor at school than at home",
+            "Because the font you used at home is not installed on your school computer",
+            "Because the version of Windows is different",
+          ],
+          answer: 2,
+          exp: "If the font is not installed on another computer, Word substitutes a different font.",
+        },
+
+        {
+          q: "Ctrl + B",
+          options: [
+            "Search the selected text",
+            "Paste the selected text",
+            "Bold the selected text",
+            "Open the specified file",
+          ],
+          answer: 2,
+          exp: "Ctrl + B applies Bold formatting to the selected text.",
+        }, // Data Processing
+
+        {
+          q: "A master document contains _____, each of which contains a pointer to a file on a disk?",
+          options: ["Placeholders", "Subdocuments", "Bookmarks", "References"],
+          answer: 1,
+          exp: "A master document contains subdocuments.",
+        },
+
+        {
+          q: "If the number of columns is selected 1 and the line between check box is marked, where is the line drawn?",
+          options: [
+            "In the left margin",
+            "In the right margin",
+            "Both in left and right margin",
+            "None of above",
+          ],
+          answer: 3,
+          exp: "The line is drawn only between multiple columns, not with one column.",
+        },
+
+        {
+          q: "A feature of MS Word that saves document automatically after certain interval is available on",
+          options: [
+            "Save tab on Options dialog box",
+            "Save as dialog box",
+            "Both of above",
+            "None of above",
+          ],
+          answer: 0,
+          exp: "The AutoSave interval is configured from the Save tab in Options.",
+        },
+
+        {
+          q: "After typing header text, how can you quickly enter footer text?",
+          options: [
+            "Press Page Down key and type the text for footer",
+            "Click on Switch between Header & Footer then type the text",
+            "Both of above",
+            "None of above",
+          ],
+          answer: 1,
+          exp: "Use the Switch between Header & Footer command to move directly to the footer.",
+        },
+
+        {
+          q: "To move the cursor page to page of document",
+          options: [
+            "Ctrl + PgDn",
+            "Ctrl + PgUp",
+            "Both of above",
+            "None of above",
+          ],
+          answer: 2,
+          exp: "Ctrl + PgDn and Ctrl + PgUp move between pages.",
+        },
+        {
+          q: "You can jump to the next column by",
+          options: [
+            "Clicking with your mouse on the next column",
+            "Press Alt + Down-arrow",
+            "Both of above",
+            "None of above",
+          ],
+          answer: 2,
+          exp: "Both methods can be used to move to the next column.",
+        },
+
+        {
+          q: "Which of the following enables you to paste data multiple times?",
+          options: [
+            "Windows Clipboard",
+            "Office Clipboard",
+            "Both Windows & Office Clipboard",
+            "None of all",
+          ],
+          answer: 1,
+          exp: "Office Clipboard allows multiple items to be stored and pasted.",
+        },
+
+        {
+          q: "You need to jump to the next column breaking current column right at the cursor position. How can you break column?",
+          options: [
+            "Pressing Ctrl + Enter",
+            "Pressing Alt + Shift + Enter",
+            "Break command from Insert menu",
+            "Both b and c",
+          ],
+          answer: 3,
+          exp: "A column break can be inserted using Alt + Shift + Enter or the Break command.",
+        },
+
+        {
+          q: "In Word you can force a page break",
+          options: [
+            "By positioning your cursor at the appropriate place and pressing the F1 key",
+            "By using the Insert/Section break on the Insert tab",
+            "By positioning your cursor at the appropriate place and pressing Ctrl + Enter",
+            "By changing the font size of your document",
+          ],
+          answer: 2,
+          exp: "Ctrl + Enter inserts a page break.",
+        }, // Data Processing
+
+        {
+          q: "How can you increase the font size of selected text by one point every time?",
+          options: [
+            "By pressing Ctrl + ]",
+            "By pressing Ctrl + [",
+            "By pressing Ctrl + }",
+            "By pressing Ctrl + {",
+          ],
+          answer: 0,
+          exp: "Ctrl + ] increases the font size by one point.",
+        },
+
+        {
+          q: "How to use Format Painter multiple times",
+          options: [
+            "By Click on Lock Format Painter Icon",
+            "By Double click on the Format Painter Icon",
+            "By Selecting Edit -> Format Painter -> Multiple Use",
+            "Format Painter cannot be use multiple times",
+          ],
+          answer: 1,
+          exp: "Double-clicking the Format Painter lets you use it multiple times.",
+        },
+
+        {
+          q: "What is the default font used in MS Word 2007 document?",
+          options: ["Times New Roman", "Arial", "Calibri", "Preeti"],
+          answer: 2,
+          exp: "Calibri is the default font in MS Word 2007.",
+        },
+
+        {
+          q: "Word includes a series of predefined graphics called _____ that can be inserted into a Word document.",
+          options: ["Clip art", "Hyperlinks", "Captions", "bookmarks"],
+          answer: 0,
+          exp: "Clip Art is the predefined graphics collection.",
+        },
+
+        {
+          q: "A _____ is a dot or other symbol positioned at the beginning of a paragraph.",
+          options: ["Bullet", "Logo", "Cell", "Target"],
+          answer: 0,
+          exp: "A bullet is a symbol placed at the beginning of a paragraph.",
+        },
+        {
+          q: "Which of the following is not a type of page margin?",
+          options: ["Left", "Right", "Center", "Top"],
+          answer: 2,
+          exp: "Center is not a page margin type.",
+        },
+
+        {
+          q: "Which command is used to remove all formatting from selected text?",
+          options: [
+            "Clear Formatting",
+            "Format Painter",
+            "Reset Style",
+            "Remove Style",
+          ],
+          answer: 0,
+          exp: "Clear Formatting removes all formatting from the selected text.",
+        },
+
+        {
+          q: "Which alignment positions the text evenly between the left and right margins?",
+          options: ["Left", "Center", "Right", "Justify"],
+          answer: 3,
+          exp: "Justify aligns text evenly with both margins.",
+        },
+
+        {
+          q: "Which keyboard shortcut is used to copy selected text?",
+          options: ["Ctrl + X", "Ctrl + C", "Ctrl + V", "Ctrl + A"],
+          answer: 1,
+          exp: "Ctrl + C copies the selected text.",
+        },
+        // Data Processing
+
+        {
+          q: "Microsoft Office Word is A _____?",
+          options: [
+            "Area in the computer's main memory in which Microsoft Office text files are stored temporarily",
+            "Program included with Windows 2000 that can be used only to create or edit text files, smaller than 64K, that do not require formatting",
+            "Classified password that prevents unauthorized users from accessing a protected Microsoft Office item or document",
+            "Full-featured word processing program that can be used to create and revise professional looking documents easily",
+          ],
+          answer: 3,
+          exp: "Microsoft Word is a full-featured word processing program.",
+        },
+
+        {
+          q: "Use of Ctrl + E",
+          options: [
+            "Exit Application",
+            "Select All",
+            "Clear All",
+            "Align Center",
+          ],
+          answer: 3,
+          exp: "Ctrl + E aligns text to the center.",
+        },
+
+        {
+          q: "The main elements of the ____ are the insertion point, end mark, mouse pointer, rulers, scroll bars, and status bar.",
+          options: [
+            "Word toolbar",
+            "Formatting toolbar",
+            "Word document window",
+            "Graphics toolbar",
+          ],
+          answer: 2,
+          exp: "These are the elements of the Word document window.",
+        },
+
+        {
+          q: "MS-Word automatically moves the text to the next line when it reaches the right edge of the screen and is called?",
+          options: [
+            "Carriage Return",
+            "Enter",
+            "Word Wrap",
+            "None of the above",
+          ],
+          answer: 2,
+          exp: "Word Wrap automatically moves text to the next line.",
+        },
+
+        {
+          q: "How do you close a word document without closing Word window?",
+          options: [
+            "Click on the Close button on the title bar",
+            "Click on Minimize button on the title bar",
+            "Click on the Close command on Office menu",
+            "Click Exit on the File menu",
+          ],
+          answer: 0,
+          exp: "The Close button closes only the current document.",
+        },
+
+        {
+          q: "To switch between insert mode and overtype mode, _____",
+          options: [
+            "Click Caption on the Insert menu",
+            "Double-click on the OVR status indicator on the status bar",
+            "Click Text Box on the Insert menu",
+            "Double-click the INS status indicator on the status bar",
+          ],
+          answer: 3,
+          exp: "Double-clicking the INS indicator toggles Insert/Overtype mode.",
+        },
+
+        {
+          q: "Superscript, subscript, outline, emboss, engrave are known as",
+          options: ["Font styles", "Font effects", "Word art", "Text effects"],
+          answer: 1,
+          exp: "These are Font Effects in MS Word.",
+        }, // Data Processing
+
+        {
+          q: "Which would you choose to save a document with a new name?",
+          options: [
+            "Press Ctrl + S",
+            "Click File, Save",
+            "Click Tools, Options, Save",
+            "Click File, Save As",
+          ],
+          answer: 3,
+          exp: "Save As is used to save the document with a new name.",
+        },
+
+        {
+          q: "You cannot close MS Word application by",
+          options: [
+            "Choosing File menu then Exit submenu",
+            "Press Alt+F4",
+            "Click X button on title bar",
+            "From File menu choose Close submenu",
+          ],
+          answer: 3,
+          exp: "Close closes only the current document, not the MS Word application.",
+        },
+
+        {
+          q: "Which of the following option is not available in Insert >> Picture?",
+          options: ["Chart", "Word Art", "Clip Art", "Graph"],
+          answer: 3,
+          exp: "Graph is not an Insert → Picture option.",
+        },
+
+        {
+          q: "Which option in File pull-down menu is used to close a file in MS Word?",
+          options: ["New", "Quit", "Close", "Exit"],
+          answer: 2,
+          exp: "Close closes the current file.",
+        },
+
+        {
+          q: "Ctrl + O",
+          options: [
+            "Save Document",
+            "Print Document",
+            "Close Document",
+            "Open Document",
+          ],
+          answer: 3,
+          exp: "Ctrl + O opens an existing document.",
+        },
+
+        {
+          q: "Which feature do you use to create a newspaper like document?",
+          options: ["Bullets & numbering", "Tables", "Columns", "Tab stops"],
+          answer: 2,
+          exp: "Newspaper-style documents are created using Columns.",
+        },
+
+        {
+          q: "A ____ contains buttons, boxes, and menus that allow tasks to be performed more quickly than using the menus bar.",
+          options: ["Format bar", "Status bar", "Command bar", "Toolbar"],
+          answer: 3,
+          exp: "A toolbar provides quick access to commands.",
+        },
+
+        {
+          q: "A letterhead should contain all of the following EXCEPT ____.",
+          options: [
+            "Full street address",
+            "Logo",
+            "Complete legal name of the company, group, or individual",
+            "None of the above",
+          ],
+          answer: 3,
+          exp: "All listed items can be part of a letterhead.",
+        },
+
+        {
+          q: "Which of the following is not available in Font Spacing?",
+          options: ["Normal", "Loosely", "Condensed", "Expanded"],
+          answer: 1,
+          exp: "'Loosely' is not a Font Spacing option.",
+        },
+
+        {
+          q: "To convert a hyperlink e-mail address to regular text, right-click the e-mail address and then click ____ on the shortcut menu.",
+          options: [
+            "Edit Hyperlink",
+            "Select Hyperlink",
+            "Convert Hyperlink",
+            "Remove Hyperlink",
+          ],
+          answer: 3,
+          exp: "Remove Hyperlink converts the hyperlink to plain text.",
+        },
+
+        {
+          q: "Which enables you to move directly to specific location in a document?",
+          options: [
+            "Subdocuments",
+            "Bookmarks",
+            "Cross-references",
+            "Outlines",
+          ],
+          answer: 1,
+          exp: "Bookmarks let you jump directly to a saved location.",
+        }, // Data Processing
+
+        {
+          q: "Each time the _____ key is pressed, the paragraph formatting in the previous paragraph is carried forward to the next paragraph.",
+          options: ["enter", "shift", "ctrl", "alt"],
+          answer: 0,
+          exp: "Pressing Enter carries the previous paragraph formatting to the next paragraph.",
+        },
+
+        {
+          q: "What is the shortcut key you can press to create a copyright symbol?",
+          options: [
+            "Alt + Ctrl + C",
+            "Alt + C",
+            "Ctrl + C",
+            "Ctrl + Shift + C",
+          ],
+          answer: 0,
+          exp: "Alt + Ctrl + C inserts the copyright symbol.",
+        },
+
+        {
+          q: "What is the short cut key to open Font dialog box?",
+          options: [
+            "Ctrl + F",
+            "Alt + Ctrl + F",
+            "Ctrl + D",
+            "Ctrl + Shift + D",
+          ],
+          answer: 2,
+          exp: "Ctrl + D opens the Font dialog box.",
+        },
+
+        {
+          q: "What is the short key to 'Center Align' the selected text?",
+          options: ["Ctrl + C", "Ctrl + E", "Ctrl + F", "None"],
+          answer: 1,
+          exp: "Ctrl + E applies center alignment.",
+        },
+
+        {
+          q: "What is the shortcut key for Spelling Check in document?",
+          options: ["F7", "Shift + F7", "Ctrl + F7", "Alt + F7"],
+          answer: 0,
+          exp: "F7 starts the spelling and grammar check.",
+        },
+
+        {
+          q: "What is the shortcut key to Update Formula in a table?",
+          options: ["F9", "Alt + F9", "Ctrl + F9", "Shift + F9"],
+          answer: 0,
+          exp: "F9 updates the selected field/formula.",
+        },
+
+        {
+          q: "What is the shortcut key for 'Font' dialog box?",
+          options: ["Ctrl + F", "Ctrl + D", "Ctrl + G", "None"],
+          answer: 1,
+          exp: "Ctrl + D opens the Font dialog box.",
+        },
+
+        {
+          q: "What is the shortcut key for 'Find and Replace' dialog box?",
+          options: ["Ctrl + F", "Ctrl + R", "Ctrl + H", "Ctrl + Shift + F"],
+          answer: 2,
+          exp: "Ctrl + H opens the Replace tab of the Find and Replace dialog.",
+        },
+
+        {
+          q: "What is the shortcut key to 'Insert Hyperlink' in a document?",
+          options: ["Ctrl + H", "Ctrl + L", "Ctrl + K", "None"],
+          answer: 2,
+          exp: "Ctrl + K opens the Insert Hyperlink dialog.",
+        },
+
+        {
+          q: "How can you access the font size tool on formatting toolbar?",
+          options: [
+            "Ctrl + S",
+            "Ctrl + Shift + S",
+            "Ctrl + P",
+            "Ctrl + Shift + P",
+          ],
+          answer: 3,
+          exp: "Ctrl + Shift + P moves to the Font Size box.",
+        },
+
+        {
+          q: "Shimmer, Sparkle text, Blinking Background etc., are known as",
+          options: ["Font styles", "font effects", "Word art", "text effects"],
+          answer: 1,
+          exp: "These are font effects.",
+        },
+
+        {
+          q: "What is the blank space outside the printing area on a page?",
+          options: ["Clipart", "Margins", "Header", "Footer"],
+          answer: 1,
+          exp: "The blank area outside the printable region is called the margin.",
+        },
+
+        {
+          q: "What is the shortcut key to Close Active Document in Microsoft Word?",
+          options: ["Ctrl + F4", "Shift + F4", "Ctrl + Shift + F4", "None"],
+          answer: 0,
+          exp: "Ctrl + F4 closes the active document.",
+        },
+
+        {
+          q: "Bold, Italic, Regular are known as",
+          options: ["Font styles", "Font effects", "Word art", "Text effects"],
+          answer: 0,
+          exp: "Bold, Italic and Regular are font styles.",
+        },
+
+        {
+          q: "How to remove all character formats?",
+          options: [
+            "Shift + Spacebar",
+            "Shift + Enter",
+            "Ctrl + Spacebar",
+            "Ctrl + Enter",
+          ],
+          answer: 2,
+          exp: "Ctrl + Spacebar removes character formatting.",
+        },
+
+        {
+          q: "Which of the following is the Latest version of MS Word?",
+          options: ["Word 2013", "Word 2016", "Word 2021", "Word 2019"],
+          answer: 2,
+          exp: "According to the book, Word 2021 is the latest version.",
+        },
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>
