@@ -1,0 +1,1200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(
+            circle at 50% -10%,
+            rgba(229, 9, 20, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(
+          145deg,
+          rgba(24, 24, 24, 0.98),
+          rgba(12, 12, 12, 0.98)
+        );
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(
+          90deg,
+          rgba(229, 9, 20, 0.2),
+          rgba(229, 9, 20, 0.07)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229, 9, 20, 0.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229, 9, 20, 0.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Boolean Algebra
+
+        // questions
+        {
+          q: "Q.1. ______ Gate follows condition If both the inputs are high then the output is also high.?",
+          options: [
+            "And Gate",
+            "OR Gate",
+            "XNOR Gate",
+            "All of these",
+            "None of these",
+          ],
+          answer: 3,
+          exp: "The AND gate, OR gate and XNOR gate all produce HIGH output when both inputs are HIGH.",
+        },
+        {
+          q: "Q.2. ______ Gate follows condition If both input is low then the output is High & If both input is high then the output is high .?",
+          options: ["And Gate", "OR Gate", "XOR Gate", "NOR Gate", "XNOR Gate"],
+          answer: 4,
+          exp: "XNOR gives HIGH when both inputs are LOW (00) and also when both inputs are HIGH (11).",
+        },
+        {
+          q: "Q.3. ______ Gate follows condition If the minimum one input is high then only the output is high.?",
+          options: [
+            "XNOR Gate",
+            "NOR Gate",
+            "XOR Gate",
+            "AND Gate",
+            "All of these",
+          ],
+          answer: 2,
+          exp: "XOR gate gives HIGH output when one input is HIGH and the other input is LOW. When both inputs are the same, the output is LOW.",
+        },
+
+        {
+          q: "Q.4. ______ Gate follows condition If the minimum one input is low then the output is high.?",
+          options: [
+            "And Gate",
+            "OR Gate",
+            "XOR Gate",
+            "NAND Gate",
+            "None of these",
+          ],
+          answer: 3,
+          exp: "NAND gate gives HIGH output when at least one input is LOW. It gives LOW only when both inputs are HIGH.",
+        },
+
+        {
+          q: "Q.5. ______ Gate follows condition If both the inputs are low then the output is high.?",
+          options: ["NAND", "NOR", "XNOR", "All of these", "None of these"],
+          answer: 3,
+          exp: "NAND, NOR and XNOR all give HIGH output when both inputs are LOW (0,0). Therefore, the correct answer is All of these.",
+        },
+
+        {
+          q: "Q.6. Boolean algebra deals with variables that can have?",
+          options: [
+            "two discrete values",
+            "three discrete values",
+            "four discrete values",
+            "five discrete values",
+            "None of these",
+          ],
+          answer: 0,
+          exp: "Boolean algebra deals with variables having two discrete values, generally represented as 0 and 1.",
+        },
+
+        {
+          q: "Q.7. Boolean algebra was introduced by ______ in 1854.?",
+          options: [
+            "Alan Turing",
+            "Charles Babbage",
+            "George Boole",
+            "John Von Neumann",
+            "None of these",
+          ],
+          answer: 2,
+          exp: "Boolean algebra was introduced by George Boole in 1854. It forms the mathematical foundation of digital logic and computer systems.",
+        },
+
+        {
+          q: "Q.8. The result of a Boolean expression is.?",
+          options: [
+            "And, OR",
+            "True, False",
+            "Not, And",
+            "All of these",
+            "None of these",
+          ],
+          answer: 1,
+          exp: "A Boolean expression evaluates to one of two possible logical values: True or False, commonly represented by 1 and 0.",
+        },
+
+        {
+          q: "Q.9. ______ Gate gives true output only when both inputs are true ?",
+          options: ["And", "OR", "XNOR", "All of these", "None of these"],
+          answer: 3,
+          exp: "AND gives TRUE when both inputs are TRUE, while XNOR also gives TRUE when both inputs are the same, including both inputs being TRUE. Therefore, both AND and XNOR satisfy the stated condition, so All of these is the given correct option.",
+        },
+        {
+          q: "Q.10. ______ Gate gives a true output when at least one input is true.?",
+          options: ["And", "OR", "XNOR", "All of these", "None of these"],
+          answer: 1,
+          exp: "OR gate gives a true output when at least one input is true.",
+        },
+
+        {
+          q: "Q.11. ______ is a single input single output gate.?",
+          options: ["And", "OR", "Not", "All of these", "None of these"],
+          answer: 2,
+          exp: "NOT gate is a single input single output gate.",
+        },
+
+        {
+          q: "Q.12. This gate is also known as Inverter.?",
+          options: ["And", "OR", "Not", "All of these", "None of these"],
+          answer: 2,
+          exp: "NOT gate is also known as an Inverter because it produces the complement of the input.",
+        },
+
+        {
+          q: "Q.13. The symbol + in Boolean is also known as the ______ operator.?",
+          options: ["AND", "OR", "NOT", "NAND", "All of these"],
+          answer: 1,
+          exp: "In Boolean algebra, the + symbol represents the OR operator.",
+        },
+
+        {
+          q: "Q.14. The format used to present the logic output for the various combinations of logic inputs to a gate is called a(n).?",
+          options: [
+            "Boolean Constant",
+            "Boolean Variable",
+            "Truth Table",
+            "Input Logic Function",
+            "None of these",
+          ],
+          answer: 2,
+          exp: "A Truth Table presents the logic output for various combinations of logic inputs to a gate.",
+        },
+
+        {
+          q: "Q.15. Which one of the following logical operations is represented by the . Sign in Boolean Algebra .?",
+          options: ["OR", "NOT", "NOR", "AND", "XNOR"],
+          answer: 3,
+          exp: "The dot (.) sign in Boolean algebra represents the AND operation.",
+        },
+
+        {
+          q: "Q.16. How many total Logic Gates are there in Boolean Algebra.?",
+          options: ["4 Only", "2 Only", "5 Only", "7 Only", "8 Only"],
+          answer: 3,
+          exp: "There are 7 total logic gates shown: AND, OR, NOT, XOR, XNOR, NAND and NOR.",
+        },
+
+        {
+          q: "Q.17. Which logical gate is known as Universal gate.?",
+          options: ["Ex-OR", "AND", "NAND", "NOT", "All of these"],
+          answer: 2,
+          exp: "NAND gate is known as a Universal gate because it can be used to implement other basic logic gates.",
+        },
+
+        {
+          q: "Q.18. Boolean Algebra is also called.?",
+          options: [
+            "Switching algebra",
+            "Arithmetic algebra",
+            "Linear algebra",
+            "Algebra",
+            "All of these",
+          ],
+          answer: 0,
+          exp: "Boolean Algebra is also called Switching algebra.",
+        },
+
+        {
+          q: "Q.19. A digital circuit that can store only one bit is a?",
+          options: [
+            "Register",
+            "NOR gate",
+            "Flip-flop",
+            "All of these",
+            "None of these",
+          ],
+          answer: 2,
+          exp: "A flip-flop is a digital circuit capable of storing one bit of information.",
+        },
+
+        {
+          q: "Q.20. Which of the following gates can have only one input?",
+          options: [
+            "OR gate",
+            "NOT gate",
+            "AND gate",
+            "NAND gate",
+            "All of these",
+          ],
+          answer: 1,
+          exp: "NOT gate can have only one input and produces the inverted output.",
+        },
+        {
+          q: "Q.21. How many basic logic gates are there?",
+          options: ["1", "2", "3", "4", "5"],
+          answer: 2,
+          exp: "There are 3 basic logic gates: AND, OR and NOT.",
+        },
+        {
+          q: "Q.22. Which of the following gates cannot be used as an inverter?",
+          options: ["NAND", "AND", "NOR", "X-NOR", "All of these"],
+          answer: 1,
+          exp: "AND gate cannot be used as an inverter.",
+        },
+        {
+          q: "Q.23. How many Boolean expressions can be formed with four Boolean variables .?",
+          options: ["4", "16", "65536", "256", "65535"],
+          answer: 2,
+          exp: "The number of Boolean expressions for n variables is 2^(2^n). For n = 4, 2^(2^4) = 2^16 = 65536.",
+        },
+        {
+          q: "Q.24. How many Boolean expressions can be formed with three Boolean variables .?",
+          options: ["16", "1024", "32", "256", "255"],
+          answer: 3,
+          exp: "The number of Boolean expressions for n variables is 2^(2^n). For n = 3, 2^(2^3) = 2^8 = 256.",
+        },
+        {
+          q: "Q.25. How many entries will be in the truth table of a 4-input NAND gate?",
+          options: ["6", "8", "32", "16", "64"],
+          answer: 3,
+          exp: "The number of entries in a truth table is 2^n. For a 4-input NAND gate, 2^4 = 16.",
+        },
+        {
+          q: "Q.26. How many truth table entries are necessary for a four-input circuit?",
+          options: ["4", "8", "12", "16", "32"],
+          answer: 3,
+          exp: "The number of truth table entries is 2^n. For a four-input circuit, 2^4 = 16.",
+        },
+        // Laws of boolean algebra
+        {
+          q: "Q.27. What are the two methods used to minimize Boolean expressions?",
+          options: [
+            "Using Logic Gates and Truth Tables",
+            "Using Laws of Boolean Algebra and Karnaugh Maps",
+            "Using Flip-Flops and Registers",
+            "Using Multiplexers and Demultiplexers",
+            "Using Counters and Registers",
+          ],
+          answer: 1,
+          exp: "Boolean expressions can be minimized by using Laws of Boolean Algebra and Karnaugh Maps.",
+        },
+        {
+          q: "Q.41. Which Boolean Algebra law states that changing the order of variables does not change the logical output?",
+          options: [
+            "Associative Law",
+            "Commutative Law",
+            "Distributive Law",
+            "Complement Law",
+            "Absorption Law",
+          ],
+          answer: 1,
+          exp: "The Commutative Law states that changing the order of variables does not change the logical output.",
+        },
+        {
+          q: "Q.42. Which of the following represents the Commutative Law for Addition in Boolean Algebra?",
+          options: [
+            "A + B = A.B",
+            "A + B = B + A",
+            "A + B = A + A",
+            "A + B = A",
+            "A + B = 1",
+          ],
+          answer: 1,
+          exp: "The Commutative Law for Addition is A + B = B + A.",
+        },
+        {
+          q: "Q.43. Which of the following represents the Commutative Law for Multiplication in Boolean Algebra?",
+          options: [
+            "A.B = A + B",
+            "A.B = A.B",
+            "A.B = B.A",
+            "A.B = A",
+            "A.B = 0",
+          ],
+          answer: 2,
+          exp: "The Commutative Law for Multiplication is A.B = B.A.",
+        },
+        {
+          q: "Q.44. What does the Commutative Law imply in Boolean Algebra?",
+          options: [
+            "The variables must always be complemented",
+            "The order of variables can be changed without changing the logical output",
+            "The variables can only be added",
+            "The output always becomes 1",
+            "The output always becomes 0",
+          ],
+          answer: 1,
+          exp: "According to the Commutative Law, the order of variables can be changed without changing the logical circuit's output.",
+        },
+        {
+          q: "Q.45. If A + B is changed to B + A in a Boolean expression, which law is being applied?",
+          options: [
+            "Identity Law",
+            "Associative Law",
+            "Commutative Law",
+            "Inversion Law",
+            "De Morgan's Law",
+          ],
+          answer: 2,
+          exp: "Changing A + B to B + A applies the Commutative Law for Addition.",
+        },
+        {
+          q: "Q.46. If A.B is changed to B.A in a Boolean expression, which law is being applied?",
+          options: [
+            "Commutative Law",
+            "Complement Law",
+            "Absorption Law",
+            "Annulment Law",
+            "Idempotent Law",
+          ],
+          answer: 0,
+          exp: "Changing A.B to B.A applies the Commutative Law for Multiplication.",
+        },
+        {
+          q: "Which of the following statement represents commutative law?",
+          options: [
+            "(X + Y) + Z = X + (Y + Z)",
+            "X.(Y + Z) = (X.Y) + (X.Z)",
+            "X + Y = Y + X",
+            "X + X = X",
+          ],
+          answer: 2,
+          exp: "The commutative law states that changing the order of variables does not change the result. Therefore, X + Y = Y + X represents the commutative law.",
+        },
+        {
+          q: "Q.27. Which of the following Boolean expressions represents the Associative Law for Addition?",
+          options: [
+            "A + B = B + A",
+            "A + (B + C) = (A + B) + C",
+            "A.(B + C) = A.B + A.C",
+            "A + A = A",
+            "A + 0 = A",
+          ],
+          answer: 1,
+          exp: "The Associative Law for Addition is A + (B + C) = (A + B) + C. It changes the grouping of variables without changing the result.",
+        },
+
+        {
+          q: "Q.28. Which Boolean expression represents the Associative Law for Multiplication?",
+          options: [
+            "A.B = B.A",
+            "A.(B.C) = (A.B).C",
+            "A.B = A + B",
+            "A.B = A",
+            "A + (B.C) = (A+B).(A+C)",
+          ],
+          answer: 1,
+          exp: "The Associative Law for Multiplication is A.(B.C) = (A.B).C. It shows that changing the grouping of variables does not affect the output.",
+        },
+
+        {
+          q: "Q.29. What is the main concept of the Associative Law in Boolean Algebra?",
+          options: [
+            "Changing the order of variables changes the output",
+            "Changing the grouping of variables does not affect the output",
+            "A variable combined with 0 always gives 0",
+            "A variable combined with its complement always gives 1",
+            "A variable combined with itself always gives 0",
+          ],
+          answer: 1,
+          exp: "The Associative Law states that changing the grouping of the combined input variables does not affect the output.",
+        },
+
+        {
+          q: "Q.30. Which of the following Boolean expressions represents the Distributive Law?",
+          options: [
+            "A + B = B + A",
+            "A.(B + C) = A.B + A.C",
+            "A + 0 = A",
+            "A + A = A",
+            "A.A' = 0",
+          ],
+          answer: 1,
+          exp: "The Distributive Law is represented by A.(B + C) = A.B + A.C. It distributes A over the OR operation inside the bracket.",
+        },
+
+        {
+          q: "Q.31. Which of the following is the second form of the Distributive Law given in Boolean Algebra?",
+          options: [
+            "A + (B.C) = (A+B).(A+C)",
+            "A + (B+C) = (A+B)+C",
+            "A.B = B.A",
+            "A + A' = 1",
+            "A.A = A",
+          ],
+          answer: 0,
+          exp: "The second form of the Distributive Law is A + (B.C) = (A+B).(A+C).",
+        },
+
+        {
+          q: "Q.32. Which Boolean law is represented by both A.(B + C) = A.B + A.C and A + (B.C) = (A+B).(A+C)?",
+          options: [
+            "Associative Law",
+            "Commutative Law",
+            "Distributive Law",
+            "Identity Law",
+            "Complement Law",
+          ],
+          answer: 2,
+          exp: "Both given Boolean expressions represent the Distributive Law.",
+        },
+
+        {
+          q: "Q.33. Which Boolean law uses the NOT operation and is represented by A'' = A?",
+          options: [
+            "Complement Law",
+            "Inversion Law / Involution Law",
+            "Identity Law",
+            "Annulment Law",
+            "Idempotent Law",
+          ],
+          answer: 1,
+          exp: "The Inversion Law, also called the Involution Law, uses the NOT operation. Its expression is A'' = A.",
+        },
+
+        {
+          q: "Q.34. According to the Inversion Law, what is the result when the complement of a Boolean variable is complemented again?",
+          options: ["0", "1", "A", "A'", "A + A'"],
+          answer: 2,
+          exp: "The Inversion Law states A'' = A. Therefore, the double complement of a Boolean variable gives the original variable.",
+        },
+
+        {
+          q: "Q.35. The expression A'' = A represents which of the following concepts in Boolean Algebra?",
+          options: [
+            "A variable becomes 0 after two NOT operations",
+            "A variable becomes 1 after two NOT operations",
+            "The double complement of a variable is the variable itself",
+            "A variable and its complement give 0",
+            "A variable and its complement give 1",
+          ],
+          answer: 2,
+          exp: "A'' = A means that applying the NOT operation twice returns the original Boolean variable.",
+        },
+
+        {
+          q: "Q.36. Which of the following equations represents the Complement Law for the OR operation?",
+          options: [
+            "A + A' = 1",
+            "A.A' = 1",
+            "A + A = A",
+            "A + 0 = A",
+            "A + 1 = A",
+          ],
+          answer: 0,
+          exp: "The Complement Law for OR is A + A' = 1. A Boolean variable ORed with its complement always produces 1.",
+        },
+
+        {
+          q: "Q.37. Which of the following equations represents the Complement Law for the AND operation?",
+          options: [
+            "A.A' = 1",
+            "A + A' = 0",
+            "A.A' = 0",
+            "A.A = 1",
+            "A + A = 0",
+          ],
+          answer: 2,
+          exp: "The Complement Law for AND is A.A' = 0. A Boolean variable ANDed with its complement always produces 0.",
+        },
+
+        {
+          q: "Q.38. What are the results when a Boolean variable is combined with its complement using OR and AND respectively?",
+          options: [
+            "OR gives 0 and AND gives 1",
+            "OR gives 1 and AND gives 0",
+            "Both OR and AND give 1",
+            "Both OR and AND give 0",
+            "OR gives the variable and AND gives its complement",
+          ],
+          answer: 1,
+          exp: "According to the Complement Law, A + A' = 1 and A.A' = 0. Thus, OR gives 1 and AND gives 0.",
+        },
+
+        {
+          q: "Q.39. Which of the following is the Identity Law for the OR operation?",
+          options: [
+            "A + 1 = A",
+            "A + 0 = A",
+            "A.0 = A",
+            "A.A' = 0",
+            "A + A = A",
+          ],
+          answer: 1,
+          exp: "The Identity Law for OR is A + 0 = A. Combining a variable with 0 using OR leaves the variable unchanged.",
+        },
+
+        {
+          q: "Q.40. Which of the following is the Identity Law for the AND operation?",
+          options: ["A.0 = 0", "A.1 = A", "A + 1 = 1", "A + 0 = 0", "A.A' = 1"],
+          answer: 1,
+          exp: "The Identity Law for AND is A.1 = A. Combining a variable with 1 using AND leaves the variable unchanged.",
+        },
+
+        {
+          q: "Q.41. What is the effect of combining a Boolean variable with 0 using OR and with 1 using AND?",
+          options: [
+            "The result becomes 0 in both cases",
+            "The result becomes 1 in both cases",
+            "The result remains the same as the variable",
+            "The result becomes the complement of the variable",
+            "The result becomes the opposite Boolean value",
+          ],
+          answer: 2,
+          exp: "According to the Identity Law, A + 0 = A and A.1 = A. Therefore, the result remains the same as the original variable.",
+        },
+
+        {
+          q: "Q.42. Which of the following equations represents the Annulment Law for the AND operation?",
+          options: ["A.0 = 0", "A.1 = A", "A + 0 = A", "A + A = A", "A.A' = 1"],
+          answer: 0,
+          exp: "The Annulment Law for AND is A.0 = 0. Any Boolean variable ANDed with 0 gives 0.",
+        },
+
+        {
+          q: "Q.43. Which of the following equations represents the Annulment Law for the OR operation?",
+          options: [
+            "A + 0 = A",
+            "A + 1 = 1",
+            "A.1 = A",
+            "A.A = A",
+            "A + A' = 0",
+          ],
+          answer: 1,
+          exp: "The Annulment Law for OR is A + 1 = 1. Any Boolean variable ORed with 1 gives 1.",
+        },
+
+        {
+          q: "Q.44. What are the results of A.0 and A + 1 according to the Annulment Law?",
+          options: ["A and A", "0 and 1", "1 and 0", "A' and A", "0 and A"],
+          answer: 1,
+          exp: "According to the Annulment Law, A.0 = 0 and A + 1 = 1. Thus, AND with 0 gives 0, while OR with 1 gives 1.",
+        },
+
+        {
+          q: "Q.45. Which of the following equations represents the Idempotent Law for OR operation?",
+          options: [
+            "A + 0 = A",
+            "A + 1 = 1",
+            "A + A = A",
+            "A.A' = 0",
+            "A'' = A",
+          ],
+          answer: 2,
+          exp: "The Idempotent Law for OR is A + A = A. Combining a variable with itself using OR produces the same variable.",
+        },
+
+        {
+          q: "Q.46. Which of the following equations represents the Idempotent Law for AND operation?",
+          options: ["A.A = A", "A.A' = 0", "A.0 = 0", "A.1 = A", "A + A = 0"],
+          answer: 0,
+          exp: "The Idempotent Law for AND is A.A = A. Combining a variable with itself using AND produces the same variable.",
+        },
+
+        {
+          q: "Q.47. What is the common result of applying the Idempotent Law to a Boolean variable using both OR and AND with itself?",
+          options: [
+            "OR gives 0 and AND gives 1",
+            "OR gives 1 and AND gives 0",
+            "Both operations give the same variable A",
+            "OR gives A' and AND gives A'",
+            "Both operations give 0",
+          ],
+          answer: 2,
+          exp: "The Idempotent Law states A + A = A and A.A = A. Therefore, both OR and AND with the same variable produce the variable itself.",
+        },
+        {
+          q: "Q.48. Which of the following Boolean expressions represents the Absorption Law?",
+          options: [
+            "A + A.B = A",
+            "A + B = B + A",
+            "A.(B + C) = A.B + A.C",
+            "A + A = A",
+            "A.A' = 0",
+          ],
+          answer: 0,
+          exp: "The Absorption Law is represented by A + A.B = A. It is called absorption because one term absorbs the other term.",
+        },
+
+        {
+          q: "Q.49. According to the Absorption Law, what is the simplified form of A + A.B?",
+          options: ["B", "A", "A + B", "A.B", "1"],
+          answer: 1,
+          exp: "Using the Absorption Law, A + A.B = A. Therefore, the term A.B is absorbed and the result is A.",
+        },
+
+        {
+          q: "Q.50. Which of the following statements correctly describes the Absorption Law?",
+          options: [
+            "It changes the order of variables",
+            "It changes the grouping of variables",
+            "It absorbs one term without changing the final result",
+            "It always produces 0",
+            "It always produces 1",
+          ],
+          answer: 2,
+          exp: "The Absorption Law is so called because one term absorbs another term while the final result remains unchanged.",
+        },
+
+        {
+          q: "Q.51. Which of the following is NOT an AND Law given in the Boolean Algebra rules?",
+          options: ["A.0 = 0", "A.1 = A", "A.A = A", "A.A' = 0", "A + A = A"],
+          answer: 4,
+          exp: "A + A = A is an OR law (Idempotent Law), not an AND law. The other expressions belong to the AND-related laws.",
+        },
+
+        {
+          q: "Q.52. What is the result of A.0 in Boolean Algebra?",
+          options: ["A", "1", "A'", "0", "A + 0"],
+          answer: 3,
+          exp: "According to the AND Law, A.0 = 0. Any Boolean variable ANDed with 0 produces 0.",
+        },
+
+        {
+          q: "Q.53. Which pair correctly represents the AND laws shown in the given material?",
+          options: [
+            "A + 0 = A and A + 1 = 1",
+            "A.0 = 0 and A.1 = A",
+            "A + A = A and A + A' = 1",
+            "A.A' = 1 and A.A = 0",
+            "A'' = A and A + B = B + A",
+          ],
+          answer: 1,
+          exp: "The given AND laws include A.0 = 0 and A.1 = A. These describe the effect of 0 and 1 under the AND operation.",
+        },
+
+        {
+          q: "Q.54. Which of the following is the correct set of OR laws given in the material?",
+          options: [
+            "A.0 = 0, A.1 = A, A.A = A",
+            "A + 0 = A, A + 1 = 1, A + A = A, A + A' = 1",
+            "A.A' = 0, A.A = A, A.1 = A",
+            "A'' = A, A + B = B + A",
+            "A.B = B.A, A.(B.C) = (A.B).C",
+          ],
+          answer: 1,
+          exp: "The four OR laws shown are A + 0 = A, A + 1 = 1, A + A = A and A + A' = 1.",
+        },
+
+        {
+          q: "Q.55. Which Boolean expression demonstrates that OR operation with 1 always gives 1?",
+          options: [
+            "A + 0 = A",
+            "A + 1 = 1",
+            "A + A = A",
+            "A + A' = 1",
+            "A.1 = A",
+          ],
+          answer: 1,
+          exp: "The expression A + 1 = 1 shows that ORing any Boolean variable with 1 produces 1.",
+        },
+
+        {
+          q: "Q.56. Which of the following correctly matches the OR operation with its corresponding Boolean law?",
+          options: [
+            "A + 0 = A — Identity",
+            "A + 1 = 1 — Annulment",
+            "A + A = A — Idempotent",
+            "A + A' = 1 — Complement",
+            "All of the above",
+          ],
+          answer: 4,
+          exp: "All four statements correctly match the OR expressions with their corresponding laws.",
+        },
+
+        {
+          q: "Q.57. De Morgan's Theorem consists of how many fundamental theorems/laws as shown in the given material?",
+          options: ["One", "Two", "Three", "Four", "Five"],
+          answer: 1,
+          exp: "The material presents De Morgan's Theorem as consisting of 2 Theorems / 2 Laws.",
+        },
+
+        {
+          q: "Q.58. Which Boolean expression represents the first theorem of De Morgan's Law?",
+          options: [
+            "(A.B)' = A' + B'",
+            "(A+B)' = A'.B'",
+            "A.B = A' + B'",
+            "A+B = A'.B'",
+            "A'' = A",
+          ],
+          answer: 0,
+          exp: "The first De Morgan theorem is (A.B)' = A' + B'. Thus, the complement of AND becomes OR of the complements.",
+        },
+
+        {
+          q: "Q.59. Which Boolean expression represents the second theorem of De Morgan's Law?",
+          options: [
+            "(A.B)' = A' + B'",
+            "(A+B)' = A'.B'",
+            "A.B = A+B",
+            "A+A' = 1",
+            "A.A' = 0",
+          ],
+          answer: 1,
+          exp: "The second De Morgan theorem is (A+B)' = A'.B'. Thus, the complement of OR becomes AND of the complements.",
+        },
+
+        {
+          q: "Q.60. According to De Morgan's Theorem, the complement of an AND operation is equivalent to:",
+          options: [
+            "AND of the complements",
+            "OR of the complements",
+            "OR of the original variables",
+            "AND of the original variables",
+            "NOT of only the first variable",
+          ],
+          answer: 1,
+          exp: "According to (A.B)' = A' + B', the complement of an AND operation becomes OR of the individual complements.",
+        },
+
+        {
+          q: "Q.61. According to De Morgan's Theorem, the complement of an OR operation is equivalent to:",
+          options: [
+            "OR of the complements",
+            "AND of the complements",
+            "AND of the original variables",
+            "OR of the original variables",
+            "NOT of only the second variable",
+          ],
+          answer: 1,
+          exp: "According to (A+B)' = A'.B', the complement of an OR operation becomes AND of the individual complements.",
+        },
+
+        {
+          q: "Q.62. Which operation is effectively interchanged when applying De Morgan's Theorem to a complemented expression?",
+          options: [
+            "NOT is changed to XOR",
+            "AND is changed to OR, and OR is changed to AND",
+            "AND is changed to NOT only",
+            "OR is changed to XOR",
+            "No operation changes",
+          ],
+          answer: 1,
+          exp: "De Morgan's Theorem changes AND into OR and OR into AND while complementing the individual variables.",
+        },
+
+        {
+          q: "Q.63. Who is mentioned as the founder associated with De Morgan's Theorem in the given material?",
+          options: [
+            "George Boole",
+            "Augustus De Morgan",
+            "Charles Babbage",
+            "Isaac Newton",
+            "Alan Turing",
+          ],
+          answer: 1,
+          exp: "The material explicitly mentions 'Founded by = Augustus De Morgan'.",
+        },
+
+        {
+          q: "Q.64. Which mathematician is directly associated with the name of De Morgan's Theorem?",
+          options: [
+            "Augustus De Morgan",
+            "George Boole",
+            "Blaise Pascal",
+            "Gottfried Leibniz",
+            "John von Neumann",
+          ],
+          answer: 0,
+          exp: "De Morgan's Theorem is associated with Augustus De Morgan, whose name is given to the theorem.",
+        },
+
+        {
+          q: "Q.65. In De Morgan's Theorem, which three logical operations are mentioned as being used to simplify expressions?",
+          options: [
+            "NOT, AND and OR",
+            "XOR, XNOR and NOT",
+            "AND, XOR and NAND",
+            "OR, NOR and XNOR",
+            "NAND, NOR and XOR",
+          ],
+          answer: 0,
+          exp: "The material states that complement (NOT), conjunction (AND), and disjunction (OR) operations are used to simplify expressions.",
+        },
+
+        {
+          q: "Q.66. In the given material, conjunction refers to which logical operation?",
+          options: ["NOT", "OR", "AND", "XOR", "NOR"],
+          answer: 2,
+          exp: "The material explicitly identifies conjunction as AND.",
+        },
+
+        {
+          q: "Q.67. In the given material, disjunction refers to which logical operation?",
+          options: ["AND", "NOT", "OR", "NAND", "XNOR"],
+          answer: 2,
+          exp: "The material explicitly identifies disjunction as OR.",
+        },
+
+        {
+          q: "Q.68. What is the primary purpose of using De Morgan's Theorem mentioned in the material?",
+          options: [
+            "To increase the number of variables",
+            "To simplify logical expressions",
+            "To convert decimal numbers into binary",
+            "To increase circuit complexity",
+            "To eliminate Boolean variables",
+          ],
+          answer: 1,
+          exp: "The material states that NOT, AND and OR operations are used with De Morgan's Theorem to simplify logical expressions.",
+        },
+
+        {
+          q: "Q.69. Which of the following is listed as a use of De Morgan's Theorem?",
+          options: [
+            "Simplifying logical expressions",
+            "Designing digital logic circuits",
+            "Finding errors in digital circuits in Boolean Algebra",
+            "All of the above",
+            "None of the above",
+          ],
+          answer: 3,
+          exp: "The material lists three uses: simplifying logical expressions, digital logic circuit design, and finding errors in digital circuits using Boolean Algebra.",
+        },
+
+        {
+          q: "Q.70. Which of the following is NOT mentioned as a use of De Morgan's Theorem in the given material?",
+          options: [
+            "Simplification of logical expressions",
+            "Digital logic circuit design",
+            "Finding errors in digital circuits in Boolean Algebra",
+            "Converting binary numbers into decimal numbers",
+            "None of the above",
+          ],
+          answer: 3,
+          exp: "The given material does not mention binary-to-decimal conversion as a use of De Morgan's Theorem.",
+        },
+
+        {
+          q: "Q.71. De Morgan's Theorem can be used in digital logic circuit design primarily because it helps in:",
+          options: [
+            "Changing the logical form of expressions",
+            "Increasing the number of inputs",
+            "Removing all NOT operations",
+            "Converting analogue signals into digital signals",
+            "Changing binary values into decimal values",
+          ],
+          answer: 0,
+          exp: "De Morgan's Theorem provides equivalent logical forms, which can be useful while designing digital logic circuits.",
+        },
+
+        {
+          q: "Q.72. According to the given material, De Morgan's Theorem can be used for finding errors in:",
+          options: [
+            "Digital circuits in Boolean Algebra",
+            "Only arithmetic calculations",
+            "Only computer networks",
+            "Only programming languages",
+            "Only memory devices",
+          ],
+          answer: 0,
+          exp: "The material specifically lists finding errors in digital circuits in Boolean Algebra as one of the uses.",
+        },
+
+        {
+          q: "Q.73. Which gate is shown in the material as the graphical representation associated with the first De Morgan theorem?",
+          options: ["NOR Gate", "NAND Gate", "AND Gate", "OR Gate", "XOR Gate"],
+          answer: 1,
+          exp: "The first theorem, (A.B)' = A' + B', is shown with a NAND gate and its equivalent bubbled OR representation.",
+        },
+
+        {
+          q: "Q.74. Which gate is shown in the material as the graphical representation associated with the second De Morgan theorem?",
+          options: [
+            "NAND Gate",
+            "NOR Gate",
+            "AND Gate",
+            "XOR Gate",
+            "XNOR Gate",
+          ],
+          answer: 1,
+          exp: "The second theorem, (A+B)' = A'.B', is shown with a NOR gate and its equivalent bubbled AND representation.",
+        },
+
+        {
+          q: "Q.75. In the given De Morgan representation, NAND is converted into which equivalent logic form?",
+          options: [
+            "Positive-AND",
+            "Negative-OR",
+            "Positive-OR",
+            "Negative-AND",
+            "XOR",
+          ],
+          answer: 1,
+          exp: "The material explicitly shows 'NAND to Negative-OR'. This corresponds to (A.B)' = A' + B'.",
+        },
+
+        {
+          q: "Q.76. In the given De Morgan representation, NOR is converted into which equivalent logic form?",
+          options: [
+            "Negative-AND",
+            "Negative-OR",
+            "Positive-AND",
+            "Positive-OR",
+            "XOR",
+          ],
+          answer: 0,
+          exp: "The material explicitly shows 'NOR to Negative-AND'. This corresponds to (A+B)' = A'.B'.",
+        },
+
+        {
+          q: "Q.77. Which pair correctly represents the two De Morgan transformations shown in the material?",
+          options: [
+            "NAND → Negative-OR and NOR → Negative-AND",
+            "NAND → Positive-AND and NOR → Positive-OR",
+            "NAND → XOR and NOR → XNOR",
+            "NAND → Negative-AND and NOR → Negative-OR",
+            "NAND → OR and NOR → AND without complements",
+          ],
+          answer: 0,
+          exp: "The material shows the two transformations: NAND to Negative-OR and NOR to Negative-AND.",
+        },
+
+        // questions
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

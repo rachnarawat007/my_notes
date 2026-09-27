@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(circle at 50% -10%, rgba(229, 9, 20, 0.20), transparent 38%),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(145deg, rgba(24,24,24,.98), rgba(12,12,12,.98));
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: .3px;
+        box-shadow: 0 5px 15px rgba(229,9,20,.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all .18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(90deg, rgba(229,9,20,.20), rgba(229,9,20,.07));
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all .18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229,9,20,.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229,9,20,.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229,9,20,.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+</style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Boolean Algebra
+
+        {
+          q: "In Boolean algebra, which operation is represented by the symbol ∧?",
+          options: ["Disjunction", "Negation", "Conjunction", "XOR"],
+          answer: 2,
+          exp: "The image states that conjunction is represented by ∧.",
+        },
+
+        {
+          q: "Which operation in Boolean algebra is represented by the symbol ∨?",
+          options: ["Conjunction", "Disjunction", "Negation", "XNOR"],
+          answer: 1,
+          exp: "The image states that disjunction is represented by ∨.",
+        },
+
+        {
+          q: "Which operation is represented by the symbol ~ in Boolean algebra?",
+          options: ["Negation", "Conjunction", "Disjunction", "NAND"],
+          answer: 0,
+          exp: "The image identifies ¬ as the symbol for negation.",
+        },
+
+        {
+          q: "Which of the following correctly matches the Boolean algebra operation with its equivalent operation?",
+          options: [
+            "Conjunction — OR",
+            "Disjunction — AND",
+            "Negation — NOT",
+            "Conjunction — NOT",
+          ],
+          answer: 2,
+          exp: "The image states that negation is also called the NOT operation.",
+        },
+
+        {
+          q: "Which combination represents the important operations performed in Boolean algebra?",
+          options: [
+            "AND, OR and NOT",
+            "AND, XOR and XNOR",
+            "NAND, NOR and XOR",
+            "OR, NAND and NOT",
+          ],
+          answer: 0,
+          exp: "The image lists conjunction (∧), disjunction (∨) and negation (~) as important operations.",
+        },
+
+        {
+          q: "Which of the following correctly represents the seven logic gates?",
+          options: [
+            "AND, OR, NOT, NAND, NOR, XOR, XNOR",
+            "AND, OR, NOT, ADD, NAND, XOR, XNOR",
+            "AND, NOR, NOT, XOR, XNOR, RAM, ROM",
+            "AND, OR, NAND, NOR, ADD, SUB, NOT",
+          ],
+          answer: 0,
+          exp: "The image lists AND, OR, NOT, NAND, NOR, XOR and XNOR.",
+        },
+
+        {
+          q: "Which gate is included among the basic logic gates?",
+          options: ["XOR", "NAND", "AND", "XNOR"],
+          answer: 2,
+          exp: "AND is classified as a Basic Gate in the image.",
+        },
+
+        {
+          q: "Which pair of gates belongs to the Exclusive Gates category?",
+          options: [
+            "AND and OR",
+            "NAND and NOR",
+            "XOR and XNOR",
+            "NOT and AND",
+          ],
+          answer: 2,
+          exp: "The image places XOR and XNOR under Exclusive Gates.",
+        },
+
+        {
+          q: "Which pair of gates belongs to the Universal Gates category?",
+          options: [
+            "AND and OR",
+            "NAND and NOR",
+            "XOR and XNOR",
+            "NOT and XOR",
+          ],
+          answer: 1,
+          exp: "The image places NAND and NOR under Universal Gates.",
+        },
+
+        {
+          q: "Which of the following correctly classifies the logic gates?",
+          options: [
+            "Basic: AND, OR, NOT; Exclusive: XOR, XNOR; Universal: NAND, NOR",
+            "Basic: NAND, NOR, NOT; Exclusive: AND, OR; Universal: XOR, XNOR",
+            "Basic: AND, XOR, NOT; Exclusive: OR, NOR; Universal: NAND, XNOR",
+            "Basic: AND, OR; Exclusive: NOT, XOR; Universal: NAND, NOR, XNOR",
+          ],
+          answer: 0,
+          exp: "The diagram classifies AND, OR, NOT as Basic; XOR, XNOR as Exclusive; and NAND, NOR as Universal.",
+        },
+
+        {
+          q: "Which of the following is a Basic Gate but not an Exclusive or Universal Gate?",
+          options: ["XNOR", "NOR", "OR", "NAND"],
+          answer: 2,
+          exp: "OR is shown under the Basic Gates category.",
+        },
+
+        {
+          q: "What is Boolean algebra used to do with a digital circuit?",
+          options: [
+            "Analyze and simplify it",
+            "Convert it into an analog circuit",
+            "Increase its number of gates",
+            "Store it permanently",
+          ],
+          answer: 0,
+          exp: "The image states that Boolean algebra is used to analyze and simplify the digital circuit.",
+        },
+
+        {
+          q: "Boolean algebra is based on which of the following?",
+          options: [
+            "Mathematical logic",
+            "Statistical analysis",
+            "Geometrical reasoning",
+            "Numerical approximation",
+          ],
+          answer: 0,
+          exp: "The image states that Boolean algebra is based on mathematical logic.",
+        },
+
+        {
+          q: "Which statement correctly describes the values used in Boolean algebra?",
+          options: [
+            "It uses three values",
+            "It contains only two values: True and False",
+            "It uses only positive values",
+            "It contains four logical values",
+          ],
+          answer: 1,
+          exp: "The image states that Boolean algebra contains only two values: True or False.",
+        },
+
+        {
+          q: "Which statement about Boolean algebra is correct?",
+          options: [
+            "It uses decimal numbers only",
+            "It uses only binary numbers",
+            "It uses hexadecimal numbers only",
+            "It uses negative numbers only",
+          ],
+          answer: 1,
+          exp: "Boolean algebra uses only binary numbers (0 or 1).",
+        },
+
+        {
+          q: "what does the binary value 1 represent?",
+          options: ["False", "True", "Low", "Off"],
+          answer: 1,
+          exp: "1 means true.",
+        },
+
+        {
+          q: "what does the binary value 0 represent?",
+          options: ["True", "High", "False", "On"],
+          answer: 2,
+          exp: "0 means false.",
+        },
+
+        {
+          q: "Who founded Boolean Algebra according to the image?",
+          options: [
+            "George Boole",
+            "George Boyle",
+            "George Bell",
+            "George Boolean",
+          ],
+          answer: 0,
+          exp: "Boolean Algebra was founded by George Boole.",
+        },
+
+        {
+          q: "In which year was Boolean Algebra founded?",
+          options: ["1852", "1853", "1854", "1855"],
+          answer: 2,
+          exp: "Boolean Algebra was founded in 1854.",
+        },
+
+        {
+          q: "The statement '1 means true and 0 means false' refers to which system?",
+          options: [
+            "Decimal system",
+            "Boolean algebra's binary representation",
+            "Roman numeral system",
+            "Hexadecimal system",
+          ],
+          answer: 1,
+          exp: "The image explains 1 as true and 0 as false in Boolean algebra.",
+        },
+
+        {
+          q: "What is one purpose of Boolean algebra?",
+          options: [
+            "To reduce the number of logic gates",
+            "To increase the number of logic gates",
+            "To eliminate binary numbers",
+            "To replace mathematical logic",
+          ],
+          answer: 0,
+          exp: "Boolean algebra is used to reduce the number of logic gates.",
+        },
+
+        {
+          q: "Boolean Algebra is based on which three logical operations?",
+          options: [
+            "AND, OR, NOT",
+            "NAND, NOR, XOR",
+            "XOR, XNOR, NAND",
+            "OR, NOR, XNOR",
+          ],
+          answer: 0,
+          exp: "The image states that Boolean Algebra is based on three logical operations: AND, OR and NOT.",
+        },
+
+        {
+          q: "Which set contains the representations of 1 or 0?",
+          options: [
+            "Yes/No, On/Off, High/Low",
+            "True/False, High/Medium, On/Yes",
+            "Yes/High, No/Low, On/Off",
+            "High/Medium, Yes/No, True/On",
+          ],
+          answer: 0,
+          exp: "The image gives Yes/No, On/Off and High/Low as representations of 1 or 0.",
+        },
+        // ----
+
+        // Truth Table
+
+        {
+          q: "What is the primary purpose of a truth table?",
+          options: [
+            "To establish the relation between input and output",
+            "To calculate only the input values",
+            "To reduce the number of variables",
+            "To represent decimal numbers",
+          ],
+          answer: 0,
+          exp: "A truth table is used to establish the relation between input and output.",
+        },
+
+        {
+          q: "A truth table is particularly useful for understanding the output of:",
+          options: [
+            "Arithmetic circuits only",
+            "Logic gates",
+            "Decimal systems",
+            "Memory units only",
+          ],
+          answer: 1,
+          exp: "A truth table helps to understand the output of logic gates.",
+        },
+
+        {
+          q: "If a Boolean expression contains n variables, how many rows are required in its truth table?",
+          options: ["n²", "2n", "2ⁿ", "n + 2"],
+          answer: 2,
+          exp: "The number of rows in a truth table is 2ⁿ, where n is the number of variables.",
+        },
+
+        {
+          q: "In the expression 2ⁿ for determining truth-table rows, what does n represent?",
+          options: [
+            "Number of rows",
+            "Number of outputs",
+            "Number of variables",
+            "Number of gates",
+          ],
+          answer: 2,
+          exp: "n represents the number of variables.",
+        },
+
+        {
+          q: "How many rows will a truth table have if a Boolean equation contains 3 variables?",
+          options: ["6", "8", "9", "12"],
+          answer: 1,
+          exp: "For 3 variables, the number of rows is 2³ = 8.",
+        },
+
+        {
+          q: "If a Boolean equation contains 3 variables, which expression gives the number of rows in its truth table?",
+          options: ["3²", "2 × 3", "2³", "3 + 2"],
+          answer: 2,
+          exp: "The number of rows is calculated as 2³, which equals 8.",
+        },
+
+        {
+          q: "A truth table for a Boolean equation with 3 variables contains how many possible input combinations?",
+          options: ["4", "6", "8", "9"],
+          answer: 2,
+          exp: "Three variables produce 2³ = 8 rows.",
+        },
+
+        ///------
+        {
+          q: "In Boolean algebra, which operator is used to represent the AND operation?",
+          options: ["+", "'", "·", "∨"],
+          answer: 2,
+          exp: "The dot (·) operator represents the AND operation.",
+        },
+
+        {
+          q: "In Boolean algebra, the plus (+) operator represents which operation?",
+          options: ["AND", "OR", "NOT", "Complement"],
+          answer: 1,
+          exp: "The plus (+) operator represents OR.",
+        },
+
+        {
+          q: "If A' denotes the complement of A, which operator is associated with the NOT operation?",
+          options: ["+", "·", "'", "∨"],
+          answer: 2,
+          exp: "The apostrophe (') denotes the NOT or complement operation.",
+        },
+
+        {
+          q: "Which of the following correctly represents the relationship between an AND operation and its Boolean operator?",
+          options: ["A + B", "A · B", "A' + B", "A ∨ B"],
+          answer: 1,
+          exp: "The dot operator is used for AND, so A · B represents the AND operation.",
+        },
+
+        {
+          q: "If A is a Boolean variable, which expression represents its complement?",
+          options: ["A+", "A·", "A'", "A∨"],
+          answer: 2,
+          exp: "The complement of A is represented by A'.",
+        },
+
+        // Boolean Algebra
+
+        {
+          q: "For an AND gate with inputs A and B, which Boolean expression represents the output X?",
+          options: ["X = A + B", "X = A · B", "X = A'", "X = A ∨ B"],
+          answer: 1,
+          exp: "The AND operation is represented by X = A · B.",
+        },
+
+        {
+          q: "For an OR gate with inputs A and B, the output X is represented by:",
+          options: ["X = A · B", "X = A'", "X = A + B", "X = A · B'"],
+          answer: 2,
+          exp: "The OR operation is represented by X = A + B.",
+        },
+
+        {
+          q: "Which Boolean expression represents a NOT operation on input A?",
+          options: ["X = A + B", "X = A · B", "X = A'", "X = A + A"],
+          answer: 2,
+          exp: "For the NOT gate, the output is X = A'.",
+        },
+
+        {
+          q: "Which logic gate has a single input and single output?",
+          options: ["AND", "OR", "NOT", "XOR"],
+          answer: 2,
+          exp: "The NOT gate is shown with a single input A.",
+        },
+
+        {
+          q: "Which of the following correctly matches the gate with its Boolean expression?",
+          options: [
+            "AND — X = A + B",
+            "OR — X = A · B",
+            "NOT — X = A'",
+            "OR — X = A'",
+          ],
+          answer: 2,
+          exp: "The image represents the NOT gate by X = A'.",
+        },
+
+        {
+          q: "For an AND operation, what is the output when A = 1 and B = 1?",
+          options: ["0", "1", "A", "B"],
+          answer: 1,
+          exp: "The AND truth table gives an output of 1 when both inputs are 1.",
+        },
+
+        {
+          q: "For an AND operation, what is the output when A = 1 and B = 0?",
+          options: ["1", "A", "0", "B"],
+          answer: 2,
+          exp: "The AND truth table gives 0 for the input combination 1, 0.",
+        },
+
+        {
+          q: "For an AND operation, what is the output when A = 0 and B = 1?",
+          options: ["0", "1", "A+B", "B"],
+          answer: 0,
+          exp: "The AND truth table gives 0 for the input combination 0, 1.",
+        },
+
+        {
+          q: "For an AND gate, under which input condition does the output become 1?",
+          options: [
+            "A = 0, B = 0",
+            "A = 0, B = 1",
+            "A = 1, B = 0",
+            "A = 1, B = 1",
+          ],
+          answer: 3,
+          exp: "The truth table shows output 1 only when both A and B are 1.",
+        },
+
+        {
+          q: "For an OR gate, under which input condition does the output become 0?",
+          options: [
+            "A = 1, B = 1",
+            "A = 1, B = 0",
+            "A = 0, B = 1",
+            "A = 0, B = 0",
+          ],
+          answer: 3,
+          exp: "The truth table shows output 0 only when both A and B are 0.",
+        },
+
+        {
+          q: "Which symbol is associated with the OR operation in the basic Boolean operations?",
+          options: ["∧", "~", "∨", "+"],
+          answer: 2,
+          exp: "OR is represented by ∨.",
+        },
+
+        {
+          q: "Which symbol is associated with the NOT operation in the basic Boolean operations?",
+          options: ["∧", "∨", "~", "+"],
+          answer: 2,
+          exp: "NOT is represented by ~ in the displayed basic-operation list.",
+        },
+        //not
+
+        {
+          q: "The primary function of a NOT gate is to:",
+          options: [
+            "Add two inputs",
+            "Reverse the input logic level",
+            "Compare two inputs",
+            "Multiply two inputs",
+          ],
+          answer: 1,
+          exp: "A NOT gate reverses or inverts the input: 0 becomes 1 and 1 becomes 0.",
+        },
+        {
+          q: "Which of the following is another name for a NOT gate?",
+          options: ["Inverter", "Adder", "Selector", "Comparator"],
+          answer: 0,
+          exp: "A NOT gate is also called an inverter because it reverses the input.",
+        },
+        {
+          q: "If Q is the output of a NOT gate with input A, which expression represents Q?",
+          options: ["Q=A", "Q=A+B", "Q=A.B", "Q=A'"],
+          answer: 3,
+          exp: "The Boolean expression for a NOT gate is Q=A', the complement of A.",
+        },
+        {
+          q: "What is the output of a NOT gate when its input is 0?",
+          options: ["0", "1", "A", "Undefined"],
+          answer: 1,
+          exp: "NOT operation complements the input, therefore NOT 0 = 1.",
+        },
+        {
+          q: "The small circle or bubble at the output of a NOT gate represents:",
+          options: [
+            "Addition",
+            "Input reversal/inversion",
+            "Multiplication",
+            "Memory",
+          ],
+          answer: 1,
+          exp: "The bubble indicates inversion or reversal of the logic signal.",
+        },
+        // nand
+
+        {
+          q: "A NAND gate can be represented as which combination of basic logic operations?",
+          options: ["NOT + OR", "NOT + AND", "AND + XOR", "OR + NOT + XOR"],
+          answer: 1,
+          exp: "NAND is obtained by applying NOT operation to the output of an AND operation.",
+        },
+        {
+          q: "Which Boolean expression represents a two-input NAND gate?",
+          options: ["Q=A+B", "Q=A.B", "Q=(A.B)'", "Q=(A+B)'"],
+          answer: 2,
+          exp: "The NAND operation is the complement of AND, hence Q=(A.B)'.",
+        },
+        {
+          q: "What is the output of a NAND gate when A=1 and B=1?",
+          options: ["0", "1", "A", "B"],
+          answer: 0,
+          exp: "AND of 1 and 1 is 1; the NOT operation then makes the NAND output 0.",
+        },
+
+        // nor
+
+        {
+          q: "A NOR gate is obtained by applying which operation to the output of an OR gate?",
+          options: ["AND", "XOR", "NOT", "XNOR"],
+          answer: 2,
+          exp: "NOR is the complement of OR, so a NOT operation is applied to the OR output.",
+        },
+        {
+          q: "Which Boolean expression represents a two-input NOR gate?",
+          options: ["A.B", "(A.B)'", "A+B", "(A+B)'"],
+          answer: 3,
+          exp: "NOR is the complemented OR operation, therefore X=(A+B)'.",
+        },
+        {
+          q: "What is the output of a NOR gate when A=0 and B=0?",
+          options: ["0", "1", "A", "B"],
+          answer: 1,
+          exp: "OR of 0 and 0 is 0; complementing it gives a NOR output of 1.",
+        },
+        {
+          q: "A two-input NOR gate produces LOW output when:",
+          options: [
+            "Both inputs are 0",
+            "At least one input is 1",
+            "Both inputs are equal",
+            "Both inputs are 0 or 1",
+          ],
+          answer: 1,
+          exp: "NOR is HIGH only for 00. If at least one input is 1, the OR output is 1 and NOR becomes 0.",
+        },
+        {
+          q: "NOR gates are used in microprocessors particularly for designing the:",
+          options: [
+            "Control unit",
+            "Keyboard",
+            "Display panel",
+            "Power supply",
+          ],
+          answer: 0,
+          exp: "The given concept identifies microprocessors, particularly the design of the control unit, as an application of NOR.",
+        },
+        //xor
+
+        {
+          q: "The XOR gate is also known as:",
+          options: [
+            "Exclusive OR gate",
+            "Exclusive NOR gate",
+            "Universal OR gate",
+            "Complementary OR gate",
+          ],
+          answer: 0,
+          exp: "XOR stands for Exclusive OR, so it is called the Exclusive OR gate.",
+        },
+        {
+          q: "Which Boolean expression represents the XOR operation?",
+          options: ["A+B", "A.B", "A⊕B", "(A⊕B)'"],
+          answer: 2,
+          exp: "The XOR operation is represented by A⊕B.",
+        },
+        {
+          q: "An XOR gate produces HIGH output when:",
+          options: [
+            "Both inputs are 0",
+            "Both inputs are 1",
+            "The inputs are different",
+            "The inputs are equal",
+          ],
+          answer: 2,
+          exp: "XOR produces HIGH when exactly one of the two inputs is HIGH, meaning the inputs are different.",
+        },
+        {
+          q: "Which of the following is a major application of XOR gates?",
+          options: [
+            "Half adder and full adder",
+            "Only voltage regulation",
+            "Only data storage",
+            "Only signal amplification",
+          ],
+          answer: 0,
+          exp: "XOR gates are used in arithmetic circuits such as half adders, full adders and subtractors.",
+        },
+        {
+          q: "Which combination of input values gives LOW output from an XOR gate?",
+          options: ["00 and 11", "01 only", "10 only", "01 and 10"],
+          answer: 0,
+          exp: "XOR gives LOW when both inputs are equal: 00 and 11.",
+        },
+        // ---xnor
+        {
+          q: "The XNOR gate is also known as:",
+          options: [
+            "Exclusive OR gate",
+            "Exclusive NOR gate",
+            "Universal OR gate",
+            "Complementary AND gate",
+          ],
+          answer: 1,
+          exp: "XNOR stands for Exclusive NOR, hence it is called the Exclusive NOR gate.",
+        },
+        {
+          q: "Which Boolean expression correctly represents an XNOR operation?",
+          options: ["A + B", "A.B", "A ⊕ B", "(A ⊕ B)'"],
+          answer: 3,
+          exp: "XNOR is the logical complement of XOR, so its expression is (A ⊕ B)'.",
+        },
+        {
+          q: "For an XNOR gate, the output is HIGH when:",
+          options: [
+            "Both inputs are different",
+            "Exactly one input is HIGH",
+            "Both inputs are the same",
+            "At least one input is LOW",
+          ],
+          answer: 2,
+          exp: "XNOR produces HIGH output when its inputs are equal: 00 or 11.",
+        },
+        {
+          q: "Which input combination produces a LOW output from an XNOR gate?",
+          options: [
+            "A=0, B=0",
+            "A=0, B=1",
+            "A=1, B=1",
+            "Both A and B are equal",
+          ],
+          answer: 1,
+          exp: "XNOR gives LOW when the two inputs are different, such as 0 and 1.",
+        },
+        {
+          q: "XNOR gates are particularly useful in digital systems for:",
+          options: [
+            "Data synchronization and data multiplexing",
+            "Only voltage amplification",
+            "Only signal generation",
+            "Power conversion",
+          ],
+          answer: 0,
+          exp: "The given concept identifies data synchronization and data multiplexing as applications of XNOR.",
+        },
+        // questions
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>
