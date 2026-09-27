@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(
+            circle at 50% -10%,
+            rgba(229, 9, 20, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(
+          145deg,
+          rgba(24, 24, 24, 0.98),
+          rgba(12, 12, 12, 0.98)
+        );
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(
+          90deg,
+          rgba(229, 9, 20, 0.2),
+          rgba(229, 9, 20, 0.07)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229, 9, 20, 0.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229, 9, 20, 0.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Longitude and Time (देशषांतर और समय)
+
+        {
+          q: "When the Prime Meridian of Greenwich has sun at highest point in the sky, all the places along this meridian will have:",
+          options: ["Sunrise", "Mid-day or noon", "Sunset", "Midnight"],
+          answer: 1,
+          exp: "When the sun is at its highest point over the Prime Meridian, all places along this meridian have mid-day or noon.",
+        },
+
+        {
+          q: "Which statement correctly describes the time of places east and west of Greenwich?",
+          options: [
+            "Places east are behind Greenwich time and places west are ahead",
+            "Places east and west have the same time",
+            "Places east are ahead of Greenwich time and places west are behind it",
+            "Places east are behind and places west have the same time",
+          ],
+          answer: 2,
+          exp: "Because the Earth rotates from west to east, places east of Greenwich are ahead of Greenwich time and places west are behind it.",
+        },
+
+        {
+          q: "The Earth rotates through how many degrees in 24 hours?",
+          options: ["180°", "360°", "270°", "90°"],
+          answer: 1,
+          exp: "The Earth rotates 360° in 24 hours.",
+        },
+
+        {
+          q: "A difference of 15° longitude corresponds to a time difference of:",
+          options: ["15 minutes", "30 minutes", "1 hour", "2 hours"],
+          answer: 2,
+          exp: "360° divided by 24 hours gives 15°, so 15° longitude corresponds to 1 hour.",
+        },
+
+        {
+          q: "A difference of 1° longitude corresponds to a time difference of:",
+          options: ["2 minutes", "4 minutes", "6 minutes", "8 minutes"],
+          answer: 1,
+          exp: "Since 15° longitude corresponds to 1 hour, 1° longitude corresponds to 4 minutes.",
+        },
+
+        {
+          q: "If it is 12 noon at Greenwich, what will be the local time at 15° east of Greenwich?",
+          options: ["11:00 a.m.", "12:00 noon", "1:00 p.m.", "2:00 p.m."],
+          answer: 2,
+          exp: "15° east is 1 hour ahead of Greenwich, so 12 noon becomes 1:00 p.m.",
+        },
+
+        {
+          q: "If it is 12 noon at Greenwich, what will be the local time at 15° west of Greenwich?",
+          options: ["10:00 a.m.", "11:00 a.m.", "1:00 p.m.", "2:00 p.m."],
+          answer: 1,
+          exp: "15° west is 1 hour behind Greenwich, so 12 noon becomes 11:00 a.m.",
+        },
+        // Time zones
+
+        {
+          q: "Into how many time zones has the Earth been divided?",
+          options: ["12", "18", "24", "36"],
+          answer: 2,
+          exp: "The Earth has been divided into twenty-four time zones of one hour each.",
+        },
+
+        {
+          q: "The International Date Line, established in 1884, passes through the:",
+          options: [
+            "Atlantic Ocean",
+            "Indian Ocean",
+            "Mid-Pacific Ocean",
+            "Arctic Ocean",
+          ],
+          answer: 2,
+          exp: "The International Date Line established in 1884 passes through the mid-Pacific Ocean.",
+        },
+
+        {
+          q: "The International Date Line roughly follows which longitude?",
+          options: ["0°", "90°", "180°", "360°"],
+          answer: 2,
+          exp: "It roughly follows the 180° longitude north-south line.",
+        },
+
+        {
+          q: "If it is 12 noon at GMT, what is the time at 75°E?",
+          options: ["3:00 p.m.", "5:00 p.m.", "7:00 p.m.", "10:00 a.m."],
+          answer: 1,
+          exp: "75° corresponds to 5 hours. Since the place is east, 5 hours are added to 12 noon, giving 5 p.m.",
+        },
+
+        {
+          q: "If it is 12 noon at GMT, what is the time at 30°W?",
+          options: ["10:00 a.m.", "11:00 a.m.", "2:00 p.m.", "5:00 p.m."],
+          answer: 0,
+          exp: "30° corresponds to 2 hours. Since the place is west, 2 hours are subtracted from 12 noon, giving 10 a.m.",
+        },
+
+        // Standard Time (मषनक समय)
+
+        {
+          q: "The local time of places situated on different meridians is bound to:",
+          options: [
+            "Remain the same",
+            "Differ",
+            "Become zero",
+            "Match Greenwich time",
+          ],
+          answer: 1,
+          exp: "The local time of places which are on different meridians are bound to differ.",
+        },
+
+        {
+          q: "What is the approximate difference in local time between Dwarka in Gujarat and Dibrugarh in Assam?",
+          options: [
+            "1 hour 15 minutes",
+            "1 hour 30 minutes",
+            "1 hour 45 minutes",
+            "2 hours 15 minutes",
+          ],
+          answer: 2,
+          exp: "The PDF gives an approximate difference of 1 hour and 45 minutes.",
+        },
+
+        // Indian Standard Time (भषरतीय मषनक समय)
+
+        {
+          q: "Indian Standard Time is based on which meridian?",
+          options: [
+            "75°E Meridian",
+            "82.5°E Meridian",
+            "90°E Meridian",
+            "68°7'E Meridian",
+          ],
+          answer: 1,
+          exp: "IST is based on the 82.5°E Meridian.",
+        },
+
+        {
+          q: "Indian Standard Time is how many hours ahead of GMT?",
+          options: ["4.5 hours", "5 hours", "5.5 hours", "6.5 hours"],
+          answer: 2,
+          exp: "IST is 5.5 hours ahead of GMT, i.e. GMT+5.5.",
+        },
+
+        {
+          q: "When it is 12 PM in London, what is the time in India?",
+          options: ["4:30 PM", "5:00 PM", "5:30 PM", "6:30 PM"],
+          answer: 2,
+          exp: "The PDF gives 12 PM in London = 5:30 PM in India.",
+        },
+
+        // 11 Russian Time Zones
+
+        {
+          q: "How many time zones are shown for Russia?",
+          options: ["9", "10", "11", "12"],
+          answer: 2,
+          exp: "The page is titled '11 Russian Time Zones'.",
+        },
+
+        // Previous Year Question
+
+        {
+          q: "यदि ग्रीनिच प्रधान, मध्याह्न रेखा पर समय 12:00 दोपहर का है, तो 30° पूर्वी देशांतर रेखा पर अवस्थित स्थान पर समय होगा",
+          options: [
+            "2:00 अपराह्न",
+            "10:00 पूर्वाह्न",
+            "8:00 पूर्वाह्न",
+            "3:00 अपराह्न",
+          ],
+          answer: 0,
+          exp: "30° पूर्वी देशांतर 2 घंटे आगे है, इसलिए 12:00 दोपहर से समय 2:00 अपराह्न होगा.",
+        },
+
+        {
+          q: "The time at Cairo is 2 hours ahead of Greenwich. Hence, it is located at",
+          options: ["30° W", "30° E", "28° E", "28° W"],
+          answer: 1,
+          exp: "A place 2 hours ahead of Greenwich lies 30° east of Greenwich.",
+        },
+
+        {
+          q: "The Standard Meridian of India is",
+          options: [
+            "82° 30′ E Longitude",
+            "82° 50′ E Longitude",
+            "82° E Longitude",
+            "83° 30′ E Longitude",
+          ],
+          answer: 0,
+          exp: "The Standard Meridian of India is 82°30′ E longitude.",
+        },
+
+        {
+          q: "When it is 10:00 a.m. in London in June, the Indian Standard Time will be",
+          options: ["2:30 p.m.", "3:00 p.m.", "3:30 p.m.", "2:00 p.m."],
+          answer: 2,
+          exp: "IST is 5.5 hours ahead of GMT, so 10:00 a.m. becomes 3:30 p.m.",
+        },
+
+        {
+          q: "The basis for determining the standard time of a place is:",
+          options: [
+            "Longitude",
+            "Latitude",
+            "International Date Line",
+            "Prime meridian",
+          ],
+          answer: 0,
+          exp: "The standard time of a place is determined on the basis of longitude.",
+        },
+        {
+          q: "If Ahmedabad is situated on 72°30′ E longitude, what would be the local time of Ahmedabad if it is 8:00 am Indian Standard Time?",
+          options: ["8:40 am", "8:00 am", "7:20 am", "7:00 am"],
+          answer: 2,
+          exp: "72°30′ E is 10° west of the 82°30′ E standard meridian, giving a 40-minute difference; therefore 8:00 am IST becomes 7:20 am.",
+        },
+
+        {
+          q: "Two cities 'N' and 'M' are located at 15° E and 15° W of Greenwich respectively. What will be the difference in time between these two cities?",
+          options: ["30 minutes", "1 hour", "1 hour 30 minutes", "2 hours"],
+          answer: 3,
+          exp: "The difference is 30° of longitude, and 15° corresponds to 1 hour, so the time difference is 2 hours.",
+        },
+
+        {
+          q: "The international date line is drawn -",
+          options: [
+            "From Africa",
+            "From Asia",
+            "Via the Pacific Ocean",
+            "Via Atlantic Ocean",
+          ],
+          answer: 2,
+          exp: "The International Date Line passes through the mid-Pacific Ocean.",
+        },
+
+        {
+          q: "The local time of a place is 6am, while Greenwich mean time (GMT) is 3am. What will be the longitude of that place?",
+          options: [
+            "45° West/45° पश्चिम",
+            "45° East/45° पूर्व",
+            "120° East/120° पूर्व",
+            "120° West/120° पश्चिम",
+          ],
+          answer: 1,
+          exp: "The place is 3 hours ahead of Greenwich, and 1 hour corresponds to 15° longitude, so it is at 45° East.",
+        },
+        // questions
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

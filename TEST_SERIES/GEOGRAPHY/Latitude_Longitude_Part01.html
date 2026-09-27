@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(
+            circle at 50% -10%,
+            rgba(229, 9, 20, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(
+          145deg,
+          rgba(24, 24, 24, 0.98),
+          rgba(12, 12, 12, 0.98)
+        );
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(
+          90deg,
+          rgba(229, 9, 20, 0.2),
+          rgba(229, 9, 20, 0.07)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229, 9, 20, 0.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229, 9, 20, 0.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Latitude
+
+        {
+          q: "In which direction does the Earth move around its axis?",
+          options: [
+            "East to West",
+            "West to East",
+            "North to South",
+            "South to North",
+          ],
+          answer: 1,
+          exp: "The Earth moves around its axis from west to east.",
+        },
+
+        {
+          q: "The axis of the Earth is a:",
+          options: [
+            "Real line",
+            "Imaginary line",
+            "Horizontal circle",
+            "Visible line",
+          ],
+          answer: 1,
+          exp: "The axis around which the Earth moves is an imaginary line.",
+        },
+
+        {
+          q: "What is the Circle of Illumination?",
+          options: [
+            "A circle that divides the globe into two equal parts",
+            "A circle that divides day from night on the globe",
+            "A line joining the two poles",
+            "A line passing through the equator",
+          ],
+          answer: 1,
+          exp: "The Circle of Illumination divides day from night on the globe.",
+        },
+
+        {
+          q: "The circle of illumination is the",
+          options: [
+            "circle that divides the globe into two parts",
+            "circle that divides the day from night on the globe",
+            "position of the Earth on equinox when day and night are equal",
+            "position of the Sun on a particular meridian at 12:00 o'clock in noon",
+          ],
+          answer: 1,
+          exp: "The circle of illumination divides the day from night on the globe.",
+        },
+
+        {
+          q: "The earth moves on its axis",
+          options: [
+            "from West to East",
+            "from North to South",
+            "from East to West",
+            "from South to North",
+          ],
+          answer: 0,
+          exp: "The Earth moves on its axis from West to East.",
+        },
+
+        // equator
+        {
+          q: "What is the Equator?",
+          options: [
+            "An imaginary line that divides the globe into two equal parts",
+            "A line joining the North Pole and South Pole",
+            "A circle that divides day from night",
+            "A line showing the Prime Meridian",
+          ],
+          answer: 0,
+          exp: "The Equator is an imaginary line running on the globe that divides it into two equal parts.",
+        },
+
+        {
+          q: "The northern half of the Earth is called the:",
+          options: [
+            "Southern Hemisphere",
+            "Eastern Hemisphere",
+            "Northern Hemisphere",
+            "Western Hemisphere",
+          ],
+          answer: 2,
+          exp: "The northern half of the Earth is called the Northern Hemisphere.",
+        },
+
+        {
+          q: "The Equator is an important reference point for:",
+          options: [
+            "Measuring time zones",
+            "Locating places on the Earth",
+            "Determining the rotation speed",
+            "Dividing day and night",
+          ],
+          answer: 1,
+          exp: "The Equator is an imaginary circular line and an important reference point to locate places on the Earth.",
+        },
+
+        // latitude
+        {
+          q: "The imaginary parallel and horizontal circular lines on the Earth are called:",
+          options: ["Longitudes", "Latitudes", "Meridians", "Axes"],
+          answer: 1,
+          exp: "The imaginary parallel and horizontal circular lines on the Earth are called latitude.",
+        },
+
+        {
+          q: "How are latitudes measured?",
+          options: ["In kilometres", "In degrees", "In hours", "In directions"],
+          answer: 1,
+          exp: "Latitudes are measured in degrees.",
+        },
+
+        {
+          q: "What is the value of the Equator as a latitude?",
+          options: ["90°", "23½°", "0°", "66½°"],
+          answer: 2,
+          exp: "The Equator represents the zero degree latitude.",
+        },
+
+        {
+          q: "What are the parallel circles extending from the Equator towards the poles called?",
+          options: [
+            "Parallels of latitudes",
+            "Longitudes",
+            "Meridians",
+            "Tropic circles",
+          ],
+          answer: 0,
+          exp: "All parallel circles from the Equator up to the poles are called parallels of latitudes.",
+        },
+
+        {
+          q: "Which latitude is the largest on Earth?",
+          options: ["90°N", "0° Equator", "66½°N", "23½°N"],
+          answer: 1,
+          exp: "The Equator is the largest latitude on Earth.",
+        },
+
+        {
+          q: "What happens to the size of the parallels of latitude as we move away from the Equator?",
+          options: [
+            "It increases",
+            "It remains the same",
+            "It decreases",
+            "It becomes irregular",
+          ],
+          answer: 2,
+          exp: "The size of the parallels of latitude decreases as we move away from the Equator.",
+        },
+
+        {
+          q: "Which latitude marks the North Pole?",
+          options: ["90°S", "66½°N", "90°N", "23½°N"],
+          answer: 2,
+          exp: "90 degrees north latitude marks the North Pole.",
+        },
+
+        {
+          q: "Which latitude marks the South Pole?",
+          options: ["90°S", "90°N", "66½°S", "23½°S"],
+          answer: 0,
+          exp: "90 degrees south latitude marks the South Pole.",
+        },
+
+        {
+          q: "Parallels north of the Equator are called:",
+          options: [
+            "South latitudes",
+            "North latitudes",
+            "Eastern latitudes",
+            "Polar latitudes",
+          ],
+          answer: 1,
+          exp: "All parallels north of the Equator are called north latitudes.",
+        },
+
+        {
+          q: "If parallels of latitude are drawn at an interval of one degree, how many parallels are there in each hemisphere excluding the Equator?",
+          options: ["90", "89", "88", "91"],
+          answer: 1,
+          exp: "There are 89 parallels in the northern and 89 in the southern hemisphere, excluding the Equator.",
+        },
+
+        {
+          q: "What is the total number of latitude lines including the Equator, when drawn at one-degree intervals?",
+          options: ["180", "178", "179", "181"],
+          answer: 2,
+          exp: "The total is 89 South + 89 North + 1 Equator = 179 latitude lines.",
+        },
+
+        {
+          q: "A degree of latitude is approximately how long at the Equator?",
+          options: ["110.6 km", "111.7 km", "109.6 km", "112.7 km"],
+          answer: 0,
+          exp: "At the Equator, one degree of latitude is 110.6 km.",
+        },
+
+        {
+          q: "A degree of latitude is approximately how long at the poles?",
+          options: ["110.6 km", "111.7 km", "112.6 km", "109.7 km"],
+          answer: 1,
+          exp: "At the poles, one degree of latitude is 111.7 km.",
+        },
+
+        {
+          q: "The Tropic of Cancer passes through which latitude?",
+          options: ["23½°S", "66½°N", "23½°N", "66½°S"],
+          answer: 2,
+          exp: "The Tropic of Cancer passes through 23½°N.",
+        },
+
+        {
+          q: "The Tropic of Capricorn passes through which latitude?",
+          options: ["23½°S", "23½°N", "66½°S", "66½°N"],
+          answer: 0,
+          exp: "The Tropic of Capricorn passes through 23½°S.",
+        },
+
+        {
+          q: "The Arctic Circle is located at:",
+          options: ["23½°N", "66½°N", "66½°S", "23½°S"],
+          answer: 1,
+          exp: "The Arctic Circle is at 66½° north of the Equator.",
+        },
+
+        {
+          q: "The Antarctic Circle is located at:",
+          options: ["66½°S", "66½°N", "23½°S", "23½°N"],
+          answer: 0,
+          exp: "The Antarctic Circle is at 66½° south of the Equator.",
+        },
+
+        {
+          q: "The main latitude that passes almost halfway through India is",
+          options: [
+            "the Arctic Circle",
+            "the Equator",
+            "the Tropic of Capricorn",
+            "the Tropic of Cancer",
+          ],
+          answer: 3,
+          exp: "The Tropic of Cancer passes through India.",
+        },
+
+        {
+          q: "Which of the following latitudes is a great circle?",
+          options: ["भूमध्य रेखा", "66°N/66°N", "20°S/20°S", "23°S/23°S"],
+          answer: 0,
+          exp: "The Equator is the great circle among the given latitudes.",
+        },
+        // heat zone
+        {
+          q: "Which zone lies between the Tropic of Cancer and the Tropic of Capricorn?",
+          options: [
+            "Temperate Zone",
+            "Frigid Zone",
+            "Torrid Zone",
+            "Polar Zone",
+          ],
+          answer: 2,
+          exp: "The Torrid Zone lies between the Tropic of Cancer and the Tropic of Capricorn.",
+        },
+
+        {
+          q: "Which heat zone receives the maximum heat?",
+          options: [
+            "Torrid Zone",
+            "Temperate Zone",
+            "Frigid Zone",
+            "Polar Zone",
+          ],
+          answer: 0,
+          exp: "The area between the Tropic of Cancer and Tropic of Capricorn receives maximum heat.",
+        },
+
+        {
+          q: "In which zone is the mid-day sun exactly overhead at least once a year on all its latitudes?",
+          options: [
+            "Frigid Zone",
+            "Temperate Zone",
+            "Torrid Zone",
+            "Polar Zone",
+          ],
+          answer: 2,
+          exp: "In the Torrid Zone, the mid-day sun is exactly overhead at least once a year on all latitudes between the two tropics.",
+        },
+
+        {
+          q: "The Northern Hemisphere temperate zone is bounded by:",
+          options: [
+            "Tropic of Cancer and Arctic Circle",
+            "Tropic of Capricorn and Antarctic Circle",
+            "Arctic Circle and North Pole",
+            "Equator and Tropic of Cancer",
+          ],
+          answer: 0,
+          exp: "In the Northern Hemisphere, the Temperate Zone lies between the Tropic of Cancer and the Arctic Circle.",
+        },
+
+        {
+          q: "What type of temperature is found throughout the year in the Temperate Zones?",
+          options: ["Very high", "Very low", "Moderate", "Extremely variable"],
+          answer: 2,
+          exp: "The Temperate Zones have moderate temperature throughout the year.",
+        },
+
+        {
+          q: "Beyond the Tropic of Cancer and Tropic of Capricorn, the mid-day sun:",
+          options: [
+            "Always shines overhead",
+            "Never shines overhead",
+            "Shines overhead twice a year",
+            "Shines overhead every month",
+          ],
+          answer: 1,
+          exp: "The mid-day sun never shines overhead on any latitude beyond the Tropic of Cancer and Tropic of Capricorn.",
+        },
+
+        {
+          q: "What happens to the angle of the Sun's rays towards the poles?",
+          options: [
+            "It increases",
+            "It remains constant",
+            "It decreases",
+            "It becomes vertical",
+          ],
+          answer: 2,
+          exp: "The angle of the Sun's rays goes on decreasing towards the poles.",
+        },
+
+        {
+          q: "Which areas are included in the Frigid Zone?",
+          options: [
+            "Between the Equator and Tropic of Cancer",
+            "Between Tropic of Cancer and Arctic Circle",
+            "Between Arctic Circle and North Pole, and Antarctic Circle and South Pole",
+            "Between Tropic of Capricorn and Antarctic Circle only",
+          ],
+          answer: 2,
+          exp: "The Frigid Zones lie between the Arctic Circle and North Pole in the north and between the Antarctic Circle and South Pole in the south.",
+        },
+
+        {
+          q: "Why do the Frigid Zones receive less heat?",
+          options: [
+            "The Sun remains overhead throughout the year",
+            "The Sun does not rise much above the horizon and its rays are slanting",
+            "The Equator is very near these regions",
+            "The Tropics receive all the sunlight",
+          ],
+          answer: 1,
+          exp: "The Sun does not rise much above the horizon in the Frigid Zones, so its rays are slanting and provide less heat.",
+        },
+
+        {
+          q: "Which matching of heat zones and temperature is correct?",
+          options: [
+            "Torrid—Very low; Temperate—Very high; Frigid—Moderate",
+            "Torrid—Very high; Temperate—Moderate; Frigid—Very low",
+            "Torrid—Moderate; Temperate—Very low; Frigid—Very high",
+            "Torrid—Very low; Temperate—Moderate; Frigid—Very high",
+          ],
+          answer: 1,
+          exp: "Torrid Zone has very high temperature, Temperate Zone has moderate temperature, and Frigid Zone has very low temperature.",
+        },
+        // Longitude (देशषांतर)
+
+        {
+          q: "Lines of longitude extend from:",
+          options: [
+            "Equator to Equator",
+            "Pole to pole",
+            "East to West only",
+            "Tropic of Cancer to Tropic of Capricorn",
+          ],
+          answer: 1,
+          exp: "Lines of longitude are imaginary lines extending from pole to pole.",
+        },
+
+        {
+          q: "What is the shape of the lines of longitude?",
+          options: [
+            "Complete circles",
+            "Semi-circles",
+            "Horizontal circles",
+            "Parallel circles",
+          ],
+          answer: 1,
+          exp: "Longitudes are semi-circles.",
+        },
+
+        {
+          q: "What happens to the distance between longitudes as they move towards the poles?",
+          options: [
+            "It increases steadily",
+            "It remains constant",
+            "It decreases steadily",
+            "It becomes maximum",
+          ],
+          answer: 2,
+          exp: "The distance between longitudes decreases steadily polewards.",
+        },
+
+        {
+          q: "At the poles, the distance between all longitudes becomes:",
+          options: ["111.3 km", "55.6 km", "0 km", "90 km"],
+          answer: 2,
+          exp: "The distance between the longitudes becomes zero at the poles, where all the meridians meet.",
+        },
+
+        {
+          q: "Where is the distance between two longitudes maximum?",
+          options: [
+            "At the poles",
+            "At the Equator",
+            "At 45° latitude",
+            "At the Tropic of Cancer",
+          ],
+          answer: 1,
+          exp: "The distance between two longitudes is maximum at the Equator.",
+        },
+
+        {
+          q: "What is the approximate maximum distance between two longitudes at the Equator?",
+          options: ["110.6 km", "111.3 km", "111.7 km", "0 km"],
+          answer: 1,
+          exp: "The distance between two longitudes is maximum at the Equator, where it is 111.3 km.",
+        },
+        // Longitude: Prime Meridian (देशषांतर: प्रर्षन मध्यषह्न रेखा)
+
+        {
+          q: "The Prime Meridian is used as the reference line to define:",
+          options: [
+            "North/South positions",
+            "East/West positions",
+            "Latitude of a place",
+            "Distance from the Equator",
+          ],
+          answer: 1,
+          exp: "The Prime Meridian is chosen as the reference line to define the relative East/West positions of a point on the globe.",
+        },
+
+        {
+          q: "At what longitude is the Prime Meridian located?",
+          options: ["90°", "180°", "0°", "23½°"],
+          answer: 2,
+          exp: "The Prime Meridian is at 0° longitude.",
+        },
+
+        {
+          q: "The Prime Meridian is also known as the Greenwich line because it passes through:",
+          options: [
+            "Paris, France",
+            "Greenwich, London",
+            "New York, USA",
+            "Madrid, Spain",
+          ],
+          answer: 1,
+          exp: "It is known as the Greenwich line because it passes through Greenwich in London.",
+        },
+
+        {
+          q: "The Prime Meridian and the 180° meridian divide the Earth into:",
+          options: [
+            "Northern and Southern Hemispheres",
+            "Eastern and Western Hemispheres",
+            "Tropical and Polar Zones",
+            "Two equal latitude zones",
+          ],
+          answer: 1,
+          exp: "The Prime Meridian and 180° meridian divide the Earth into Eastern and Western Hemispheres.",
+        },
+        // Longitude: Prime Meridian (देशषांतर: प्रर्षन मध्यषह्न रेखा)
+
+        {
+          q: "How many longitudes are there on each side of the Prime Meridian?",
+          options: ["90°", "180°", "360°", "120°"],
+          answer: 1,
+          exp: "There are 180° longitudes on both the East and West sides of the Prime Meridian.",
+        },
+
+        {
+          q: "What is the total number of longitude lines?",
+          options: ["180", "270", "360", "720"],
+          answer: 2,
+          exp: "There are 180° longitudes on each side, making a total of 360° longitudes.",
+        },
+
+        {
+          q: "What happens to the size of longitude as we move from the Eastern Hemisphere to the Western Hemisphere?",
+          options: [
+            "It increases",
+            "It decreases",
+            "It remains the same",
+            "It becomes zero",
+          ],
+          answer: 2,
+          exp: "The size of the longitude remains the same as we move from the Eastern Hemisphere to the Western Hemisphere.",
+        },
+
+        {
+          q: "The 180° East and 180° West meridians are located on:",
+          options: [
+            "Different lines",
+            "The Equator",
+            "The same line",
+            "The Prime Meridian",
+          ],
+          answer: 2,
+          exp: "The 180° East and 180° West meridians are on the same line.",
+        },
+
+        {
+          q: "The world's standard time is known from the:",
+          options: [
+            "Prime Meridian Time Line",
+            "Greenwich Mean TimeLine",
+            "Equator Time Line",
+            "International Date Time Line",
+          ],
+          answer: 1,
+          exp: "The world's standard time is known from the Greenwich Mean TimeLine.",
+        },
+        // Tropic of Cancer
+
+        {
+          q: "What is the approximate total length of the Tropic of Cancer in India?",
+          options: ["2678 km", "2687 km", "2768 km", "2876 km"],
+          answer: 0,
+          exp: "The total length of the Tropic of Cancer in India is about 2678 km.",
+        },
+
+        {
+          q: "In which state is the maximum length of the Tropic of Cancer found in India?",
+          options: ["Rajasthan", "Madhya Pradesh", "Gujarat", "West Bengal"],
+          answer: 1,
+          exp: "The maximum length of the Tropic of Cancer is in Madhya Pradesh.",
+        },
+
+        {
+          q: "In which state is the shortest length of the Tropic of Cancer found in India?",
+          options: ["Rajasthan", "Madhya Pradesh", "Jharkhand", "Gujarat"],
+          answer: 0,
+          exp: "The shortest length of the Tropic of Cancer is in Rajasthan.",
+        },
+        // India
+
+        {
+          q: "India is located entirely in which hemisphere?",
+          options: [
+            "Southern Hemisphere",
+            "Northern Hemisphere",
+            "Eastern Hemisphere",
+            "Western Hemisphere",
+          ],
+          answer: 1,
+          exp: "India is lying entirely in the Northern Hemisphere.",
+        },
+
+        {
+          q: "The mainland of India extends approximately between which latitudes?",
+          options: [
+            "8°4'N and 37°6'N",
+            "8°4'S and 37°6'S",
+            "6°4'N and 35°6'N",
+            "10°4'N and 39°6'N",
+          ],
+          answer: 0,
+          exp: "The main land extends between latitudes 8°4'N and 37°6'N.",
+        },
+
+        {
+          q: "The mainland of India extends approximately between which longitudes?",
+          options: [
+            "68°7'W and 97°25'W",
+            "68°7'E and 97°25'E",
+            "67°7'E and 96°25'E",
+            "69°7'E and 98°25'E",
+          ],
+          answer: 1,
+          exp: "The main land extends between longitudes 68°7'E and 97°25'E.",
+        },
+
+        {
+          q: "Identify from the following states of India through which the Tropic of Cancer passes and arrange them from east to west:  1.Gujrat 2.west bengal 3. uttar pradesh 4.Jharkhand 5.Madhya Pradesh 6.Bihar 7,Chattisgarh",
+          options: ["2-5-7-4-1", "2-4-7-5-1", "3-2-6-7-5", "3-7-4-6-2"],
+          answer: 0,
+          exp: "The east-to-west order shown by the map is West Bengal, Madhya Pradesh, Chhattisgarh, Jharkhand and Gujarat.",
+        },
+
+        // questions
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>
