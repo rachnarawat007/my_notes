@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(
+            circle at 50% -10%,
+            rgba(229, 9, 20, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(
+          145deg,
+          rgba(24, 24, 24, 0.98),
+          rgba(12, 12, 12, 0.98)
+        );
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(
+          90deg,
+          rgba(229, 9, 20, 0.2),
+          rgba(229, 9, 20, 0.07)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229, 9, 20, 0.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229, 9, 20, 0.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Boolean Algebra lec 03
+        // questions
+        // Boolean Algebra in Digital Electronics
+
+        {
+          q: "According to De-Morgan’s theorem : NAND = ?",
+          options: [
+            "Bubbled AND",
+            "Bubbled NOR",
+            "Bubbled XOR",
+            "Bubbled OR",
+            "All of these",
+          ],
+          answer: 3,
+          exp: "NAND is equivalent to Bubbled OR.",
+        },
+
+        {
+          q: "According to De-Morgan’s theorem : NOR = ?",
+          options: [
+            "Bubbled AND",
+            "Bubbled NOR",
+            "Bubbled XOR",
+            "Bubbled OR",
+            "None of these",
+          ],
+          answer: 0,
+          exp: "NOR is equivalent to Bubbled AND.",
+        },
+
+        {
+          q: "Which of the following scientist represented De-Morgans theorem?",
+          options: [
+            "Augustus De-Morgan",
+            "Charles De-Morgan",
+            "Richard De-Morgan",
+            "All of these",
+            "None of the above",
+          ],
+          answer: 0,
+          exp: "Augustus De-Morgan represented the theorem.",
+        },
+
+        {
+          q: "De-morgans theorem solves _____ expressions?",
+          options: [
+            "Boolean algebra",
+            "Logic gates",
+            "Arithmetic",
+            "Both 1 and 2",
+            "All of these",
+          ],
+          answer: 3,
+          exp: "De-Morgan's theorem solves Boolean algebra and logic gate expressions.",
+        },
+
+        {
+          q: "De-morgans theorem is applicable for _____ types of components?",
+          options: [
+            "High circuit design",
+            "Computer programming",
+            "Networking",
+            "Both 1 and 2",
+            "All of these",
+          ],
+          answer: 3,
+          exp: "It is applicable to high circuit design and computer programming.",
+        },
+        // Boolean Algebra in Digital Electronics
+
+        {
+          q: "Which of the following logical operation of does a De-Morgans theorem performs?",
+          options: ["AND", "OR", "NOT", "All the above", "None of these"],
+          answer: 3,
+          exp: "De-Morgan's theorem performs AND, OR and NOT logical operations.",
+        },
+
+        {
+          q: "Which of the following is the De-Morgans formula for (X.Y)’?",
+          options: ["X’ + Y’", "X’ − Y’", "X’ * Y’", "X’/Y’", "None of these"],
+          answer: 0,
+          exp: "The De-Morgan formula for (X.Y)’ is X’ + Y’.",
+        },
+
+        {
+          q: "Which of the following DeMorgans theorem states when multiple variables are AND and negated they are equivalent to OR of the complements if individual variables.?",
+          options: [
+            "First theorem",
+            "Second theorem",
+            "Third theorem",
+            "Fourth theorem",
+            "None of these",
+          ],
+          answer: 0,
+          exp: "This statement corresponds to the First theorem.",
+        },
+
+        {
+          q: "Which of the following DeMorgans theorem states when multiple variables are Or’ed and negated they are equivalent to AND of the complements if individual variables.?",
+          options: [
+            "First theorem",
+            "Second theorem",
+            "Third theorem",
+            "Fourth theorem",
+            "None of these",
+          ],
+          answer: 1,
+          exp: "This statement corresponds to the Second theorem.",
+        },
+
+        {
+          q: "_____is used to implement fundamental gate functions like the NAND gate and NOR gate?",
+          options: [
+            "Logic Gates",
+            "Truth Table",
+            "Universal Gates",
+            "De Morgan's theorem",
+            "None of these",
+          ],
+          answer: 3,
+          exp: "De Morgan's theorem is the marked answer for implementing these fundamental gate functions.",
+        },
+        // Boolean Algebra in Digital Electronics
+
+        {
+          q: "De Morgans law states?",
+          options: [
+            "X'+Y' = X'.Y'",
+            "X'.Y' = X'+Y'",
+            "BOTH",
+            "1",
+            "None of the above",
+          ],
+          answer: 2,
+          exp: "FOLLOW NOTES.",
+        },
+        {
+          q: "According to DeMorgan's theorem:?",
+          options: [
+            "a NAND gate is equivalent to negative-AND (inverted AND) gate",
+            "a NOR gate is equivalent to negative-OR (inverted OR) gate",
+            "a NAND gate is equivalent to NOR gate",
+            "a NAND gate is equivalent to negative-OR (inverted OR) gate",
+            "None of the above",
+          ],
+          answer: 3,
+          exp: "FOLLOW NOTES.",
+        },
+        {
+          q: "Applying DeMorgan's theorem to the expression (W' + X' + Y')Z', we get?",
+          options: [
+            "W'X'Y'Z'",
+            "W'X'Y' Z",
+            "WXYZ'",
+            "W'X'Y'+Z'",
+            "None of the above",
+          ],
+          answer: 2,
+          exp: "FOLLOW NOTES.",
+        },
+        //----------------------------------------------------------------------------------------
+
+        {
+          q: "F(X,Y,Z,M) = XYZM. The degree of the function is ________?",
+          options: ["2", "5", "4", "1", "More than one of the above"],
+          answer: 2,
+          exp: "The degree of a function is equal to the number of variables. Here there are four variables.",
+        },
+
+        {
+          q: "A ________ value is represented by a Boolean expression.?",
+          options: [
+            "Positive",
+            "Recursive",
+            "Negative",
+            "Boolean",
+            "More than one of the above",
+          ],
+          answer: 3,
+          exp: "A Boolean expression represents a Boolean value.",
+        },
+
+        {
+          q: "The involution of A is equal to _________?",
+          options: ["A", "A’", "1", "0", "All of these"],
+          answer: 0,
+          exp: "The involution law gives A’’ = A.",
+        },
+
+        {
+          q: "Complement of the expression A’B + CD’ is _________?",
+          options: [
+            "(A’ + B)(C’ + D)",
+            "(A + B’)(C’ + D)",
+            "(A’ + B)(C’ + D)",
+            "(A + B’)(C + D’)",
+            "None of these",
+          ],
+          answer: 1,
+          exp: "The complement is obtained by applying De Morgan's theorem to the expression.",
+        },
+
+        {
+          q: "A Boolean function may be transformed into.?",
+          options: [
+            "logical diagram",
+            "map",
+            "logical graph",
+            "Matrix",
+            "All of these",
+          ],
+          answer: 0,
+          exp: "A Boolean function may be transformed into a logical diagram.",
+        },
+        // Boolean Algebra in Digital Electronics
+
+        {
+          q: "Q.16. In Boolean algebra 0 is a.?",
+          options: [
+            "Commutative property",
+            "Additive identity",
+            "Associative identity",
+            "Identity element",
+            "More than one of the above",
+          ],
+          answer: 1,
+          exp: "0 is the additive identity in Boolean algebra.",
+        },
+
+        {
+          q: "Q.17. A + B = B + A defines which law in Boolean Algebra.?",
+          options: [
+            "Commutative Law",
+            "Associative Law",
+            "Distributive Law",
+            "Inversion Law",
+            "Complement Law",
+          ],
+          answer: 0,
+          exp: "A + B = B + A represents the Commutative Law.",
+        },
+
+        {
+          q: "Q.18. A + (B+C) = (A+B) + C defines which law in Boolean Algebra.?",
+          options: [
+            "Commutative Law",
+            "Associative Law",
+            "Distributive Law",
+            "Inversion Law",
+            "Complement Law",
+          ],
+          answer: 1,
+          exp: "A + (B+C) = (A+B) + C represents the Associative Law.",
+        },
+
+        {
+          q: "Q.19. A.(B+C) = A.B + A.C defines which law in Boolean Algebra.?",
+          options: [
+            "Commutative Law",
+            "Associative Law",
+            "Distributive Law",
+            "Inversion Law",
+            "Complement Law",
+          ],
+          answer: 2,
+          exp: "A.(B+C) = A.B + A.C represents the Distributive Law.",
+        },
+
+        {
+          q: "Q.20. A’’= A defines which law in Boolean Algebra.?",
+          options: [
+            "Commutative Law",
+            "Associative Law",
+            "Distributive Law",
+            "Inversion Law",
+            "Complement Law",
+          ],
+          answer: 3,
+          exp: "A’’ = A represents the Inversion Law.",
+        },
+        {
+          q: "Q.21. A + A’ = 1 & A . A’ = 0 defines which law in Boolean Algebra.?",
+          options: [
+            "Commutative Law",
+            "Associative Law",
+            "Distributive Law",
+            "Inversion Law",
+            "Complement Law",
+          ],
+          answer: 4,
+          exp: "A + A’ = 1 and A . A’ = 0 represent the Complement Law.",
+        },
+
+        {
+          q: "Q.22. A + 0 = A, A . 1 = A defines which law in Boolean Algebra.?",
+          options: [
+            "Identity Law",
+            "Annulment Law",
+            "Idempotent Law",
+            "Absorbtion Law",
+            "De Morgan’s Law",
+          ],
+          answer: 0,
+          exp: "A + 0 = A and A . 1 = A represent the Identity Law.",
+        },
+
+        {
+          q: "Q.23. A . 0 = 0, A + 1 = 1 defines which law in Boolean Algebra.?",
+          options: [
+            "Identity Law",
+            "Annulment Law",
+            "Idempotent Law",
+            "Absorbtion Law",
+            "De Morgan’s Law",
+          ],
+          answer: 1,
+          exp: "A . 0 = 0 and A + 1 = 1 represent the Annulment Law.",
+        },
+
+        {
+          q: "Q.24. A + A = A, A . A = A defines which law in Boolean Algebra.?",
+          options: [
+            "Identity Law",
+            "Annulment Law",
+            "Idempotent Law",
+            "Absorbtion Law",
+            "De Morgan’s Law",
+          ],
+          answer: 2,
+          exp: "A + A = A and A . A = A represent the Idempotent Law.",
+        },
+
+        {
+          q: "Q.25. A + A.B = A defines which law in Boolean Algebra.?",
+          options: [
+            "Identity Law",
+            "Annulment Law",
+            "Idempotent Law",
+            "Absorbtion Law",
+            "De Morgan’s Law",
+          ],
+          answer: 3,
+          exp: "A + A.B = A represents the Absorption Law.",
+        },
+        // Boolean Algebra in Digital Electronics
+
+        {
+          q: "Q.26. (A.B)’ = A’+B’ & (A+B)’ = A’.B’ defines which law in Boolean Algebra.?",
+          options: [
+            "Identity Law",
+            "Annulment Law",
+            "Idempotent Law",
+            "Absorbtion Law",
+            "De Morgan’s Law",
+          ],
+          answer: 4,
+          exp: "(A.B)’ = A’+B’ and (A+B)’ = A’.B’ represent De Morgan’s Law.",
+        },
+
+        // Duality Principle in Boolean Algebra
+
+        {
+          q: "In the Duality Principle of Boolean Algebra, each AND operation is changed to:",
+          options: [
+            "NOT operation",
+            "OR operation",
+            "XOR operation",
+            "NAND operation",
+          ],
+          answer: 1,
+          exp: "The duality principle changes AND operations to OR operations.",
+        },
+
+        {
+          q: "In the Duality Principle of Boolean Algebra, each OR operation is changed to:",
+          options: [
+            "AND operation",
+            "NOT operation",
+            "NOR operation",
+            "XOR operation",
+          ],
+          answer: 0,
+          exp: "The duality principle changes OR operations to AND operations.",
+        },
+
+        {
+          q: "In the Duality Principle of Boolean Algebra, 0 is replaced by:",
+          options: ["0", "1", "A", "A’"],
+          answer: 1,
+          exp: "The duality principle replaces 0 with 1.",
+        },
+
+        {
+          q: "In the Duality Principle of Boolean Algebra, 1 is replaced by:",
+          options: ["A", "A’", "0", "1"],
+          answer: 2,
+          exp: "The duality principle replaces 1 with 0.",
+        },
+
+        {
+          q: "What is the duality of the expression AB + C + BCA = 0?",
+          options: [
+            "(A + B).C.(B + C + A) = 1",
+            "(A.B) + C + B.C.A = 1",
+            "(A + B) + C + (B.C.A) = 0",
+            "(A.B).(B + C + A) = 1",
+          ],
+          answer: 0,
+          exp: "The dual expression changes AND to OR, OR to AND, 0 to 1, giving (A + B).C.(B + C + A) = 1.",
+        },
+
+        {
+          q: "What is the duality of the expression A.B = B.A?",
+          options: [
+            "A.B = B.A",
+            "A + B = B + A",
+            "A + B = A.B",
+            "A’ + B’ = B’ + A’",
+          ],
+          answer: 1,
+          exp: "Changing the AND operation to OR gives A + B = B + A.",
+        },
+        {
+          q: "Dual of a Boolean theorem is obtained by?",
+          options: [
+            "Interchanging all zero and ones only",
+            "Changing all zero to one only",
+            "Changing all ones to zero",
+            "Interchanging all zero and ones and . to +",
+          ],
+          answer: 3,
+          exp: "prefer notes.",
+        },
+        // Duality Principle in Boolean Algebra
+
+        {
+          q: "What is the Duality for this Expression A.A = 0?",
+          options: ["A + A = 0", "A + A = 1", "A.A = 1", "A + A’ = 1"],
+          answer: 1,
+          exp: "The dual is obtained by changing AND to OR and 0 to 1, giving A + A = 1.",
+        },
+
+        // Canonical Form
+
+        {
+          q: "Which of the following represents the canonical form of F = AB + BC + AC?",
+          options: [
+            "F = AB + BC + AC",
+            "F = ABC + A’BC + AB’C’",
+            "F = A + B + C",
+            "F = A’B’C + ABC",
+          ],
+          answer: 1,
+          exp: "The expression is given in canonical form as F = ABC + A’BC + AB’C’.",
+        },
+
+        {
+          q: "Canonical form of a Boolean expression is mainly based on:",
+          options: [
+            "AND and NOT",
+            "SOP and POS",
+            "NOR and NAND",
+            "XOR and XNOR",
+          ],
+          answer: 1,
+          exp: "Canonical form is mainly based on SOP (Sum of Product) and POS (Product of Sum).",
+        },
+
+        // Sum of Product (SOP)
+
+        {
+          q: "What does SOP stand for in Boolean Algebra?",
+          options: [
+            "Sum of Product",
+            "System of Product",
+            "Sum of Process",
+            "Series of Product",
+          ],
+          answer: 0,
+          exp: "SOP stands for Sum of Product.",
+        },
+
+        // Product of Sum (POS)
+
+        {
+          q: "What does POS stand for in Boolean Algebra?",
+          options: [
+            "Product of Sum",
+            "Product of Series",
+            "Power of Sum",
+            "Process of Sum",
+          ],
+          answer: 0,
+          exp: "POS stands for Product of Sum.",
+        },
+
+        // Canonical Form
+
+        {
+          q: "SOP is also known as:",
+          options: [
+            "Product of Maxterm",
+            "Sum of Minterm",
+            "Product of Minterm",
+            "Sum of Maxterm",
+          ],
+          answer: 1,
+          exp: "SOP is also called Sum of Minterm.",
+        },
+
+        {
+          q: "POS is also known as:",
+          options: [
+            "Sum of Minterm",
+            "Product of Minterm",
+            "Product of Maxterm",
+            "Sum of Maxterm",
+          ],
+          answer: 2,
+          exp: "POS is also called Product of Maxterm.",
+        },
+
+        // Minterm & Maxterm
+
+        {
+          q: "Which type of terms are represented by Minterm?",
+          options: ["AND terms", "OR terms", "NOT terms", "XOR terms"],
+          answer: 0,
+          exp: "Minterm represents AND terms.",
+        },
+
+        {
+          q: "Which type of terms are represented by Maxterm?",
+          options: ["AND terms", "OR terms", "NAND terms", "NOR terms"],
+          answer: 1,
+          exp: "Maxterm represents OR terms.",
+        },
+
+        {
+          q: "In the given convention, a Minterm has the value:",
+          options: ["0", "1", "Both 0 and 1", "Neither 0 nor 1"],
+          answer: 1,
+          exp: "A Minterm is represented with a value of 1.",
+        },
+
+        {
+          q: "In the given convention, a Maxterm has the value:",
+          options: ["0", "1", "Both 0 and 1", "Neither 0 nor 1"],
+          answer: 1,
+          exp: "A Maxterm is represented with a value of 1.",
+        },
+
+        {
+          q: "For a Minterm, the variable A has which value and A’ has which value?",
+          options: [
+            "A = 0, A’ = 1",
+            "A = 1, A’ = 0",
+            "A = 1, A’ = 1",
+            "A = 0, A’ = 0",
+          ],
+          answer: 1,
+          exp: "The given convention states Minterm = (A = 1) and (A’ = 0).",
+        },
+
+        {
+          q: "For a Maxterm, the variable A has which value and A’ has which value?",
+          options: [
+            "A = 1, A’ = 0",
+            "A = 0, A’ = 1",
+            "A = 1, A’ = 1",
+            "A = 0, A’ = 0",
+          ],
+          answer: 1,
+          exp: "The given convention states Maxterm = (A = 0) and (A’ = 1).",
+        },
+        // POS to MAX TERM
+
+        {
+          q: "For F(POS) = (A+B+C)(A+B+C’)(A+B’+C’)(A’+B+C), the corresponding maxterms are:",
+          options: ["0, 1, 3, 4", "0, 2, 3, 4", "1, 2, 4, 7", "0, 1, 4, 7"],
+          answer: 0,
+          exp: "The combinations are 000, 001, 011 and 100, corresponding to maxterms 0, 1, 3 and 4.",
+        },
+
+        // POS to MAX TERM
+
+        {
+          q: "For F(POS) = (A+B)(A’+B), the corresponding maxterms are:",
+          options: ["0, 1", "0, 2", "1, 2", "2, 3"],
+          answer: 1,
+          exp: "The combinations are 00 and 10, corresponding to maxterms 0 and 2.",
+        },
+
+        // SOP to MIN TERM
+
+        {
+          q: "For F(SOP) = A’B + AB’ + AB, the corresponding minterms are:",
+          options: ["0, 1, 2", "1, 2, 3", "0, 2, 3", "1, 3, 4"],
+          answer: 1,
+          exp: "The combinations are 01, 10 and 11, corresponding to minterms 1, 2 and 3.",
+        },
+
+        // SOP to MIN TERM
+
+        {
+          q: "For F(SOP) = A’B + A’B’ + AB’, the corresponding minterms are:",
+          options: ["0, 1, 2", "1, 2, 3", "0, 2, 3", "1, 0, 2"],
+          answer: 3,
+          exp: "The combinations are 01, 00 and 10, corresponding to minterms 1, 0 and 2.",
+        },
+
+        // Minterm and Maxterm
+
+        {
+          q: "Minterm Σm(1,3,5,6) equals to which maxterm expression?",
+          options: ["ΠM(0,3,7)", "ΠM(0,2,4,7)", "ΠM(0,3,4,7)", "None of these"],
+          answer: 1,
+          exp: "The corresponding maxterm indices are 0, 2, 4 and 7.",
+        },
+
+        {
+          q: "A boolean function is given as F(x, y, z) = Σ(1, 3, 6, 7). What is its equivalent canonical form?",
+          options: [
+            "F(x, y, z) = Π(0, 2, 3, 5) product of max terms",
+            "F(x, y, z) = Π(0, 2, 4, 5) product of max terms",
+            "F(x, y, z) = Π(0, 2, 4, 5) product of min terms",
+            "F(x, y, z) = Π(0, 2, 4, 5) sum of max terms",
+          ],
+          answer: 1,
+          exp: "The zero positions are 0, 2, 4 and 5, so the equivalent canonical POS form uses those maxterms.",
+        },
+        // Minterm & Maxterm
+
+        {
+          q: "Minterms corresponding to decimal number 15 is",
+          options: ["ABCD", "A̅B̅C̅D̅", "A+B+C+D", "A̅+B̅+C̅+D̅"],
+          answer: 0,
+          exp: "Decimal number 15 corresponds to binary 1111, so the minterm is ABCD.",
+        },
+
+        {
+          q: "For a Boolean expression with 3 variables (a, b, c), how many minterms are possible?",
+          options: ["2", "4", "8", "16"],
+          answer: 2,
+          exp: "The number of minterms is 2ⁿ. For 3 variables, 2³ = 8.",
+        },
+
+        {
+          q: "The truth table for the SOP expression AB + B̅C has how many input combinations?",
+          options: ["1", "2", "4", "8"],
+          answer: 3,
+          exp: "The expression contains three variables, so the number of input combinations is 2³ = 8.",
+        },
+        // questions
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

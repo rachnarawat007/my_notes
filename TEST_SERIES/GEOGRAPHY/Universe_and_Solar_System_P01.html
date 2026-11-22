@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(
+            circle at 50% -10%,
+            rgba(229, 9, 20, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(
+          145deg,
+          rgba(24, 24, 24, 0.98),
+          rgba(12, 12, 12, 0.98)
+        );
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(
+          90deg,
+          rgba(229, 9, 20, 0.2),
+          rgba(229, 9, 20, 0.07)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229, 9, 20, 0.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229, 9, 20, 0.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // UNIVERSE AND SOLAR SYSTEM
+        // Introduction
+
+        {
+          q: "The sun, the moon and all those objects shining in the night sky are called:",
+          options: [
+            "Celestial bodies",
+            "Constellations",
+            "Planets",
+            "Galaxies",
+          ],
+          answer: 0,
+          exp: "The sun, moon and all objects shining in the night sky are called celestial bodies.",
+        },
+
+        {
+          q: "Which celestial bodies have their own heat and light?",
+          options: ["Planets", "Stars", "Satellites", "Asteroids"],
+          answer: 1,
+          exp: "The PDF describes stars as celestial bodies that have their own heat and light.",
+        },
+
+        {
+          q: "Which of the following is a star?",
+          options: ["Moon", "Earth", "Sun", "Mars"],
+          answer: 2,
+          exp: "The Sun is identified as a star.",
+        },
+
+        {
+          q: "Celestial bodies that do not have their own heat and light and are illuminated by stars are called:",
+          options: ["Stars", "Planets", "Galaxies", "Constellations"],
+          answer: 1,
+          exp: "Celestial bodies without their own heat and light that are lit by stars are called planets.",
+        },
+        // Cosmology
+
+        {
+          q: "The study of the universe is known as:",
+          options: ["Cosmology", "Astronomy", "Geology", "Astrology"],
+          answer: 0,
+          exp: "The study of the universe is known as Cosmology.",
+        },
+
+        {
+          q: "A person who studies the universe is known as:",
+          options: ["Astronaut", "Cosmonaut", "Geologist", "Astrologer"],
+          answer: 1,
+          exp: "The PDF states that a person who studies the universe is known as a Cosmonaut.",
+        },
+        // GALAXY
+
+        {
+          q: "What is a galaxy?",
+          options: [
+            "A system of billions of stars, clouds of dust and gases",
+            "A group of planets revolving around the Sun",
+            "A collection of only satellites",
+            "A group of asteroids and meteoroids",
+          ],
+          answer: 0,
+          exp: "A galaxy is a system of billions of stars, clouds of dust and gases.",
+        },
+
+        {
+          q: "Which galaxy is the galaxy of the Earth?",
+          options: [
+            "Andromeda Galaxy",
+            "Milky Way",
+            "Whirlpool Galaxy",
+            "Comet Galaxy",
+          ],
+          answer: 1,
+          exp: "The Milky Way (Akash Ganga) is the galaxy of the Earth.",
+        },
+
+        {
+          q: "The number of galaxies together constitutes the:",
+          options: ["Solar System", "Milky Way", "Universe", "Constellation"],
+          answer: 2,
+          exp: "The PDF states that the number of galaxies together constitutes the Universe.",
+        },
+
+        {
+          q: "Approximately how many stars does the Milky Way consist of?",
+          options: [
+            "10,000 million",
+            "50,000 million",
+            "1,00,000 million",
+            "5,00,000 million",
+          ],
+          answer: 2,
+          exp: "The Milky Way consists of around 1,00,000 million stars.",
+        },
+        // Nearest Star (Except Sun)
+
+        {
+          q: "Which is the nearest star to Earth except the Sun?",
+          options: [
+            "Alpha Centauri A",
+            "Proxima Centauri",
+            "Sirius",
+            "Polaris",
+          ],
+          answer: 1,
+          exp: "Proxima Centauri is the nearest star except the Sun, at 4.2 light years.",
+        },
+
+        {
+          q: "Alpha Centauri A and B are approximately how far from Earth?",
+          options: [
+            "3.2 light years",
+            "4.2 light years",
+            "4.3 light years",
+            "5.3 light years",
+          ],
+          answer: 2,
+          exp: "The PDF gives the distance of Alpha Centauri A and B as 4.3 light years.",
+        },
+        // Brightest Star - Sirius
+
+        {
+          q: "“Sirius”, the brightest star outside solar system, is also called…………",
+          options: ["Cat star", "Dog star", "Fox star", "Lion star"],
+          answer: 1,
+          exp: "Sirius is also called the Dog star.",
+        },
+
+        // Stars (तारे)
+
+        {
+          q: "The color of a star indicates its:",
+          options: ["Distance", "Temperature", "Size", "Luminosity"],
+          answer: 1,
+          exp: "The color of a star is an indication of its temperature.",
+        },
+
+        // Stars (तारे)
+
+        {
+          q: "Which of the following is indicated by the colour of a star?",
+          options: ["Weight", "Distance", "Temperature", "Size"],
+          answer: 2,
+          exp: "The question in the PDF marks Temperature as the correct answer.",
+        },
+
+        // Stars (तारे)
+
+        {
+          q: "A constellation is:",
+          options: [
+            "A single very bright star",
+            "A certain pattern formed by a group of stars",
+            "A group of planets",
+            "A group of galaxies",
+          ],
+          answer: 1,
+          exp: "A constellation is a certain pattern formed by different groups of stars.",
+        },
+        // Brightest Star - Sirius
+
+        {
+          q: "Brightest Star - Sirius is the:",
+          options: [
+            "Brightest star outside the Solar System",
+            "Nearest star to Earth except the Sun",
+            "Largest star in the Solar System",
+            "North Star",
+          ],
+          answer: 0,
+          exp: "The PDF identifies Sirius as the brightest star outside the Solar System.",
+        },
+
+        {
+          q: "“Sirius”, the brightest star outside solar system, is also called…………",
+          options: ["Cat star", "Dog star", "Fox star", "Lion star"],
+          answer: 1,
+          exp: "Sirius is also called the Dog star.",
+        },
+
+        // Stars (तारे)
+
+        {
+          q: "Which colour indicates the hottest star?",
+          options: ["Red", "Yellow", "Blue-white", "Orange"],
+          answer: 2,
+          exp: "The colour chart shows blue-white stars at about 40,000°C, the highest temperature shown.",
+        },
+
+        {
+          q: "Which colour of star has a temperature of about 10,000°C?",
+          options: ["White", "Yellow", "Orange", "Red"],
+          answer: 0,
+          exp: "The chart shows white stars at about 10,000°C.",
+        },
+
+        {
+          q: "Which colour of star has a temperature of about 6,000°C?",
+          options: ["Orange", "Yellow", "White", "Red"],
+          answer: 1,
+          exp: "The chart shows yellow stars at about 6,000°C.",
+        },
+
+        {
+          q: "Which colour of star has a temperature of about 4,500°C?",
+          options: ["Red", "Orange", "Yellow", "White"],
+          answer: 1,
+          exp: "The chart shows orange stars at about 4,500°C.",
+        },
+
+        {
+          q: "Which colour of star has the lowest temperature among those shown in the chart?",
+          options: ["Blue-white", "White", "Orange", "Red"],
+          answer: 3,
+          exp: "The chart shows red stars at about 3,000°C, the lowest temperature shown.",
+        },
+
+        {
+          q: "A star with a temperature of about 40,000°C is shown as which colour?",
+          options: ["Yellow", "Blue-white", "Orange", "Red"],
+          answer: 1,
+          exp: "The chart shows blue-white stars at about 40,000°C.",
+        },
+
+        {
+          q: "A star with a temperature of about 3,000°C is shown as which colour?",
+          options: ["White", "Yellow", "Orange", "Red"],
+          answer: 3,
+          exp: "The chart shows red stars at about 3,000°C.",
+        },
+        // Stars (तारे)
+
+        {
+          q: "What is a constellation?",
+          options: [
+            "A certain pattern formed by different groups of stars",
+            "A single group of planets",
+            "A system of galaxies",
+            "A group of satellites",
+          ],
+          answer: 0,
+          exp: "A constellation is a certain pattern formed by different groups of stars.",
+        },
+
+        // Some Examples
+
+        {
+          q: "Saptarishi is a group of how many stars?",
+          options: ["Five", "Six", "Seven", "Eight"],
+          answer: 2,
+          exp: "Saptarishi is a group of seven stars.",
+        },
+
+        {
+          q: "Saptarishi forms a part of which constellation?",
+          options: [
+            "Ursa Minor",
+            "Ursa Major or Big Bear",
+            "Orion",
+            "Cassiopeia",
+          ],
+          answer: 1,
+          exp: "The PDF states that Saptarishi forms a part of Ursa Major or Big Bear constellation.",
+        },
+
+        {
+          q: "Which direction is indicated by the North Star?",
+          options: ["East", "West", "South", "North"],
+          answer: 3,
+          exp: "The North Star indicates the north direction.",
+        },
+
+        {
+          q: "The North Star is also called the:",
+          options: ["Sirius", "Pole Star", "Dog Star", "Morning Star"],
+          answer: 1,
+          exp: "The North Star is also called the Pole Star.",
+        },
+
+        {
+          q: "According to the PDF, the Pole Star always remains:",
+          options: [
+            "In the same position in the sky",
+            "Near the Equator",
+            "In the southern sky",
+            "Changing its position every hour",
+          ],
+          answer: 0,
+          exp: "The PDF states that the Pole Star always remains in the same position in the sky.",
+        },
+
+        {
+          q: "With the help of which group of stars can the position of the Pole Star be located?",
+          options: ["Sirius", "Alpha Centauri", "Saptarishi", "Milky Way"],
+          answer: 2,
+          exp: "The position of the Pole Star can be located with the help of Saptarishi.",
+        },
+
+        // Our Solar System
+
+        {
+          q: "Our solar system is a part of which galaxy?",
+          options: [
+            "Andromeda Galaxy",
+            "Whirlpool Galaxy",
+            "Milky Way Galaxy",
+            "Comet Galaxy",
+          ],
+          answer: 2,
+          exp: "The PDF gives Milky Way Galaxy as the answer.",
+        },
+        // Brightest Star - Sirius
+
+        {
+          q: "Which is the brightest star outside the Solar System?",
+          options: [
+            "Alpha Centauri अल्फा सेंटॉरी",
+            "Proxima Centauri प्रॉक्ससमा सेंटॉरी",
+            "Sirius सीररर्स",
+            "None of these इनमेंसेकोई नहीं",
+          ],
+          answer: 2,
+          exp: "The PDF identifies Sirius as the brightest star outside the Solar System.",
+        },
+
+        // Stars (तारे)
+
+        {
+          q: "The color of the star is an indication of its",
+          options: [
+            "Distance from earth ृथ्वी सेदूरी",
+            "Temperature ता मान",
+            "Luminosity चमक",
+            "Distance from the sun सूर्यसेदूरी",
+          ],
+          answer: 1,
+          exp: "The PDF states that the color of a star indicates its temperature.",
+        },
+
+        {
+          q: "Statement I: Saptarishi consists of seven stars and is the part of Ursa Major Constellation.\nStatement II: Pole star can be located with the help of Saptarishi.",
+          options: [
+            "Statement I is correct",
+            "Statement II is correct",
+            "Both the statements are correct",
+            "Both the statements are incorrect",
+          ],
+          answer: 2,
+          exp: "Both statements are supported by the PDF: Saptarishi has seven stars and is part of Ursa Major, and it can help locate the Pole Star.",
+        },
+
+        // The Solar System (सौर - मण्डल)
+
+        {
+          q: "The Solar System consists of:",
+          options: [
+            "Sun, eight planets, satellites, asteroids and meteoroids",
+            "Sun, seven planets and galaxies",
+            "Eight stars, planets and satellites",
+            "Only the Sun and eight planets",
+          ],
+          answer: 0,
+          exp: "The Solar System consists of the Sun, eight planets, satellites, asteroids and meteoroids.",
+        },
+
+        {
+          q: "The Solar System is also called the:",
+          options: [
+            "Galaxy family",
+            "Solar family",
+            "Star family",
+            "Planetary galaxy",
+          ],
+          answer: 1,
+          exp: "The PDF states that the Solar System is also called a solar family.",
+        },
+
+        {
+          q: "Who is considered the head of the solar family?",
+          options: ["Earth", "Jupiter", "Sun", "Moon"],
+          answer: 2,
+          exp: "The Sun is described as the head of the solar family.",
+        },
+
+        {
+          q: "How many dwarf planets are mentioned in our Solar System?",
+          options: ["Three", "Four", "Five", "Eight"],
+          answer: 2,
+          exp: "The PDF mentions five dwarf planets.",
+        },
+
+        {
+          q: "Which of the following is NOT one of the five dwarf planets mentioned in the PDF?",
+          options: ["Pluto", "Ceres", "Neptune", "Haumea"],
+          answer: 2,
+          exp: "The five listed dwarf planets are Pluto, Ceres, Eris, Makemake and Haumea.",
+        },
+        // The Sun
+
+        {
+          q: "The Sun is the ______ of the Solar System.",
+          options: ["Centre", "Outer boundary", "Smallest body", "Satellite"],
+          answer: 0,
+          exp: "The Sun is at the centre of the Solar System.",
+        },
+
+        {
+          q: "The Sun is a:",
+          options: ["Huge star", "Planet", "Satellite", "Dwarf planet"],
+          answer: 0,
+          exp: "The Sun is a huge star.",
+        },
+
+        {
+          q: "What binds the Solar System together?",
+          options: [
+            "The Sun's pulling force",
+            "Earth's rotation",
+            "Moon's gravity",
+            "Asteroids",
+          ],
+          answer: 0,
+          exp: "The Sun's pulling force binds the Solar System.",
+        },
+
+        {
+          q: "The ultimate source of heat and light for the Solar System is:",
+          options: ["Earth", "Moon", "Sun", "Jupiter"],
+          answer: 2,
+          exp: "The Sun is the ultimate source of heat and light for the Solar System.",
+        },
+
+        {
+          q: "In which direction do the planets revolve around the Sun, with which two exceptions?",
+          options: [
+            "Clockwise; Earth and Mars",
+            "Anti-clockwise; Venus and Uranus",
+            "Clockwise; Mercury and Venus",
+            "Anti-clockwise; Jupiter and Saturn",
+          ],
+          answer: 1,
+          exp: "The planets revolve anti-clockwise around the Sun except Venus and Uranus, which revolve clockwise.",
+        },
+
+        {
+          q: "Which two planets revolve around the Sun in the clockwise direction?",
+          options: [
+            "Venus and Uranus",
+            "Mercury and Venus",
+            "Uranus and Neptune",
+            "Mercury and Uranus",
+          ],
+          answer: 0,
+          exp: "Venus and Uranus are the two exceptions that revolve clockwise.",
+        },
+
+        {
+          q: "The gravity at the surface of the Sun is how many times that of Earth?",
+          options: ["14 times", "28 times", "36 times", "42 times"],
+          answer: 1,
+          exp: "The gravity at the surface of the Sun is 28 times that of Earth.",
+        },
+
+        {
+          q: "A man weighing 60 kg on Earth would weigh how much on the Sun?",
+          options: ["840 kg", "1120 kg", "1680 kg", "1960 kg"],
+          answer: 2,
+          exp: "A 60 kg weight on Earth is given as 1680 kg on the Sun.",
+        },
+
+        // The Solar System (सौर - मण्डल)
+
+        {
+          q: "What is the approximate distance between the Sun and the Earth?",
+          options: [
+            "100 million km",
+            "125 million km",
+            "150 million km",
+            "175 million km",
+          ],
+          answer: 2,
+          exp: "The distance between the Sun and Earth is 150 million km.",
+        },
+
+        {
+          q: "How long does light take to travel from the Sun to the Earth?",
+          options: [
+            "4.3 minutes",
+            "8.3 minutes",
+            "10.3 minutes",
+            "12.3 minutes",
+          ],
+          answer: 1,
+          exp: "Light takes 8.3 minutes to travel from the Sun to the Earth.",
+        },
+
+        {
+          q: "The Sun produces energy through:",
+          options: [
+            "Nuclear fission",
+            "Nuclear fusion",
+            "Radioactivity",
+            "Artificial radioactivity",
+          ],
+          answer: 1,
+          exp: "The Sun produces energy by nuclear fusion.",
+        },
+
+        {
+          q: "In the nuclear fusion process described, two hydrogen atoms fuse to form a:",
+          options: [
+            "Carbon atom",
+            "Oxygen atom",
+            "Helium atom",
+            "Nitrogen atom",
+          ],
+          answer: 2,
+          exp: "The process involves the fusion of two hydrogen atoms into a helium atom.",
+        },
+        // The Solar System (सौर - मण्डल)
+
+        {
+          q: "Which of the following two planets in our solar system rotate from East to West. These planets are",
+          options: [
+            "Venus and Uranus शुक्र एवंअरुण",
+            "Mercury and venus बुध एवंशुक्र",
+            "Uranus and Neptune अरुण एवंवरुण",
+            "Mercury and Uranus बुध एवंअरुण",
+          ],
+          answer: 0,
+          exp: "Venus and Uranus rotate from East to West.",
+        },
+
+        {
+          q: "What is the distance of the earth from the sun?",
+          options: [
+            "107 million k.m.",
+            "112 million k.m.",
+            "136 million k.m.",
+            "150 million k.m.",
+          ],
+          answer: 3,
+          exp: "The distance between the Earth and the Sun is 150 million km.",
+        },
+
+        {
+          q: "Energy is continuously generated in the sun due to____.",
+          options: [
+            "Nuclear fusion रमाणुसंलर्न",
+            "Nuclear fission रमाणुववखंडन",
+            "Radioactivity रेमडर्ोधर्मिंता",
+            "Artificial radioactivity कृ वत्रम रेमडर्ोधर्मिंता",
+          ],
+          answer: 0,
+          exp: "Energy is continuously generated in the Sun due to nuclear fusion.",
+        },
+
+        {
+          q: "What is the unit of measurement of the distance of Stars from the Earth:",
+          options: [
+            "Light year प्रकाश वर्य",
+            "Fathoms फै दम",
+            "Nautical Miles समुद्री मील",
+            "Kilometers वकलोमीटर",
+          ],
+          answer: 0,
+          exp: "The distance of stars from Earth is measured in light years.",
+        },
+
+        {
+          q: "Our solar system is a part of which galaxy?",
+          options: [
+            "Milky Way Galaxy ममल्की वेगैलेससी",
+            "Andromeda Galaxy एंड्रोमेडा गैलेससी",
+            "Whirlpool Galaxy व्हलय ूल गैलेससी",
+            "Comet Galaxy धूमके तुआकाशगंगा",
+          ],
+          answer: 0,
+          exp: "Our solar system is a part of the Milky Way Galaxy.",
+        },
+        // Brightest Star - Sirius
+
+        {
+          q: "Which is the brightest star outside the Solar System?",
+          options: [
+            "Alpha Centauri अल्फा सेंटॉरी",
+            "Proxima Centauri प्रॉक्ससमा सेंटॉरी",
+            "Sirius सीररर्स",
+            "None of these इनमेंसेकोई नहीं",
+          ],
+          answer: 2,
+          exp: "Sirius is the brightest star outside the Solar System.",
+        },
+
+        // Stars (तारे)
+
+        {
+          q: "The color of the star is an indication of its",
+          options: [
+            "Distance from earth ृथ्वी सेदूरी",
+            "Temperature ता मान",
+            "Luminosity चमक",
+            "Distance from the sun सूर्यसेदूरी",
+          ],
+          answer: 1,
+          exp: "The color of a star is an indication of its temperature.",
+        },
+        // questions
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(
+            circle at 50% -10%,
+            rgba(229, 9, 20, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(
+          145deg,
+          rgba(24, 24, 24, 0.98),
+          rgba(12, 12, 12, 0.98)
+        );
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(
+          90deg,
+          rgba(229, 9, 20, 0.2),
+          rgba(229, 9, 20, 0.07)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229, 9, 20, 0.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229, 9, 20, 0.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // India size and location
+        // India - Size And Location (भारत - आकार और स्थान)
+
+        {
+          q: "Extension of the International boundaries of India along with their neighboring countries in ascending order are",
+          options: [
+            "China, Bangladesh, Pakistan, Nepal",
+            "Nepal, Pakistan, China, Bangladesh",
+            "Nepal, Pakistan, Bangladesh, China",
+            "Pakistan, Nepal, China, Bangladesh",
+          ],
+          answer: 1,
+          exp: "The correct ascending order shown in the question is Nepal, Pakistan, China, Bangladesh.",
+        },
+
+        {
+          q: "What is the correct north-south sequence of the states of India along the Myanmar border?",
+          options: [
+            "Arunachal Pradesh, Nagaland, Manipur, Mizoram",
+            "Arunachal Pradesh, Assam, Nagaland, Manipur",
+            "Assam, Nagaland, Manipur, Mizoram",
+            "Arunachal Pradesh, Manipur, Nagaland, Mizoram",
+          ],
+          answer: 0,
+          exp: "The correct north-south sequence shown is Arunachal Pradesh, Nagaland, Manipur, Mizoram.",
+        },
+
+        {
+          q: "The McMohan Line is a line agreed to by Britain and Tibet as part of the Simla Accord, a treaty signed in",
+          options: ["1912", "1914", "1947", "1962"],
+          answer: 1,
+          exp: "The marked answer in the PDF is 1914.",
+        },
+
+        {
+          q: "Consider the following statements:\n1. Assam shares a border with Bhutan and Bangladesh.\n2. West Bengal shares a border with Bhutan and Nepal.\n3. Mizoram shares a border with Bangladesh and Myanmar.\nWhich of the statements given above are correct?",
+          options: [
+            "1, 2 and 3",
+            "1 and 2 only",
+            "2 and 3 only",
+            "1 and 3 only",
+          ],
+          answer: 0,
+          exp: "The PDF marks all three statements as correct.",
+        },
+
+        {
+          q: "Which of the following States of India does not have common border with Myanmar?",
+          options: ["Assam", "Nagaland", "Arunachal Pradesh", "Mizoram"],
+          answer: 0,
+          exp: "The marked answer in the PDF is Assam.",
+        },
+
+        {
+          q: "Which one of the following States does not form border with Bangladesh?",
+          options: ["Meghalaya", "Tripura", "Manipur", "Mizoram"],
+          answer: 2,
+          exp: "The marked answer in the PDF is Manipur.",
+        },
+        // India - Size And Location (भारत - आकार और स्थान)
+
+        {
+          q: "The Indian states bordering with Bangladesh are:",
+          options: [
+            "West Bengal, Nagaland, Assam, Meghalaya",
+            "Nagaland, Assam, Sikkim, West Bengal",
+            "Meghalaya, Assam, West Bengal, Tripura",
+            "Nagaland, Assam, West Bengal, Manipur",
+          ],
+          answer: 2,
+          exp: "The correct option shown is Meghalaya, Assam, West Bengal, Tripura.",
+        },
+
+        {
+          q: "Which one of the following states does not share border with Bhutan?",
+          options: ["Sikkim", "Meghalaya", "Arunachal Pradesh", "West Bengal"],
+          answer: 1,
+          exp: "The correct option shown is Meghalaya.",
+        },
+
+        {
+          q: "Which state of India has borders with three countries namely Nepal, Bhutan and China?",
+          options: ["Arunachal Pradesh", "Meghalaya", "West Bengal", "Sikkim"],
+          answer: 3,
+          exp: "The correct option shown is Sikkim.",
+        },
+
+        {
+          q: "The pair of neighbouring Indian states of Nepal is:",
+          options: [
+            "Sikkim, Bhutan",
+            "Sikkim, Bihar",
+            "Assam, Bihar",
+            "Uttar Pradesh, Haryana",
+          ],
+          answer: 1,
+          exp: "The correct pair shown is Sikkim and Bihar.",
+        },
+
+        {
+          q: "Which among the following states of India is surrounded by international boundary in three sides?",
+          options: ["Assam", "Nagaland", "Tripura", "West Bengal"],
+          answer: 2,
+          exp: "The correct option shown is Tripura.",
+        },
+        {
+          q: "Which one of the following countries shares the longest land frontier with India?",
+          options: ["China", "Nepal", "Pakistan", "Bangladesh"],
+          answer: 3,
+          exp: "The PDF gives Bangladesh as having the longest land boundary with India, at about 4,096 km.",
+        },
+
+        {
+          q: "Which country has the shortest land boundary with India among the following?",
+          options: ["Bhutan", "Afghanistan", "Myanmar", "Nepal"],
+          answer: 1,
+          exp: "The PDF lists Afghanistan with a boundary of about 106 km, the shortest among India's listed neighbouring countries.",
+        },
+
+        {
+          q: "Which of the following correctly matches a neighbouring country of India with its approximate land boundary length?",
+          options: [
+            "Bangladesh — 4,096 km",
+            "China — 3,310 km",
+            "Pakistan — 699 km",
+            "Nepal — 1,458 km",
+          ],
+          answer: 0,
+          exp: "The PDF lists Bangladesh — 4,096 km; China — 3,488 km; Pakistan — 3,310 km; Nepal — 1,751 km.",
+        },
+        {
+          q: "Which of the following correctly represents the descending order of India's land boundary length with its neighbouring countries?",
+          options: [
+            "Bangladesh, China, Pakistan, Nepal",
+            "China, Bangladesh, Pakistan, Nepal",
+            "Bangladesh, Pakistan, China, Nepal",
+            "Pakistan, Bangladesh, China, Nepal",
+          ],
+          answer: 0,
+          exp: "The listed boundary lengths are Bangladesh 4,096 km, China 3,488 km, Pakistan 3,310 km and Nepal 1,751 km.",
+        },
+        // India - Size And Location (भारत - आकार और स्थान)
+
+        {
+          q: "What is the total number of latitude lines on a standard globe?",
+          options: ["90", "179", "270", "360"],
+          answer: 1,
+          exp: "The answer given in the PDF is 179.",
+        },
+
+        {
+          q: "With which of the following countries does Meghalaya share its border?",
+          options: [
+            "Bhutan भूटान",
+            "Bangladesh बाांग्लादेश",
+            "Myanmar म्याांमार",
+            "Nepal नेपाल",
+          ],
+          answer: 1,
+          exp: "The answer given in the PDF is Bangladesh.",
+        },
+
+        {
+          q: "Myanmar doesn't share its boundary with which of the following states?",
+          options: [
+            "Nagaland नागालैण्ड",
+            "Manipur मणिपुर",
+            "Sikkim लसक्ककम",
+            "Mizoram ममजोरम",
+          ],
+          answer: 2,
+          exp: "The answer given in the PDF is Sikkim.",
+        },
+
+        {
+          q: "Consider these two statements about Globe\nA. The equator represents the zero degree longitude\nB. Equator is an imaginary line that divides globe in two equal parts\nChoose the correct option.",
+          options: [
+            "A is true and B is false",
+            "A is false and B is true",
+            "Both A and B are true",
+            "Both A and B are false",
+          ],
+          answer: 1,
+          exp: "The PDF marks A as false and B as true.",
+        },
+        {
+          q: "Where is the distance between two longitudes maximum?",
+          options: [
+            "At the poles",
+            "At the Equator",
+            "At 45° latitude",
+            "At the Tropic of Cancer",
+          ],
+          answer: 1,
+          exp: "The distance between two longitudes is maximum at the Equator.",
+        },
+
+        {
+          q: "What is the maximum distance between two longitudes at the Equator?",
+          options: ["110.6 km", "111.3 km", "111.7 km", "0 km"],
+          answer: 1,
+          exp: "The distance between two longitudes is maximum at the Equator, measuring 111.3 km.",
+        },
+        {
+          q: "Which of the following country is not included in the great geographic entity known as the ‘Indian Sub-Continent’?",
+          options: [
+            "Myanmar म्याांमार",
+            "Pakistan पाककस्तान",
+            "Bangladesh बाांग्लादेश",
+            "India भारत",
+          ],
+          answer: 0,
+          exp: "The question in the PDF identifies Myanmar as the country not included in the Indian Sub-Continent.",
+        },
+
+        {
+          q: "______ is the seventh largest country in the world in terms of area.",
+          options: [
+            "India भारत",
+            "Sri Lanka श्रीलांका",
+            "China चीन",
+            "Japan जापान",
+          ],
+          answer: 0,
+          exp: "The question in the PDF identifies India as the seventh largest country by area.",
+        },
+
+        {
+          q: "Name the westernmost point of India.",
+          options: [
+            "Dahod दाहोद",
+            "Guhar Moti गुहार मोती",
+            "Bharuch भरूच",
+            "Amreli अमरेली",
+          ],
+          answer: 1,
+          exp: "The question in the PDF gives Guhar Moti as the answer.",
+        },
+
+        {
+          q: "The Northern most point of India is",
+          options: [
+            "Indira Point इांद्रदरा प्िाइांट",
+            "Indira Col इांद्रदरा कोल",
+            "Kibithu कककबथू",
+            "Sir Creek सर क्रीक",
+          ],
+          answer: 1,
+          exp: "The question in the PDF identifies Indira Col as the northernmost point.",
+        },
+
+        {
+          q: "Match the following:\n1. Indira Point\n2. Kibithu\n3. Sir Creek\n4. Indira Col\n\nA. Easternmost point of India\nB. Westernmost point of India\nC. Northernmost point of India\nD. Southernmost point of India",
+          options: [
+            "1-D, 2-A, 3-B, 4-C",
+            "1-C, 2-D, 3-A, 4-B",
+            "1-B, 2-C, 3-D, 4-A",
+            "1-A, 2-B, 3-C, 4-D",
+          ],
+          answer: 0,
+          exp: "The matching given in the PDF is 1-D, 2-A, 3-B, 4-C.",
+        },
+
+        {
+          q: "Which country is separated from India by the Gulf of Mannar?",
+          options: [
+            "Bangladesh बाांग्लादेश",
+            "Sri Lanka श्रीलांका",
+            "Indonesia इांडोनेलशया",
+            "China चीन",
+          ],
+          answer: 1,
+          exp: "The question in the PDF gives Sri Lanka as the answer.",
+        },
+
+        {
+          q: "Where is the Gulf of Mannar located?",
+          options: [
+            "South of Kanyakumari",
+            "West of Kerala",
+            "East of Tamil Nadu",
+            "West of Gujarat",
+          ],
+          answer: 2,
+          exp: "The PDF identifies the Gulf of Mannar as being east of Tamil Nadu.",
+        },
+        {
+          q: "The country that shares longest border with India is _________.",
+          options: [
+            "China चीन",
+            "Bangladesh बाांग्लादेश",
+            "Nepal नेपाल",
+            "Pakistan पाककस्तान",
+          ],
+          answer: 1,
+          exp: "The PDF lists Bangladesh with the longest border with India.",
+        },
+
+        {
+          q: "Arrange the following neighboring countries of India in descending order of their border length with India.",
+          options: [
+            "Bangladesh, China, Pakistan, Nepal, Myanmar, Bhutan, Afghanistan",
+            "China, Bangladesh, Pakistan, Nepal, Myanmar, Bhutan, Afghanistan",
+            "Pakistan, China, Bangladesh, Nepal, Myanmar, Afghanistan, Bhutan",
+            "Nepal, Myanmar, Bhutan, Afghanistan, Bangladesh, China, Pakistan",
+          ],
+          answer: 0,
+          exp: "The descending order given by the listed border lengths is Bangladesh, China, Pakistan, Nepal, Myanmar, Bhutan, Afghanistan.",
+        },
+
+        {
+          q: "Name the westernmost point of India.",
+          options: [
+            "Dahod दाहोद",
+            "Guhar Moti गुहार मोती",
+            "Bharuch भरूच",
+            "Amreli अमरेली",
+          ],
+          answer: 1,
+          exp: "The PDF gives Guhar Moti as the westernmost point of India.",
+        },
+
+        {
+          q: "The Northern most point of India is",
+          options: [
+            "Indira Point इांद्रदरा प्िाइांट",
+            "Indira Col इांद्रदरा कोल",
+            "Kibithu कककबथू",
+            "Sir Creek सर क्रीक",
+          ],
+          answer: 1,
+          exp: "The PDF gives Indira Col as the northernmost point of India.",
+        },
+
+        {
+          q: "Which country is separated from India by the Gulf of Mannar?",
+          options: [
+            "Bangladesh बाांग्लादेश",
+            "Sri Lanka श्रीलांका",
+            "Indonesia इांडोनेलशया",
+            "China चीन",
+          ],
+          answer: 1,
+          exp: "The PDF identifies Sri Lanka as the country separated from India by the Gulf of Mannar.",
+        },
+        {
+          q: "The land mass of India has an area of _______ million square km.",
+          options: ["1.28", "2.28", "4.28", "None of the above"],
+          answer: 3,
+          exp: "The answer marked in the question is 'None of the above'.",
+        },
+
+        // lect 02
+        // questions
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1096 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(
+            circle at 50% -10%,
+            rgba(229, 9, 20, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(
+          145deg,
+          rgba(24, 24, 24, 0.98),
+          rgba(12, 12, 12, 0.98)
+        );
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(
+          90deg,
+          rgba(229, 9, 20, 0.2),
+          rgba(229, 9, 20, 0.07)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229, 9, 20, 0.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229, 9, 20, 0.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // UNIVERSE AND SOLAR SYSTEM
+        // Exploring Planets
+
+        {
+          q: "Which of the following is the correct order of the first four planets from the Sun?",
+          options: [
+            "Mercury, Venus, Earth, Mars",
+            "Venus, Mercury, Earth, Mars",
+            "Mercury, Earth, Venus, Mars",
+            "Mars, Earth, Venus, Mercury",
+          ],
+          answer: 0,
+          exp: "The first four planets shown from the Sun are Mercury, Venus, Earth and Mars.",
+        },
+
+        {
+          q: "Which group consists of the inner planets?",
+          options: [
+            "Jupiter, Saturn, Uranus and Neptune",
+            "Mercury, Venus, Earth and Mars",
+            "Earth, Mars, Jupiter and Saturn",
+            "Venus, Earth, Saturn and Uranus",
+          ],
+          answer: 1,
+          exp: "Mercury, Venus, Earth and Mars are the inner planets.",
+        },
+
+        {
+          q: "The inner planets are located:",
+          options: [
+            "Very far from the Sun",
+            "Very close to the Sun",
+            "Beyond Neptune",
+            "Between Jupiter and Saturn",
+          ],
+          answer: 1,
+          exp: "The inner planets are very close to the Sun.",
+        },
+
+        {
+          q: "The inner planets are mainly made up of:",
+          options: [
+            "Gases and liquids",
+            "Ice and dust",
+            "Rocks",
+            "Only metals",
+          ],
+          answer: 2,
+          exp: "The inner planets are made up of rocks.",
+        },
+
+        // Some points about planets
+
+        {
+          q: "The inner planets are also known as:",
+          options: [
+            "Gaseous planets",
+            "Terrestrial planets",
+            "Dwarf planets",
+            "Outer planets",
+          ],
+          answer: 1,
+          exp: "The inner planets are known as terrestrial planets.",
+        },
+
+        {
+          q: "Which is the largest inner planet?",
+          options: ["Mars", "Venus", "Earth", "Mercury"],
+          answer: 2,
+          exp: "Earth is the largest inner planet.",
+        },
+
+        {
+          q: "Which group consists of the outer planets?",
+          options: [
+            "Mercury, Venus, Earth and Mars",
+            "Earth, Mars, Jupiter and Saturn",
+            "Jupiter, Saturn, Uranus and Neptune",
+            "Venus, Earth, Uranus and Neptune",
+          ],
+          answer: 2,
+          exp: "Jupiter, Saturn, Uranus and Neptune are the outer planets.",
+        },
+
+        {
+          q: "The outer planets are:",
+          options: [
+            "Very close to the Sun and small",
+            "Very far from the Sun and huge",
+            "Closer to the Sun than Mercury",
+            "Made only of rocks",
+          ],
+          answer: 1,
+          exp: "The outer planets are very far from the Sun and are huge planets.",
+        },
+
+        {
+          q: "The outer planets are mainly made up of:",
+          options: [
+            "Rocks and metals",
+            "Gases and liquids",
+            "Only ice",
+            "Sand and dust",
+          ],
+          answer: 1,
+          exp: "The outer planets are made up of gases and liquids.",
+        },
+
+        {
+          q: "The outer planets are also known as:",
+          options: [
+            "Terrestrial planets",
+            "Rocky planets",
+            "Gaseous planets",
+            "Inner planets",
+          ],
+          answer: 2,
+          exp: "The outer planets are known as gaseous planets.",
+        },
+
+        {
+          q: "Which feature is mentioned for the outer planets?",
+          options: [
+            "They have rings around them",
+            "They have no satellites",
+            "They are made only of rocks",
+            "They are closest to the Sun",
+          ],
+          answer: 0,
+          exp: "The outer planets have rings around them.",
+        },
+        // Mercury (बुध)
+
+        {
+          q: "Which is the closest planet to the Sun?",
+          options: ["Venus", "Mercury", "Earth", "Mars"],
+          answer: 1,
+          exp: "Mercury is the closest planet to the Sun.",
+        },
+
+        {
+          q: "Which is the smallest planet in the Solar System?",
+          options: ["Mercury", "Mars", "Venus", "Earth"],
+          answer: 0,
+          exp: "Mercury is the smallest planet in the Solar System.",
+        },
+
+        {
+          q: "How many days does Mercury take to complete one revolution around the Sun?",
+          options: ["88 days", "225 days", "365 days", "687 days"],
+          answer: 0,
+          exp: "Mercury takes 88 days to orbit the Sun.",
+        },
+
+        {
+          q: "Which planet has no atmosphere and no satellites?",
+          options: ["Mercury", "Earth", "Mars", "Jupiter"],
+          answer: 0,
+          exp: "Mercury has no atmosphere and no satellites.",
+        },
+
+        // Venus (शुक्र)
+
+        {
+          q: "How many Earth days does Venus take to complete one revolution around the Sun?",
+          options: ["88 days", "225 days", "243 days", "365 days"],
+          answer: 1,
+          exp: "Venus takes 225 Earth days to complete one revolution around the Sun.",
+        },
+
+        {
+          q: "Which planet is known as Earth's twin?",
+          options: ["Mars", "Venus", "Mercury", "Earth"],
+          answer: 1,
+          exp: "Venus is considered Earth's twin because of the similarity in its size and shape to Earth.",
+        },
+
+        {
+          q: "Which is the hottest planet in the Solar System?",
+          options: ["Mercury", "Earth", "Venus", "Mars"],
+          answer: 2,
+          exp: "Venus is the hottest planet due to its high content of carbon dioxide.",
+        },
+
+        {
+          q: "In which direction does Venus revolve around the Sun?",
+          options: [
+            "West to East",
+            "East to West",
+            "North to South",
+            "South to North",
+          ],
+          answer: 1,
+          exp: "Unlike the other planets mentioned, Venus revolves clockwise from East to West.",
+        },
+
+        {
+          q: "Which planet has the longest day in the Solar System?",
+          options: ["Mercury", "Venus", "Earth", "Mars"],
+          answer: 1,
+          exp: "Venus has the longest day, lasting 243 days.",
+        },
+
+        // Mercury and Venus (बुध और शुक्र)
+
+        {
+          q: "Which two planets have no natural satellites?",
+          options: [
+            "Mercury and Venus",
+            "Venus and Mars",
+            "Mercury and Mars",
+            "Venus and Neptune",
+          ],
+          answer: 0,
+          exp: "Mercury and Venus have no natural satellites.",
+        },
+
+        // Planet Data
+
+        {
+          q: "Which planet takes 59 days as its period of rotation?",
+          options: ["Mercury", "Venus", "Mars", "Jupiter"],
+          answer: 0,
+          exp: "The table gives Mercury's period of rotation as 59 days.",
+        },
+
+        {
+          q: "Which planet takes 243 days as its period of rotation?",
+          options: ["Earth", "Venus", "Mars", "Mercury"],
+          answer: 1,
+          exp: "The table gives Venus's period of rotation as 243 days.",
+        },
+
+        {
+          q: "Which planet takes 225 days to complete its revolution around the Sun?",
+          options: ["Mercury", "Venus", "Earth", "Mars"],
+          answer: 1,
+          exp: "The table gives Venus's period of revolution as 225 days.",
+        },
+
+        // Previous Year Question
+
+        {
+          q: "Which planet in our solar system is also known as ‘Earth’s-twin’?",
+          options: [
+            "Mars मंगल",
+            "Mercury बुध",
+            "Venus शुक्र",
+            "Jupiter बृहस्पतत",
+          ],
+          answer: 2,
+          exp: "Venus is known as Earth's twin because of its similarity in size and shape to Earth.",
+        },
+        // Venus (शुक्र)
+
+        {
+          q: "Which planet is known as the morning/evening star?",
+          options: [
+            "Mars मंगल",
+            "Earth पृथ्वी",
+            "Venus शुक्र",
+            "Jupiter बृहस्पतत",
+          ],
+          answer: 2,
+          exp: "Venus is known as the morning/evening star.",
+        },
+
+        // Earth (पृथ्वी)
+
+        {
+          q: "Which is the third planet from the Sun?",
+          options: ["Venus", "Earth", "Mars", "Jupiter"],
+          answer: 1,
+          exp: "Earth is the third planet nearest to the Sun.",
+        },
+
+        {
+          q: "Which is the fifth-largest planet in the Solar System?",
+          options: ["Earth", "Mars", "Venus", "Neptune"],
+          answer: 0,
+          exp: "Earth is the fifth-largest planet.",
+        },
+
+        {
+          q: "Which planet is the only known planet that provides sustenance of life?",
+          options: ["Mars", "Venus", "Earth", "Jupiter"],
+          answer: 2,
+          exp: "Earth is the only known planet described as providing sustenance of life.",
+        },
+
+        {
+          q: "Why is Earth also known as the Blue Planet?",
+          options: [
+            "Because of its atmosphere",
+            "Because of its 71% water",
+            "Because of its mountains",
+            "Because of its blue rocks",
+          ],
+          answer: 1,
+          exp: "Earth is called the Blue Planet because it has 71% water.",
+        },
+
+        // Earth (पृथ्वी)
+
+        {
+          q: "Which is the densest planet in the Solar System?",
+          options: ["Jupiter", "Earth", "Venus", "Mars"],
+          answer: 1,
+          exp: "Earth is the densest planet in the Solar System.",
+        },
+
+        {
+          q: "What is the average density of Earth given in the study material?",
+          options: ["3,913 kg/m³", "4,513 kg/m³", "5,513 kg/m³", "6,513 kg/m³"],
+          answer: 2,
+          exp: "The average density of Earth is given as 5,513 kg/m³.",
+        },
+
+        // Mars (मंगल ग्रह)
+
+        {
+          q: "Why is Mars called the Red Planet?",
+          options: [
+            "Because of water on its surface",
+            "Because of iron oxide (FeO)",
+            "Because of its high temperature",
+            "Because of its atmosphere",
+          ],
+          answer: 1,
+          exp: "Mars appears reddish because of iron oxide (FeO).",
+        },
+
+        {
+          q: "Which are the two natural satellites of Mars?",
+          options: [
+            "Titan and Triton",
+            "Phobos and Deimos",
+            "Ganymede and Europa",
+            "Moon and Phobos",
+          ],
+          answer: 1,
+          exp: "Mars has two natural satellites, Phobos and Deimos.",
+        },
+
+        {
+          q: "The size of Mars is approximately:",
+          options: [
+            "One-fourth of Earth",
+            "Half of Earth",
+            "Equal to Earth",
+            "Twice the size of Earth",
+          ],
+          answer: 1,
+          exp: "Mars is half the size of Earth.",
+        },
+
+        {
+          q: "The length of a day on Mars is:",
+          options: [
+            "Almost the same as Earth's day",
+            "Half of Earth's day",
+            "Twice Earth's day",
+            "Much shorter than Earth's day",
+          ],
+          answer: 0,
+          exp: "The day on Mars is almost exactly the same length as Earth's.",
+        },
+
+        {
+          q: "Like Earth, Mars also:",
+          options: [
+            "Has rings",
+            "Tilts on an axis",
+            "Has no satellites",
+            "Revolves clockwise around the Sun",
+          ],
+          answer: 1,
+          exp: "Mars, like Earth, tilts on an axis.",
+        },
+        // Jupiter (बृहस्पति)
+
+        {
+          q: "Which is the largest planet of the Solar System?",
+          options: ["Earth", "Jupiter", "Saturn", "Neptune"],
+          answer: 1,
+          exp: "Jupiter is the largest planet of the Solar System.",
+        },
+
+        {
+          q: "Which planet has the fastest rotation time?",
+          options: ["Earth", "Mars", "Jupiter", "Saturn"],
+          answer: 2,
+          exp: "Jupiter has the fastest rotation time, about 9.8 hours.",
+        },
+
+        {
+          q: "How many natural satellites does Jupiter have in the given study material?",
+          options: ["27", "49", "79", "82"],
+          answer: 2,
+          exp: "Jupiter is stated to have 79 natural satellites.",
+        },
+
+        {
+          q: "Which is the largest satellite in the Solar System?",
+          options: ["Titan", "Ganymede", "Triton", "Moon"],
+          answer: 1,
+          exp: "Ganymede is identified as the largest satellite in the Solar System.",
+        },
+
+        // Previous Year Question
+
+        {
+          q: "Earth is the __________ largest planet in the solar system.",
+          options: [
+            "Fourth चौथा",
+            "Third तीसरा",
+            "Fifth पांचवां",
+            "Second दूसरा",
+          ],
+          answer: 2,
+          exp: "Earth is the fifth-largest planet.",
+        },
+
+        {
+          q: "Which is the densest planet of the solar system?",
+          options: [
+            "Earth पृथ्वी",
+            "Jupiter बृहस्पतत",
+            "Mars मंगल",
+            "Venus शुक्र",
+          ],
+          answer: 0,
+          exp: "Earth is the densest planet of the Solar System.",
+        },
+
+        {
+          q: "Which is a red planet in Solar system?",
+          options: ["Mercury बुध", "Venus शुक्र", "Mars मंगल", "Saturn शतन"],
+          answer: 2,
+          exp: "Mars is known as the Red Planet.",
+        },
+
+        {
+          q: "Which Planet is half the size of Earth, its day is almost exactly the same length as Earth’s and like Earth, it also tilts on an axis?",
+          options: [
+            "Mercury बुध ग्रह",
+            "Venus शुक्र ग्रह",
+            "Mars मंगल ग्रह",
+            "Jupiter बृहस् पतत ग्रह",
+          ],
+          answer: 2,
+          exp: "Mars is half the size of Earth, has an almost equally long day, and tilts on an axis.",
+        },
+
+        {
+          q: "The largest planet in our solar system is ______.",
+          options: [
+            "Mars मंगल ग्रह",
+            "Jupiter बृहस्पतत",
+            "Earth पृथ्वी",
+            "Saturn शतन",
+          ],
+          answer: 1,
+          exp: "Jupiter is the largest planet in the Solar System.",
+        },
+
+        {
+          q: "The largest satellite in the solar system is ______.",
+          options: [
+            "Ganymede गेनीमेड",
+            "Titan टाइटन",
+            "Triton ट्राइटन",
+            "Moon चन्‍द रमा",
+          ],
+          answer: 0,
+          exp: "Ganymede is the largest satellite in the Solar System.",
+        },
+        // Saturn ( शनि)
+
+        {
+          q: "Which is the second largest planet in the Solar System?",
+          options: ["Jupiter", "Saturn", "Uranus", "Neptune"],
+          answer: 1,
+          exp: "Saturn is the second largest planet in the Solar System.",
+        },
+
+        {
+          q: "Saturn's bright concentric rings are mainly made up of:",
+          options: [
+            "Rocks and metals",
+            "Ice and ice-covered dust particles",
+            "Gases and liquids",
+            "Only meteoroids",
+          ],
+          answer: 1,
+          exp: "Saturn has bright concentric rings made of ice and ice-covered dust particles.",
+        },
+
+        {
+          q: "How many satellites of Saturn are mentioned?",
+          options: ["79", "82", "13", "27"],
+          answer: 1,
+          exp: "Saturn is stated to have 82 satellites.",
+        },
+
+        {
+          q: "Which is the largest satellite of Saturn?",
+          options: ["Ganymede", "Triton", "Titan", "Phobos"],
+          answer: 2,
+          exp: "Titan is the largest satellite of Saturn.",
+        },
+
+        {
+          q: "Titan is the ______ largest moon in our Solar System.",
+          options: ["First", "Second", "Third", "Fourth"],
+          answer: 1,
+          exp: "Titan is described as the second-largest moon in the Solar System.",
+        },
+
+        // Uranus (अरुण ग्रह)
+
+        {
+          q: "Uranus rotates in which direction?",
+          options: [
+            "West to East",
+            "East to West",
+            "North to South",
+            "South to North",
+          ],
+          answer: 1,
+          exp: "Uranus rotates from east to west.",
+        },
+
+        {
+          q: "What is the most remarkable feature of Uranus?",
+          options: [
+            "It has the fastest rotation",
+            "It has a highly tilted rotational axis",
+            "It has no satellites",
+            "It is the largest planet",
+          ],
+          answer: 1,
+          exp: "Uranus has a highly tilted rotational axis.",
+        },
+
+        {
+          q: "Because of its highly tilted rotational axis, Uranus appears to:",
+          options: [
+            "Stand still in its orbit",
+            "Roll on its side",
+            "Move backwards around the Sun",
+            "Remain close to the Sun",
+          ],
+          answer: 1,
+          exp: "During its orbital motion, Uranus appears to roll on its side.",
+        },
+
+        // Neptune (वरुण ग्रह)
+
+        {
+          q: "How many natural satellites does Neptune have?",
+          options: ["13", "8", "27", "82"],
+          answer: 0,
+          exp: "Neptune has 13 natural satellites.",
+        },
+
+        {
+          q: "Which is the largest satellite of Neptune?",
+          options: ["Titan", "Ganymede", "Triton", "Phobos"],
+          answer: 2,
+          exp: "Triton is the largest of Neptune's 13 natural satellites.",
+        },
+
+        {
+          q: "Which planet is described as having the slowest revolution?",
+          options: ["Uranus", "Neptune", "Saturn", "Jupiter"],
+          answer: 1,
+          exp: "Neptune is described as having the slowest revolution.",
+        },
+
+        {
+          q: "Which is the coldest planet in the Solar System?",
+          options: ["Saturn", "Uranus", "Neptune", "Jupiter"],
+          answer: 2,
+          exp: "Neptune is described as the coldest planet.",
+        },
+        // The Solar System (सौर - मण्डल)
+
+        {
+          q: "The coldest planet in the solar system is_______.",
+          options: [
+            "Neptune वरुण ग्रह",
+            "Jupiter बृहस्पतत",
+            "Mars मंगल",
+            "Saturn शतन",
+          ],
+          answer: 0,
+          exp: "Neptune is the coldest planet.",
+        },
+
+        {
+          q: "Which is the green planet in the solar system?",
+          options: [
+            "Earth पृथ्वी",
+            "Jupiter बृहस्पतत",
+            "Uranus अरुण",
+            "Saturn शतन",
+          ],
+          answer: 2,
+          exp: "Uranus is identified as the green planet.",
+        },
+
+        {
+          q: "Which planet in the solar system has a blue-green color?",
+          options: [
+            "Jupiter बृहस्पतत",
+            "Earth पृथ्वी",
+            "Saturn शतन",
+            "Uranus अरुण",
+          ],
+          answer: 3,
+          exp: "Uranus has a blue-green color.",
+        },
+
+        {
+          q: "Which of the following planets appears as 'Greenish Star’ ?",
+          options: [
+            "Neptune नेपच्र्ून",
+            "Saturn शतन ग्रह",
+            "Jupitar बृहस्पतत",
+            "Earth पृथ्वी",
+          ],
+          answer: 0,
+          exp: "Neptune is the answer associated with the 'Greenish Star' question in the given options.",
+        },
+        // The Solar System (सौर - मण्डल)
+
+        {
+          q: "Which of the following is not a jovian planet (gaseous planet) in the Solar system?",
+          options: [
+            "Jupiter बृहस्पतत",
+            "Saturn शतन",
+            "Venus शुक्र",
+            "Neptune नेप्च्र्ून",
+          ],
+          answer: 2,
+          exp: "Venus is not a jovian or gaseous planet.",
+        },
+
+        {
+          q: "Set the planets of the Solar System in terms of their size in descending order.",
+          options: [
+            "Earth, Mars, Uranus, Neptune, Jupiter, Saturn, Venus, Mercury",
+            "Jupiter, Saturn, Uranus, Neptune, Earth, Venus, Mars, Mercury",
+            "Mercury, Neptune, Jupiter, Saturn, Earth, Mars, Venus, Uranus",
+            "Uranus, Venus, Saturn, Neptune, Earth, Mars, Jupiter, Mercury",
+          ],
+          answer: 1,
+          exp: "The descending order of planetary size is Jupiter, Saturn, Uranus, Neptune, Earth, Venus, Mars, Mercury.",
+        },
+
+        {
+          q: "As we move away from the Sun in the Solar System, the:",
+          options: [
+            "size of the planets decreases gradually",
+            "planets far from the Sun are made up of rocks",
+            "time taken by planets to complete one orbit around the Sun increases",
+            "time taken by planets to complete one orbit around the Sun decreases",
+          ],
+          answer: 2,
+          exp: "The period required by planets to complete one orbit around the Sun increases as distance from the Sun increases.",
+        },
+
+        {
+          q: "Which planet has the fastest revolution in the Solar System?",
+          options: ["Mercury", "Jupiter", "Uranus", "Neptune"],
+          answer: 0,
+          exp: "Mercury has the fastest revolution around the Sun.",
+        },
+
+        {
+          q: "Which planet in our Solar System has the longest day?",
+          options: ["Earth", "Venus", "Mercury", "Neptune"],
+          answer: 1,
+          exp: "Venus has the longest day in the Solar System.",
+        },
+        // The Solar System (सौर - मण्डल)
+
+        {
+          q: "The Solar System consists of:",
+          options: [
+            "The Sun, eight planets, satellites, asteroids and meteoroids",
+            "The Sun, seven planets and satellites",
+            "Eight planets and galaxies only",
+            "The Sun and only eight planets",
+          ],
+          answer: 0,
+          exp: "The Solar System consists of the Sun, eight planets, satellites, asteroids and meteoroids.",
+        },
+
+        {
+          q: "The Solar System is also called the:",
+          options: [
+            "Planetary system",
+            "Solar family",
+            "Galaxy family",
+            "Star cluster",
+          ],
+          answer: 1,
+          exp: "The Solar System is also called a solar family.",
+        },
+
+        {
+          q: "Who is regarded as the head of the solar family?",
+          options: ["Earth", "Jupiter", "Sun", "Moon"],
+          answer: 2,
+          exp: "The Sun is the head of the solar family.",
+        },
+
+        // Asteroids (क्षुद्र ग्रह)
+
+        {
+          q: "What are asteroids?",
+          options: [
+            "Tiny bodies other than planets and satellites that move around the Sun",
+            "Natural satellites of planets",
+            "Clouds of gases around stars",
+            "Pieces of planets that always remain stationary",
+          ],
+          answer: 0,
+          exp: "Asteroids are tiny bodies, other than planets and satellites, that move around the Sun.",
+        },
+
+        {
+          q: "Between which two planets are asteroids found?",
+          options: [
+            "Earth and Mars",
+            "Mars and Jupiter",
+            "Jupiter and Saturn",
+            "Venus and Earth",
+          ],
+          answer: 1,
+          exp: "Asteroids are found between the orbits of Mars and Jupiter.",
+        },
+
+        // Important Practice Question
+
+        {
+          q: "Between which two planets Asteroids found?",
+          options: [
+            "Earth and Mars",
+            "Saturn and Uranus",
+            "Mercury and Venus",
+            "Mars and Jupiter",
+          ],
+          answer: 3,
+          exp: "Asteroids are found between Mars and Jupiter.",
+        },
+        // Meteoroids (उल्कापपंड)
+
+        {
+          q: "What are meteoroids?",
+          options: [
+            "Small pieces of rocks that move around the Sun",
+            "Large planets that orbit the Sun",
+            "Natural satellites of planets",
+            "Clouds of gases around the Sun",
+          ],
+          answer: 0,
+          exp: "Meteoroids are small pieces of rocks that move around the Sun.",
+        },
+
+        {
+          q: "What may happen when meteoroids come near the Earth?",
+          options: [
+            "They become planets",
+            "They tend to drop upon the Earth",
+            "They stop moving",
+            "They move towards the Sun",
+          ],
+          answer: 1,
+          exp: "Some meteoroids come near the Earth and tend to drop upon it.",
+        },
+
+        {
+          q: "Why do meteoroids get burnt while entering the Earth?",
+          options: [
+            "Due to sunlight",
+            "Due to pressure from the Sun",
+            "Due to friction with the air",
+            "Due to Earth's rotation",
+          ],
+          answer: 2,
+          exp: "They get burnt because of friction with the air while entering the Earth.",
+        },
+        // Meteoroids (उल्कापपंड)
+
+        {
+          q: "The largest asteroid, Ceres, is about how wide?",
+          options: [
+            "590 miles (950 kilometres)",
+            "490 miles (790 kilometres)",
+            "690 miles (1,110 kilometres)",
+            "950 miles (590 kilometres)",
+          ],
+          answer: 0,
+          exp: "Ceres is about 590 miles or 950 kilometres wide.",
+        },
+
+        // Previous Year Question
+
+        {
+          q: "The largest natural satellite of our solar system is of which planet?",
+          options: ["Jupiter", "Saturn", "Earth", "Venus"],
+          answer: 0,
+          exp: "The largest natural satellite, Ganymede, is associated with Jupiter.",
+        },
+        // questions
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

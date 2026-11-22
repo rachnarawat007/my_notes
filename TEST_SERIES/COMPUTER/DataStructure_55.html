@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(
+            circle at 50% -10%,
+            rgba(229, 9, 20, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(
+          145deg,
+          rgba(24, 24, 24, 0.98),
+          rgba(12, 12, 12, 0.98)
+        );
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(
+          90deg,
+          rgba(229, 9, 20, 0.2),
+          rgba(229, 9, 20, 0.07)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229, 9, 20, 0.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229, 9, 20, 0.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Topic : Linked List
+        // Q.8. What is the Extra Element Known as at the Head of the Node of the Linked List.?
+        {
+          q: "What is the Extra Element Known as at the Head of the Node of the Linked List.?",
+          options: [
+            "Bantinel",
+            "Cantinel",
+            "Sentinel",
+            "Both (1) and (2)",
+            "Both (2) and (3)",
+          ],
+          answer: 2,
+          exp: "The extra dummy node at the head is called a sentinel node.",
+        },
+        // Sentinel node =
+        {
+          q: "What is a sentinel node in a linked list?",
+          options: [
+            "A dummy node that does not contain data",
+            "The final node containing NULL",
+            "A node with two next pointers",
+            "A node used only for sorting",
+          ],
+          answer: 0,
+          exp: "The source defines a sentinel node as a dummy node that does not contain data.",
+        },
+        // Q.9. In a circular linked list.?
+        {
+          q: "In a circular linked list.?",
+          options: [
+            "Components are all linked together in some sequential manner.",
+            "There is no beginning and no end.",
+            "Components are arranged hierarchically.",
+            "Forward and backward traversal within the list is permitted.",
+            "None of these",
+          ],
+          answer: 1,
+          exp: "A circular linked list has no beginning and no end because its final link returns to the first node.",
+        },
+        // Q.10. Linked lists are not suitable to for the implementation of.?
+        {
+          q: "Linked lists are not suitable to for the implementation of.?",
+          options: [
+            "Insertion sort",
+            "Radix sort",
+            "Polynomial manipulation",
+            "Binary search",
+            "None of these",
+          ],
+          answer: 3,
+          exp: "Typical linked lists do not offer random access, which binary search requires.",
+        },
+        // Q.11. In a Singly Linked List, what does the last node's next pointer point to.?
+        {
+          q: "In a Singly Linked List, what does the last node's next pointer point to.?",
+          options: [
+            "The first node ",
+            "The second last node ",
+            "Null ",
+            "Itself ",
+            "More than one of the above",
+          ],
+          answer: 2,
+          exp: "In a non-circular singly linked list, the last node's next pointer is NULL.",
+        },
+        // Q.12. In a Doubly Linked List, what does the first node's previous pointer point to.?
+        {
+          q: "In a Doubly Linked List, what does the first node's previous pointer point to.?",
+          options: [
+            "The first node ",
+            "The second last node ",
+            "Null ",
+            "Itself ",
+            "More than one of the above",
+          ],
+          answer: 2,
+          exp: "In a non-circular doubly linked list, the first node has no predecessor, so its previous pointer is NULL.",
+        },
+        // Q.13. Which of the following is not a type of Linked List.?
+        {
+          q: "Which of the following is not a type of Linked List.?",
+          options: [
+            "Singly linked list",
+            "Doubly linked list",
+            "Balanced linked list ",
+            "Circular linked list",
+            "Doubly circular linked list",
+          ],
+          answer: 2,
+          exp: "Balanced linked list is not among the standard linked-list types listed in the source.",
+        },
+        // Q.14. In which of the following scenarios is a Doubly Linked List most useful.?
+        {
+          q: "In which of the following scenarios is a Doubly Linked List most useful.?",
+          options: [
+            "When we need to frequently add new elements ",
+            "When we need to frequently delete elements ",
+            "When we need to frequently traverse the list in both directions ",
+            "When we need to frequently perform a binary search ",
+            "All of these",
+          ],
+          answer: 2,
+          exp: "A doubly linked list is most useful when traversal in both forward and backward directions is needed.",
+        },
+        // Q.15. How much extra memory does a doubly linked list need over a Singly Linked List per node.?
+        {
+          q: "How much extra memory does a doubly linked list need over a Singly Linked List per node.?",
+          options: [
+            "50% more ",
+            "Twice as much ",
+            "Depends on the size of the data ",
+            "No extra memory is needed",
+            "More than one of the above",
+          ],
+          answer: 2,
+          exp: "A doubly linked-list node has one additional pointer; its percentage overhead depends on the size of the data field.",
+        },
+        // Q.16. What does a Linked List node not contain.?
+        {
+          q: "What does a Linked List node not contain.?",
+          options: [
+            "A pointer to the next node ",
+            "A pointer to the previous node ",
+            "Data ",
+            "A pointer to the linked list ",
+            "All of these",
+          ],
+          answer: 3,
+          exp: "A node stores data and links to nodes; it does not normally store a pointer to the linked list itself.",
+        },
+        // Q.17. What is the disadvantage of a Linked List.?
+        {
+          q: "What is the disadvantage of a Linked List.?",
+          options: [
+            "Dynamic size ",
+            "Ease of insertion/deletion ",
+            "Random access is not allowed",
+            "All of these ",
+            "None of the above ",
+          ],
+          answer: 2,
+          exp: "A typical linked list does not permit random access.",
+        },
+        // Q.18. What is the disadvantage of a circular linked list?
+        {
+          q: "What is the disadvantage of a circular linked list?",
+          options: [
+            "It consumes more memory than a simple linked list ",
+            "It is complex to implement ",
+            "A simple loop through the list will never end ",
+            "None of these",
+            "All of the above ",
+          ],
+          answer: 2,
+          exp: "Without a stopping condition, traversal of a circular list repeats indefinitely.",
+        },
+        // Q.19. In a circular doubly linked list, what does the 'next' pointer of the last node point to?
+        {
+          q: "In a circular doubly linked list, what does the 'next' pointer of the last node point to?",
+          options: [
+            "The second last node ",
+            "The first node ",
+            "Null ",
+            "Itself ",
+            "All of these",
+          ],
+          answer: 1,
+          exp: "The last node's next pointer links back to the first node in a circular doubly linked list.",
+        },
+        // Q.20. Please choose the correct option about the Linked List compared with an array.?
+        {
+          q: "Please choose the correct option about the Linked List compared with an array.?",
+          options: [
+            "Arrays have a better cache locality to it will increase their performance. ",
+            "It is easy to insert and delete elements from the Linked List.",
+            "Random access is denied in a typical implementation of Linked Lists.",
+            "The size of an array is fixed; linked lists can change their size.",
+            "All of the above",
+          ],
+          answer: 4,
+          exp: "All four preceding statements correctly contrast typical arrays and linked lists.",
+        },
+        // Q.21. To insert a new node in the linked list free node will be available in .?
+        {
+          q: "To insert a new node in the linked list free node will be available in .?",
+          options: [
+            "Available list",
+            "Avail list",
+            "Free node list",
+            "Memory space list",
+            "All of these",
+          ],
+          answer: 1,
+          exp: "The list of free nodes is conventionally called the avail list.",
+        },
+        // Q.22. A singly linked list is also called as.?
+        {
+          q: "A singly linked list is also called as.?",
+          options: [
+            "linked list",
+            "one way chain",
+            "two way chain",
+            "right link",
+            "All of these",
+          ],
+          answer: 1,
+          exp: "A singly linked list permits traversal in one direction, hence it is called a one way chain.",
+        },
+        // Q.23. A doubly linked list is also called as.?
+        {
+          q: "A doubly linked list is also called as.?",
+          options: [
+            "linked list",
+            "one way chain",
+            "two way chain",
+            "right link",
+            "All of these",
+          ],
+          answer: 2,
+          exp: "A doubly linked list supports traversal in both directions, so it is called a two way chain.",
+        },
+        // Q.24. A doubly linked list has _____ pointers with each node.?
+        {
+          q: "A doubly linked list has _____ pointers with each node.?",
+          options: ["0", "1", "2", "3", "4"],
+          answer: 2,
+          exp: "Each node has a previous pointer and a next pointer.",
+        },
+        // Q.25. The list which has its own pointer is called.?
+        {
+          q: "The list which has its own pointer is called.?",
+          options: [
+            "pointer list",
+            "self pointer",
+            "free pool",
+            "own point",
+            "All of these",
+          ],
+          answer: 2,
+          exp: "The source identifies the free pool as the collection of free memory spaces.",
+        },
+        // Q.26. In a linked list, insertion can be done as.?
+        {
+          q: "In a linked list, insertion can be done as.?",
+          options: [
+            "beginning",
+            "end",
+            "middle",
+            "All of the above",
+            "None of these",
+          ],
+          answer: 3,
+          exp: "A node can be inserted at the beginning, in the middle, or at the end of a linked list.",
+        },
+        // Q.27. Which of the following conditions checks available free space in the avail list.?
+        {
+          q: "Which of the following conditions checks available free space in the avail list.?",
+          options: [
+            "Avail=Null",
+            "Null=Avail",
+            "Avail=Max stack",
+            "Avail=Top",
+            "All of these",
+          ],
+          answer: 0,
+          exp: "Avail = NULL indicates that the avail list contains no free node.",
+        },
+        // Q.28. A linear list in which each node has pointed to the predecessor and successors nodes is called.?
+        {
+          q: "A linear list in which each node has pointed to the predecessor and successors nodes is called.?",
+          options: [
+            "singly linked list",
+            "circular linked list",
+            "doubly linked list",
+            "linear linked list",
+            "More than one of the above",
+          ],
+          answer: 2,
+          exp: "A doubly linked list has pointers to both the predecessor and successor nodes.",
+        },
+        // Q.29. In ____ memory is assigned at compile time & in ____ memory is assigned at run time.?
+        {
+          q: "In ____ memory is assigned at compile time & in ____ memory is assigned at run time.?",
+          options: [
+            "Linked List, Array",
+            "Array, Linked List",
+            "Stack, Array",
+            "Queue, Array",
+            "None of these",
+          ],
+          answer: 1,
+          exp: "The source states that array memory is assigned at compile time and linked-list memory at run time.",
+        },
+        // Q.30. In Linked list elements are stored _____ and access in ____ fashion.?
+        {
+          q: "In Linked list elements are stored _____ and access in ____ fashion.?",
+          options: [
+            "Randomly, Sequentially",
+            "Sequentially, Randomly",
+            "Sequentially, Sequentially",
+            "Randomly, Randomly",
+            "None of these",
+          ],
+          answer: 0,
+          exp: "Linked-list nodes may be stored randomly in memory but are accessed sequentially.",
+        },
+
+        // Revision =  Linked List
+        {
+          q: "A linked list is classified in the revision slide as a:",
+          options: [
+            "dynamic data structure",
+            "static data structure",
+            "primitive-only structure",
+            "contiguous structure",
+          ],
+          answer: 0,
+          exp: "The revision slide identifies a linked list as a dynamic data structure.",
+        },
+        {
+          q: "How many fields does each basic linked-list node have according to the revision?",
+          options: ["Two", "One", "Three", "Four"],
+          answer: 0,
+          exp: "The revision lists two fields: data and pointer/reference/address.",
+        },
+        {
+          q: "The pointer/reference/address field in a basic linked-list node is its:",
+          options: [
+            "first field",
+            "second field",
+            "third field",
+            "optional data field",
+          ],
+          answer: 1,
+          exp: "The source identifies data as the first field and pointer/reference/address as the second field.",
+        },
+        {
+          q: "What is the starting point of a linked list called?",
+          options: ["Tail", "Head", "Avail", "Sentinel"],
+          answer: 1,
+          exp: "The revision slide states that Head is the starting point.",
+        },
+        {
+          q: "Compared with an array, accessing elements in a linked list is:",
+          options: [
+            "comparatively slower",
+            "always constant time",
+            "impossible",
+            "faster because nodes are random",
+          ],
+          answer: 0,
+          exp: "The source states that linked-list element access is comparatively slower than array access.",
+        },
+        {
+          q: "Which linked-list type has one NULL link according to the revision slide?",
+          options: [
+            "Singly Linked List",
+            "Doubly Linked List",
+            "Circular Linked List",
+            "Circular Doubly Linked List",
+          ],
+          answer: 0,
+          exp: "The revision slide assigns one NULL link to a singly linked list.",
+        },
+        {
+          q: "Which linked-list type has two NULL links according to the revision slide?",
+          options: [
+            "Singly Linked List",
+            "Doubly Linked List",
+            "Circular Linked List",
+            "Circular Doubly Linked List",
+          ],
+          answer: 1,
+          exp: "The revision slide assigns two NULL links to a doubly linked list.",
+        },
+        {
+          q: "Which linked-list type has zero NULL links according to the revision slide?",
+          options: [
+            "Singly Linked List",
+            "Doubly Linked List",
+            "Linear Linked List",
+            "Circular Linked List",
+          ],
+          answer: 3,
+          exp: "The revision slide assigns zero NULL links to a circular linked list.",
+        },
+        {
+          q: "What is the average-case time complexity of searching a linked list in the source table?",
+          options: ["O(1)", "O(log n)", "O(n log n)", "O(n)"],
+          answer: 3,
+          exp: "The time-complexity table gives O(n) for average-case search.",
+        },
+        {
+          q: "What is the worst-case time complexity of searching a linked list in the source table?",
+          options: ["O(1)", "O(log n)", "O(n²)", "O(n)"],
+          answer: 3,
+          exp: "The time-complexity table gives O(n) for worst-case search.",
+        },
+        {
+          q: "What time complexity is shown for insertion in both average and worst scenarios?",
+          options: ["O(n)", "O(log n)", "O(n²)", "O(1)"],
+          answer: 3,
+          exp: "The source table lists O(1) for insertion in both scenarios.",
+        },
+        {
+          q: "What time complexity is shown for deletion in both average and worst scenarios?",
+          options: ["O(n)", "O(log n)", "O(n²)", "O(1)"],
+          answer: 3,
+          exp: "The source table lists O(1) for deletion in both scenarios.",
+        },
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

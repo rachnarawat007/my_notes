@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(
+            circle at 50% -10%,
+            rgba(229, 9, 20, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(
+          145deg,
+          rgba(24, 24, 24, 0.98),
+          rgba(12, 12, 12, 0.98)
+        );
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(
+          90deg,
+          rgba(229, 9, 20, 0.2),
+          rgba(229, 9, 20, 0.07)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229, 9, 20, 0.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229, 9, 20, 0.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Data Structure
+        {
+          q: "According to the classification shown, data structures are broadly divided into which two categories?",
+          options: [
+            "Primitive and Non Primitive",
+            "Static and Dynamic",
+            "Linear and Non Linear",
+            "Array and Linked List",
+          ],
+          answer: 0,
+          exp: "The diagram classifies Data Structure into Primitive and Non Primitive categories.",
+        },
+        {
+          q: "Which of the following is shown as a primitive data structure?",
+          options: ["Linked List", "Tree", "Queue", "Integer"],
+          answer: 3,
+          exp: "Integer appears under Primitive in the source classification.",
+        },
+        {
+          q: "Which of the following is NOT shown as a primitive data structure in the diagram?",
+          options: ["Boolean", "Pointer", "Character", "Graph"],
+          answer: 3,
+          exp: "Graph is shown under Non Linear, while Boolean, Pointer, and Character are shown as primitive types.",
+        },
+        {
+          q: "In the source classification, which is a static linear data structure?",
+          options: ["Stack", "Array", "Queue", "Linked List"],
+          answer: 1,
+          exp: "Array is placed under Static within the Linear non-primitive category.",
+        },
+        {
+          q: "Which item is shown as a dynamic linear data structure?",
+          options: ["Graph", "Array", "Tree", "Linked List"],
+          answer: 3,
+          exp: "The diagram places Linked List under Dynamic and Linear.",
+        },
+        {
+          q: "Which pair is shown as non-linear data structures in the classification diagram?",
+          options: [
+            "Tree and Graph",
+            "Stack and Queue",
+            "Array and Linked List",
+            "Integer and Boolean",
+          ],
+          answer: 0,
+          exp: "Tree and Graph are displayed under the Non Linear branch.",
+        },
+        {
+          q: "Primitive data structures are described in the source as being:",
+          options: [
+            "complex and user-defined",
+            "simple and predefined",
+            "randomly stored only",
+            "allocated only at run time",
+          ],
+          answer: 1,
+          exp: "The source states that primitive data structures are simple and predefined.",
+        },
+        {
+          q: "Non-primitive data structures are described in the source as being:",
+          options: [
+            "simple and predefined",
+            "fixed at compile time",
+            "limited to integer values",
+            "more complex and capable of being user-defined",
+          ],
+          answer: 3,
+          exp: "The source describes non-primitive data structures as more complex and capable of being user-defined.",
+        },
+
+        // Topic : Linked List
+        {
+          q: "In the linked-list diagram, the pointer named HEAD refers to:",
+          options: [
+            "the first node",
+            "the last node",
+            "a NULL link",
+            "the data field of every node",
+          ],
+          answer: 0,
+          exp: "The diagram shows HEAD pointing to the first node of the list.",
+        },
+        {
+          q: "In a basic singly linked-list node, which field stores the link to the following node?",
+          options: ["data", "head", "next", "null"],
+          answer: 2,
+          exp: "The illustrated node has a data field and a next field; next links to the following node.",
+        },
+
+        // Linked List
+        {
+          q: "How may linked-list elements be stored in memory?",
+          options: [
+            "Only in contiguous locations",
+            "Anywhere or randomly in memory",
+            "Only in static memory",
+            "Only before program execution",
+          ],
+          answer: 1,
+          exp: "The source states that linked-list elements can be stored anywhere or randomly in memory.",
+        },
+        {
+          q: "Which memory characteristic is associated with an array in the source?",
+          options: [
+            "Dynamic memory",
+            "Random memory",
+            "Static memory",
+            "Circular memory",
+          ],
+          answer: 2,
+          exp: "The source contrasts an array's static memory with a linked list's dynamic memory.",
+        },
+        {
+          q: "When is memory allocated for a linked list according to the source?",
+          options: [
+            "At run time",
+            "At compile time",
+            "Only after deletion",
+            "Before source code is written",
+          ],
+          answer: 0,
+          exp: "The source states that linked-list memory is allocated at run time.",
+        },
+        {
+          q: "Which access method is used in a linked list?",
+          options: [
+            "Random access",
+            "Sequential access",
+            "Direct indexing",
+            "Binary access",
+          ],
+          answer: 1,
+          exp: "A linked list is traversed sequentially from the head node to the end.",
+        },
+        {
+          q: "Which access method is associated with an array in the source?",
+          options: [
+            "Sequential access",
+            "Circular access",
+            "Pointer-only access",
+            "Random access",
+          ],
+          answer: 3,
+          exp: "The source explicitly identifies array access as random.",
+        },
+        {
+          q: "Which operation is identified as easier in a linked list?",
+          options: [
+            "Compilation and linking",
+            "Sorting and searching only",
+            "Encryption and decryption",
+            "Insertion and deletion",
+          ],
+          answer: 3,
+          exp: "The source lists insertion and deletion as easier operations in a linked list.",
+        },
+        {
+          q: "Why does a linked list support efficient memory utilization according to the source?",
+          options: [
+            "It always uses contiguous memory",
+            "It does not require pre-allocation of memory",
+            "It stores only primitive data",
+            "It has fixed size",
+          ],
+          answer: 1,
+          exp: "A linked list does not need memory to be pre-allocated.",
+        },
+        {
+          q: "A linked list can be used to implement which pair of data structures?",
+          options: [
+            "Tree and graph",
+            "Array and heap",
+            "Hash table and set",
+            "Queue and stack",
+          ],
+          answer: 3,
+          exp: "The source states that a linked list can implement a queue and a stack.",
+        },
+        {
+          q: "What is each element of a linked list called?",
+          options: ["Node", "Index", "Array cell", "Record key"],
+          answer: 0,
+          exp: "Each element in a linked list is called a node.",
+        },
+        {
+          q: "A basic linked-list node is made of which two items?",
+          options: [
+            "Head and tail",
+            "Data and reference (pointer)",
+            "Key and hash",
+            "Row and column",
+          ],
+          answer: 1,
+          exp: "The source says that a node consists of data and a reference (pointer).",
+        },
+        {
+          q: "In a linked list, nodes are connected to the next node through a:",
+          options: ["compiler", "pointer", "stack frame", "loop counter"],
+          answer: 1,
+          exp: "A pointer connects each node to the next node in the list.",
+        },
+        {
+          q: "Which linked-list variant has no node containing a NULL pointer?",
+          options: [
+            "Singly linked list",
+            "Doubly linked list",
+            "Linear linked list",
+            "Circular linked list",
+          ],
+          answer: 3,
+          exp: "In a circular linked list, no node contains a NULL pointer.",
+        },
+        {
+          q: "A collection of nodes is generally called a:",
+          options: [
+            "linked list",
+            "primitive list",
+            "random array",
+            "static table",
+          ],
+          answer: 0,
+          exp: "The source states that a collection of nodes is generally called a linked list.",
+        },
+        {
+          q: "A linear collection of data elements connected by pointers is called a:",
+          options: ["tree", "linked list", "graph", "hash table"],
+          answer: 1,
+          exp: "This is the definition given for a linked list in the source.",
+        },
+        {
+          q: "Linked lists are used to overcome which array-related issues mentioned in the source?",
+          options: [
+            "Recursion and hashing",
+            "Sorting and merging",
+            "Indexing and searching only",
+            "Insertion, deletion, and static memory allocation",
+          ],
+          answer: 3,
+          exp: "The source says linked lists overcome insertion, deletion, and static-memory-allocation problems of arrays.",
+        },
+        {
+          q: "In a non-circular linked list, the last node contains a pointer to:",
+          options: [
+            "the head node",
+            "the previous node",
+            "the data field",
+            "NULL",
+          ],
+          answer: 3,
+          exp: "The source states that the last node of the list points to NULL.",
+        },
+
+        // Types of Linked List = 4
+        {
+          q: "How many types of linked lists are listed in the source?",
+          options: ["Two", "Three", "Four", "Five"],
+          answer: 2,
+          exp: "The source heading states that there are four types of linked lists.",
+        },
+        {
+          q: "Which linked-list type is also called a one way chain?",
+          options: [
+            "Singly linked list",
+            "Doubly linked list",
+            "Circular linked list",
+            "Circular doubly linked list",
+          ],
+          answer: 0,
+          exp: "The source calls a singly linked list a one way chain.",
+        },
+        {
+          q: "Which linked-list type is also called a two way chain?",
+          options: [
+            "Singly linked list",
+            "Circular linked list",
+            "Doubly linked list",
+            "Circular doubly linked list",
+          ],
+          answer: 2,
+          exp: "The source calls a doubly linked list a two way chain.",
+        },
+
+        // Implementation
+        {
+          q: "According to the source, which linked-list implementation is associated with Undo/Redo operations?",
+          options: [
+            "Singly linked list",
+            "Doubly linked list",
+            "Circular linked list",
+            "Circular doubly linked list",
+          ],
+          answer: 1,
+          exp: "The implementation slide associates doubly linked lists with Undo/Redo operations.",
+        },
+        {
+          q: "Round Robin CPU allocation is associated with which linked-list type?",
+          options: [
+            "Singly linked list",
+            "Doubly linked list",
+            "Circular linked list",
+            "Circular doubly linked list",
+          ],
+          answer: 2,
+          exp: "The source associates circular linked lists with allocating CPU to resources in Round Robin scheduling.",
+        },
+        {
+          q: "The implementation slide associates singly linked lists with:",
+          options: [
+            "Hash Tables",
+            "Undo/Redo Operation",
+            "Round Robin",
+            "CPU allocation only",
+          ],
+          answer: 0,
+          exp: "The source's implementation list pairs singly linked lists with Hash Tables.",
+        },
+
+        // 1. Singly Linked List –
+        {
+          q: "A node in a singly linked list has:",
+          options: [
+            "data and a pointer to the next node",
+            "data and pointers to both adjacent nodes",
+            "only a data field",
+            "only a pointer to the previous node",
+          ],
+          answer: 0,
+          exp: "The source states that each singly linked-list node has data and a pointer to the next node.",
+        },
+        {
+          q: "A singly linked list can be traversed in:",
+          options: [
+            "both directions",
+            "one direction only",
+            "no direction",
+            "three directions",
+          ],
+          answer: 1,
+          exp: "The source says a singly linked list can be traversed only in one direction.",
+        },
+
+        // 2. Doubly Linked List –
+        {
+          q: "What additional pointer is added in a doubly linked list?",
+          options: [
+            "A pointer to the previous node",
+            "A pointer to the compiler",
+            "A pointer to the array size",
+            "A pointer to NULL only",
+          ],
+          answer: 0,
+          exp: "A doubly linked list adds a pointer to the previous node.",
+        },
+        {
+          q: "A doubly linked list can be traversed:",
+          options: [
+            "only forward",
+            "only backward",
+            "forward or backward",
+            "only from the tail",
+          ],
+          answer: 2,
+          exp: "Its previous and next pointers allow traversal in either direction.",
+        },
+        {
+          q: "Which fields are shown in the node structure of a doubly linked list?",
+          options: [
+            "head, data, tail",
+            "prev, data, next",
+            "key, value, hash",
+            "data, index, size",
+          ],
+          answer: 1,
+          exp: "The diagram labels the fields prev, data, and next.",
+        },
+
+        // 3. Circular Linked List –
+        {
+          q: "In a circular linked list, the last element is linked to the:",
+          options: [
+            "first element",
+            "NULL",
+            "previous element only",
+            "data field",
+          ],
+          answer: 0,
+          exp: "The source says the last element links to the first element, creating a circular loop.",
+        },
+        {
+          q: "In a circular linked list, the last element points to:",
+          options: [
+            "NULL",
+            "the head",
+            "a new array",
+            "the previous node only",
+          ],
+          answer: 1,
+          exp: "The source explicitly says the last element points to the head, not NULL.",
+        },
+
+        // 4. Circular Doubly Linked List –
+        {
+          q: "In a circular doubly linked list, each node is connected to:",
+          options: [
+            "only its next node",
+            "only its previous node",
+            "both its previous and next nodes",
+            "neither adjacent node",
+          ],
+          answer: 2,
+          exp: "The source states that each node connects to both its previous and next nodes.",
+        },
+        {
+          q: "In a circular doubly linked list, the last node links back to the:",
+          options: ["first node", "NULL pointer", "middle node", "data field"],
+          answer: 0,
+          exp: "The source states that the last node links back to the first node.",
+        },
+
+        // Q.1. A linear collection of data elements where the linear node is given by means of pointer is called?
+        {
+          q: "A linear collection of data elements where the linear node is given by means of pointer is called?",
+          options: [
+            "Linked list",
+            "Node list",
+            "Primitive list",
+            "Unordered list",
+            "All of these",
+          ],
+          answer: 0,
+          exp: "A linked list is a linear collection of data elements connected by pointers.",
+        },
+        // Q.2. In linked list each node contains a minimum of two fields. One field is data field to store the data second field is.?
+        {
+          q: "In linked list each node contains a minimum of two fields. One field is data field to store the data second field is.?",
+          options: [
+            "Pointer to character",
+            "Pointer to integer",
+            "Pointer to node",
+            "Node",
+            "More than one of the above",
+          ],
+          answer: 2,
+          exp: "The second field is a pointer/reference to a node.",
+        },
+        // Q.3. Linked list is considered as an example of _______ type of memory allocation.?
+        {
+          q: "Linked list is considered as an example of _______ type of memory allocation.?",
+          options: [
+            "Dynamic",
+            "Static",
+            "Compile time",
+            "Heap",
+            "All of these",
+          ],
+          answer: 0,
+          exp: "Linked-list memory is allocated at run time, so it uses dynamic memory allocation.",
+        },
+        // Q.4. In Linked List implementation, a node carries information regarding.?
+        {
+          q: "In Linked List implementation, a node carries information regarding.?",
+          options: ["Data", "Link", "Data and Link", "Node", "1,2 & 4"],
+          answer: 2,
+          exp: "A node stores data and the link/reference to another node.",
+        },
+        // Q.5. Which of the following application makes use of a circular linked list.?
+        {
+          q: "Which of the following application makes use of a circular linked list.?",
+          options: [
+            "Undo operation in a text editor",
+            "Recursive function calls",
+            "Allocating CPU to resources",
+            "Implement Hash Tables",
+            "All of these",
+          ],
+          answer: 2,
+          exp: "The source associates circular linked lists with CPU allocation in Round Robin scheduling.",
+        },
+        // Q.6. ______ is When START=NULL in Linked List.?
+        {
+          q: "______ is When START=NULL in Linked List.?",
+          options: [
+            "Housefull",
+            "Overflow",
+            "Underflow",
+            "Saturated",
+            "All of these",
+          ],
+          answer: 2,
+          exp: "START = NULL denotes an empty linked list; this condition is commonly treated as underflow for deletion/access operations.",
+        },
+        // Q.7. The First Link of the Node of the List is.?
+        {
+          q: "The First Link of the Node of the List is.?",
+          options: ["Tail", "Head", "Initiator", "Terminator", "All of these"],
+          answer: 1,
+          exp: "The first node/link of a linked list is referred to as the head.",
+        },
+        // Q.8. What is the Extra Element Known as at the Head of the Node of the Linked List.?
+        {
+          q: "What is the Extra Element Known as at the Head of the Node of the Linked List.?",
+          options: [
+            "Bantinel",
+            "Cantinel",
+            "Sentinel",
+            "Both (1) and (2)",
+            "Both (2) and (3)",
+          ],
+          answer: 2,
+          exp: "The extra dummy node at the head is called a sentinel node.",
+        },
+
+        // Sentinel node =
+        {
+          q: "What is a sentinel node in a linked list?",
+          options: [
+            "A dummy node that does not contain data",
+            "The last node containing NULL",
+            "A node storing two data values",
+            "A node used only in a circular list",
+          ],
+          answer: 0,
+          exp: "The source defines a sentinel node as a dummy node that does not contain data.",
+        },
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>
