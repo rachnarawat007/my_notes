@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boolean Algebra (Lec 1)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #070707;
+        --bg2: #120606;
+        --card: #111111;
+        --card2: #171717;
+        --red: #e50914;
+        --red2: #ff2b35;
+        --red-dark: #8f050c;
+        --text: #f5f5f5;
+        --muted: #a7a7a7;
+        --border: #2a2a2a;
+        --green: #19c37d;
+        --green-bg: #082218;
+        --wrong: #ff4d5a;
+        --wrong-bg: #26090c;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(
+            circle at 50% -10%,
+            rgba(229, 9, 20, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(145deg, var(--bg), var(--bg2) 55%, #080808);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        padding-bottom: 90px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: linear-gradient(
+          145deg,
+          rgba(24, 24, 24, 0.98),
+          rgba(12, 12, 12, 0.98)
+        );
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      #qnum {
+        display: inline-block;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.22);
+      }
+
+      .qtext {
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #fff;
+      }
+
+      .opt {
+        padding: 13px 14px;
+        border: 1px solid #303030;
+        background: #151515;
+        color: #ddd;
+        border-radius: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.4;
+      }
+
+      .opt:hover {
+        border-color: var(--red);
+        background: #1d0b0c;
+        transform: translateY(-1px);
+      }
+
+      .opt.selected {
+        border-color: var(--red2);
+        background: linear-gradient(
+          90deg,
+          rgba(229, 9, 20, 0.2),
+          rgba(229, 9, 20, 0.07)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--red);
+      }
+
+      .opt.correct {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #dfffee;
+      }
+
+      .opt.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: #ffe2e5;
+      }
+
+      button {
+        padding: 10px 16px;
+        margin: 5px 3px;
+        border: 1px solid #3a3a3a;
+        border-radius: 9px;
+        background: #1a1a1a;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.18s ease;
+      }
+
+      button:hover {
+        border-color: var(--red);
+        background: #26090b;
+        transform: translateY(-1px);
+      }
+
+      button:last-child {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        border-color: var(--red);
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.22);
+      }
+
+      button:last-child:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red));
+        box-shadow: 0 8px 22px rgba(229, 9, 20, 0.32);
+      }
+
+      #result {
+        display: none;
+        border-color: rgba(229, 9, 20, 0.45);
+        background: linear-gradient(145deg, #171010, #101010);
+      }
+
+      #result h3 {
+        color: #fff;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #302020;
+      }
+
+      #result p {
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #151515;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 520px) {
+        .container {
+          padding: 10px 9px;
+        }
+
+        .card {
+          padding: 13px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .qtext {
+          font-size: 16px;
+        }
+
+        .opt {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        button {
+          padding: 10px 13px;
+          margin: 4px 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div id="qnum"></div>
+        <div id="qtext" class="qtext"></div>
+        <div id="options"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+        <button onclick="submitQuiz()">Submit</button>
+      </div>
+
+      <div id="result" class="card"></div>
+    </div>
+
+    <script>
+      const questions = [
+        // Topic : Trees
+        // Few more Tree =
+        {
+          q: "Which of the following is listed as a self-balanced tree?",
+          options: [
+            "B Tree",
+            "General Tree",
+            "Degenerate Tree",
+            "Complete Tree",
+          ],
+          answer: 0,
+          exp: "The source identifies B Tree as a self-balanced tree.",
+        },
+
+        // AVL Tree
+        {
+          q: "AVL stands for:",
+          options: [
+            "Adelson-Velsky and Landis",
+            "Array-Vector Linked List",
+            "Advanced Variable Logic",
+            "Algorithmic Vertex Layout",
+          ],
+          answer: 0,
+          exp: "The source gives Adelson-Velsky and Landis as the expansion of AVL.",
+        },
+        {
+          q: "An AVL tree is a self-balancing:",
+          options: [
+            "binary search tree",
+            "general tree",
+            "B-tree only",
+            "graph",
+          ],
+          answer: 0,
+          exp: "The source describes an AVL tree as a self-balancing binary search tree.",
+        },
+        {
+          q: "Which operation does an AVL tree use to maintain balance?",
+          options: [
+            "Rotation",
+            "Hashing",
+            "Linear probing",
+            "Breadth-first search only",
+          ],
+          answer: 0,
+          exp: "AVL trees automatically rotate to maintain balance.",
+        },
+        {
+          q: "How many kinds of rotations are listed for an AVL tree?",
+          options: ["Two", "Three", "Four", "Five"],
+          answer: 2,
+          exp: "The source lists four AVL rotations.",
+        },
+        {
+          q: "Which of the following is an AVL-tree rotation listed in the source?",
+          options: [
+            "Left-Right rotation",
+            "Level rotation",
+            "Queue rotation",
+            "Sibling rotation",
+          ],
+          answer: 0,
+          exp: "Left-Right rotation is one of the four listed AVL rotations.",
+        },
+        {
+          q: "A left-unbalanced AVL tree is corrected in the illustration using a:",
+          options: [
+            "right rotation",
+            "left rotation",
+            "breadth-first search",
+            "color change",
+          ],
+          answer: 0,
+          exp: "The source diagram shows a left-unbalanced tree becoming balanced after a right rotation.",
+        },
+        {
+          q: "A right-unbalanced AVL tree is corrected in the illustration using a:",
+          options: [
+            "right rotation",
+            "left rotation",
+            "postorder traversal",
+            "node deletion",
+          ],
+          answer: 1,
+          exp: "The source diagram shows a right-unbalanced tree becoming balanced after a left rotation.",
+        },
+
+        // Red Black Tree
+        {
+          q: "Who invented the RB tree according to the source?",
+          options: ["Rudolf Bayer", "McCreight", "Adelson", "Landis"],
+          answer: 0,
+          exp: "The source states that Rudolf Bayer invented the RB tree in 1972.",
+        },
+        {
+          q: "In which year was the RB tree invented according to the source?",
+          options: ["1962", "1972", "1982", "1992"],
+          answer: 1,
+          exp: "The source gives 1972 as the year of invention.",
+        },
+        {
+          q: "A red-black tree is a kind of:",
+          options: [
+            "self-balancing binary search tree",
+            "linear list",
+            "static array",
+            "heap-only tree",
+          ],
+          answer: 0,
+          exp: "The source identifies a red-black tree as a self-balancing binary search tree.",
+        },
+        {
+          q: "A red-black tree uses which scheme?",
+          options: [
+            "Color coding",
+            "Index coding",
+            "Hash coding",
+            "Level coding",
+          ],
+          answer: 0,
+          exp: "The source says it uses a simple color-coding scheme.",
+        },
+        {
+          q: "What color is the root of a red-black tree?",
+          options: ["Red", "Black", "Either red or black", "Green"],
+          answer: 1,
+          exp: "The source rule says that the root is always black.",
+        },
+        {
+          q: "Which colors can a red-black tree node have according to the source?",
+          options: [
+            "Red or Black",
+            "Blue or Green",
+            "White or Black",
+            "Red or Blue",
+          ],
+          answer: 0,
+          exp: "The source lists red and black as the node colors.",
+        },
+        {
+          q: "A red node in a red-black tree cannot have:",
+          options: ["red children", "black children", "a parent", "a key"],
+          answer: 0,
+          exp: "The source rule states that red nodes cannot have red children.",
+        },
+        {
+          q: "On any path in a red-black tree, how many consecutive red nodes are permitted?",
+          options: ["Zero", "One", "Two", "Any number"],
+          answer: 0,
+          exp: "The source states that no two consecutive red nodes occur on any path.",
+        },
+
+        // B Tree
+        {
+          q: "Who developed the B-Tree according to the source?",
+          options: [
+            "Bayer and McCreight",
+            "Rudolf Bayer only",
+            "Adelson and Landis",
+            "Knuth and Dijkstra",
+          ],
+          answer: 0,
+          exp: "The source credits Bayer and McCreight with developing the B-Tree.",
+        },
+        {
+          q: "In which year was the B-Tree developed according to the source?",
+          options: ["1962", "1972", "1982", "1992"],
+          answer: 1,
+          exp: "The source gives 1972 as the development year.",
+        },
+        {
+          q: "A B-Tree is a self-balanced:",
+          options: ["search tree", "linked list", "binary heap", "stack"],
+          answer: 0,
+          exp: "The source calls a B-Tree a self-balanced search tree.",
+        },
+        {
+          q: "The source describes a B-tree as a:",
+          options: [
+            "fat tree",
+            "skewed tree",
+            "strict binary tree",
+            "linear tree",
+          ],
+          answer: 0,
+          exp: "The source explicitly calls a B-tree a fat tree.",
+        },
+        {
+          q: "A B-tree node contains:",
+          options: [
+            "multiple keys and more than two children",
+            "one key and no children",
+            "exactly two children only",
+            "only color information",
+          ],
+          answer: 0,
+          exp: "The source states that every B-tree node contains multiple keys and has more than two children.",
+        },
+
+        // Q.1. A tree where every node has either zero or two children is called.?
+        {
+          q: "A tree where every node has either zero or two children is called.?",
+          options: [
+            "Full Binary Tree",
+            "Complete Binary Tree",
+            "Perfect Binary Tree",
+            "Degenerate Binary Tree",
+            "Balanced Binary Tree",
+          ],
+          answer: 0,
+          exp: "A full binary tree has nodes with either zero or two children.",
+        },
+        // Q.2. A tree where every internal node has exactly two child nodes and all the leaf nodes are at the same level is called.?
+        {
+          q: "A tree where every internal node has exactly two child nodes and all the leaf nodes are at the same level is called.?",
+          options: [
+            "Full Binary Tree",
+            "Complete Binary Tree",
+            "Perfect Binary Tree",
+            "Degenerate Binary Tree",
+            "Balanced Binary Tree",
+          ],
+          answer: 2,
+          exp: "A perfect binary tree has exactly two children for every internal node and all leaves at the same level.",
+        },
+        // Q.3. A tree whose left and right subtrees' heights differ by not more than 1 is called.?
+        {
+          q: "A tree whose left and right subtrees' heights differ by not more than 1 is called.?",
+          options: [
+            "Full Binary Tree",
+            "Complete Binary Tree",
+            "Perfect Binary Tree",
+            "Degenerate Binary Tree",
+            "Balanced Binary Tree",
+          ],
+          answer: 4,
+          exp: "A balanced binary tree permits a left-right subtree height difference of at most 1.",
+        },
+        // Q.4. A tree where all nodes have either only a left child or only a right child is called.?
+        {
+          q: "A tree where all nodes have either only a left child or only a right child is called.?",
+          options: [
+            "Full Binary Tree",
+            "Complete Binary Tree",
+            "Perfect Binary Tree",
+            "Degenerate Binary Tree",
+            "Balanced Binary Tree",
+          ],
+          answer: 3,
+          exp: "A degenerate binary tree is skewed to one side.",
+        },
+        // Q.5. A tree where all levels are filled with nodes, except possibly the last level is called.?
+        {
+          q: "A tree where all levels are filled with nodes, except possibly the last level is called.?",
+          options: [
+            "Full Binary Tree",
+            "Complete Binary Tree",
+            "Perfect Binary Tree",
+            "Degenerate Binary Tree",
+            "Balanced Binary Tree",
+          ],
+          answer: 1,
+          exp: "A complete binary tree has all levels filled except possibly the last level.",
+        },
+        // Q.6. A tree that self-balance and rotate automatically are known as.?
+        {
+          q: "A tree that self-balance and rotate automatically are known as.?",
+          options: [
+            "Full Binary Tree",
+            "Complete Binary Tree",
+            "B Tree",
+            "Red Black Tree",
+            "AVL Tree",
+          ],
+          answer: 4,
+          exp: "The source describes AVL trees as self-balancing BSTs that automatically rotate.",
+        },
+        // Q.7. A Balanced Binary Search Trees with two coloured nodes are known as.?
+        {
+          q: "A Balanced Binary Search Trees with two coloured nodes are known as.?",
+          options: [
+            "Full Binary Tree",
+            "Complete Binary Tree",
+            "B Tree",
+            "Red Black Tree",
+            "AVL Tree",
+          ],
+          answer: 3,
+          exp: "A red-black tree is a self-balancing BST using red and black node colors.",
+        },
+        // Q.8. A Tree where every node contains multiple keys  are known as.?
+        {
+          q: "A Tree where every node contains multiple keys  are known as.?",
+          options: [
+            "Full Binary Tree",
+            "Complete Binary Tree",
+            "B Tree",
+            "Red Black Tree",
+            "AVL Tree",
+          ],
+          answer: 2,
+          exp: "The source states that B-tree nodes contain multiple keys.",
+        },
+        // Q.9. In the ______ tree, a node can have either 0 or maximum n number of nodes.?
+        {
+          q: "In the ______ tree, a node can have either 0 or maximum n number of nodes.?",
+          options: [
+            "Binary Tree",
+            "Binary Search Tree",
+            "Balanced Tree",
+            "General Tree",
+            "All of these",
+          ],
+          answer: 3,
+          exp: "A general tree permits a parent node to have any number of child nodes.",
+        },
+        // Q.10. In a _______ tree, each node in a tree can have utmost two child nodes.?
+        {
+          q: "In a _______ tree, each node in a tree can have utmost two child nodes.?",
+          options: [
+            "Binary Tree",
+            "Binary Search Tree",
+            "Balanced Tree",
+            "General Tree",
+            "All of these",
+          ],
+          answer: 0,
+          exp: "A binary-tree node can have at most two children.",
+        },
+        // Q.11. In a Binary Tree utmost 2 child nodes means.?
+        {
+          q: "In a Binary Tree utmost 2 child nodes means.?",
+          options: [
+            "Only 2 Nodes ",
+            "Only 0 Nodes",
+            "Only 1 Nodes",
+            "More than 2 Nodes",
+            "0,1,2 Nodes",
+          ],
+          answer: 4,
+          exp: "A binary-tree node can have zero, one, or two children.",
+        },
+        // Q.12. In this tree, left nodes contain lesser value than root node & right nodes contain more value than root node.?
+        {
+          q: "In this tree, left nodes contain lesser value than root node & right nodes contain more value than root node.?",
+          options: [
+            "General Tree",
+            "AVL Tree",
+            "Red Black Tree",
+            "Binary Tree",
+            "Binary Search Tree",
+          ],
+          answer: 4,
+          exp: "This is the ordering property of a binary search tree.",
+        },
+        // Q.13. This tree obeys the binary search tree as well as a balancing factor.?
+        {
+          q: "This tree obeys the binary search tree as well as a balancing factor.?",
+          options: [
+            "AVL Tree",
+            "Red Black Tree",
+            "B tree",
+            "Extended Tree",
+            "All of these",
+          ],
+          answer: 0,
+          exp: "An AVL tree is a binary search tree that maintains a balancing factor.",
+        },
+        // Q.14. In AVL Tree balancing factor's value must be.?
+        {
+          q: "In AVL Tree balancing factor's value must be.?",
+          options: ["0", "-1", "1", "All of these", "None of these"],
+          answer: 3,
+          exp: "For an AVL tree, the allowed balance-factor values are -1, 0, and 1.",
+        },
+        // Q.15. A Degenerate Binary Tree, also known as a.?
+        {
+          q: "A Degenerate Binary Tree, also known as a.?",
+          options: [
+            "Pathological Tree",
+            "Left Skewed Tree",
+            "Right Skewed Tree",
+            "All of these",
+            "None of these",
+          ],
+          answer: 3,
+          exp: "The source illustration identifies degenerate trees as pathological, left-skewed, or right-skewed forms.",
+        },
+
+        // Topic : Tree Traversal
+        {
+          q: "Tree traversal is also known as:",
+          options: [
+            "tree search",
+            "tree rotation",
+            "tree balancing",
+            "tree coloring",
+          ],
+          answer: 0,
+          exp: "The source states that tree traversal is also known as tree search.",
+        },
+        {
+          q: "Tree traversal is the process of:",
+          options: [
+            "visiting each node of a tree data structure",
+            "adding a child to every node",
+            "sorting keys only",
+            "deleting the root",
+          ],
+          answer: 0,
+          exp: "The source defines traversal as visiting each node of a tree data structure.",
+        },
+        {
+          q: "During a traversal, each tree node should be visited:",
+          options: [
+            "exactly once",
+            "twice",
+            "only if it is a leaf",
+            "in random order only",
+          ],
+          answer: 0,
+          exp: "The source specifies visiting each node exactly once.",
+        },
+        // Tree Traversing
+        {
+          q: "Tree traversal is done by which two searches according to the source?",
+          options: [
+            "BFS and DFS",
+            "BFS and binary search",
+            "DFS and hashing",
+            "sorting and merging",
+          ],
+          answer: 0,
+          exp: "The source lists breadth-first search and depth-first search.",
+        },
+        // 1. BFS = Breadth First search
+        {
+          q: "BFS stands for:",
+          options: [
+            "Breadth First Search",
+            "Binary First Search",
+            "Balanced File Search",
+            "Branch Follow Search",
+          ],
+          answer: 0,
+          exp: "BFS is Breadth First Search.",
+        },
+        {
+          q: "BFS performs which type of tree traversal?",
+          options: [
+            "Level-order traversal",
+            "Preorder traversal",
+            "Inorder traversal",
+            "Postorder traversal",
+          ],
+          answer: 0,
+          exp: "The source identifies BFS as level-order traversal.",
+        },
+        {
+          q: "Which data structure does BFS use?",
+          options: [
+            "Queue (FIFO)",
+            "Stack (LIFO)",
+            "Array only",
+            "Binary heap",
+          ],
+          answer: 0,
+          exp: "The source states that BFS uses a FIFO queue.",
+        },
+        {
+          q: "For the first numbered BFS example, what traversal output is shown?",
+          options: ["12345", "12534", "13245", "15432"],
+          answer: 0,
+          exp: "The source displays 12345 as the BFS result for the first example.",
+        },
+        {
+          q: "For the second numbered BFS example, what traversal output is shown?",
+          options: ["12345", "12534", "15234", "12435"],
+          answer: 1,
+          exp: "The source displays 12534 as the BFS result for the second example.",
+        },
+        {
+          q: "For the third BFS example, which sequence is shown?",
+          options: [
+            "1 2 7 3 6 8 10 4 5 9",
+            "1 2 3 4 5 6 7 8 9 10",
+            "1 7 2 10 8 6 3 9 5 4",
+            "1 2 7 4 5 3 6 8 10 9",
+          ],
+          answer: 0,
+          exp: "The source shows the BFS sequence 1 2 7 3 6 8 10 4 5 9.",
+        },
+        // 2. DFS = Depth First search
+        {
+          q: "DFS stands for:",
+          options: [
+            "Depth First Search",
+            "Data First Search",
+            "Direct File Search",
+            "Dynamic Flow Search",
+          ],
+          answer: 0,
+          exp: "DFS is Depth First Search.",
+        },
+        {
+          q: "Which data structure is used to implement DFS according to the source?",
+          options: ["Stack", "Queue", "Circular list", "Hash table"],
+          answer: 0,
+          exp: "The source states that depth-first search uses a stack.",
+        },
+        // Topic : DFS Tree Traversal
+        {
+          q: "How many types of DFS tree traversal are listed?",
+          options: ["Two", "Three", "Four", "Five"],
+          answer: 1,
+          exp: "The source lists preorder, inorder, and postorder traversals.",
+        },
+        // Types of  DFS Tree Traversal
+        {
+          q: "What is the order of preorder traversal?",
+          options: [
+            "Root Left Right",
+            "Left Root Right",
+            "Left Right Root",
+            "Right Root Left",
+          ],
+          answer: 0,
+          exp: "The source gives preorder as Root Left Right.",
+        },
+        {
+          q: "What is the order of inorder traversal?",
+          options: [
+            "Root Left Right",
+            "Left Root Right",
+            "Left Right Root",
+            "Right Left Root",
+          ],
+          answer: 1,
+          exp: "The source gives inorder as Left Root Right.",
+        },
+        {
+          q: "What is the order of postorder traversal?",
+          options: [
+            "Root Left Right",
+            "Left Root Right",
+            "Left Right Root",
+            "Root Right Left",
+          ],
+          answer: 2,
+          exp: "The source gives postorder as Left Right Root.",
+        },
+        {
+          q: "For the three-node example in the source, what is the inorder result?",
+          options: ["ABC", "BAC", "BCA", "CAB"],
+          answer: 1,
+          exp: "The source shows BAC for inorder traversal.",
+        },
+      ];
+
+      let i = 0,
+        score = 0,
+        selected = [];
+
+      function loadQ() {
+        document.getElementById("qnum").innerText =
+          "Question " + (i + 1) + "/" + questions.length;
+        document.getElementById("qtext").innerText = questions[i].q;
+        let ops = "";
+        questions[i].options.forEach((o, idx) => {
+          ops += `<div class="opt" onclick="select(${idx})">${o}</div>`;
+        });
+        document.getElementById("options").innerHTML = ops;
+      }
+
+      function select(idx) {
+        selected[i] = idx;
+        let opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => o.classList.remove("selected"));
+        opts[idx].classList.add("selected");
+      }
+
+      function next() {
+        if (i < questions.length - 1) {
+          i++;
+          loadQ();
+        }
+      }
+      function prev() {
+        if (i > 0) {
+          i--;
+          loadQ();
+        }
+      }
+
+      function submitQuiz() {
+        score = 0;
+        let res = "";
+        questions.forEach((q, idx) => {
+          if (selected[idx] == q.answer) {
+            score++;
+            res += `<p>Q${idx + 1}: Correct</p>`;
+          } else {
+            res += `<p>Q${idx + 1}: Wrong - ${q.exp}</p>`;
+          }
+        });
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML =
+          "<h3>Score: " + score + "/" + questions.length + "</h3>" + res;
+      }
+
+      loadQ();
+    </script>
+  </body>
+</html>

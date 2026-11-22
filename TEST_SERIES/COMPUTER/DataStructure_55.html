@@ -219,415 +219,428 @@
 
     <script>
       const questions = [
-        // Topic : Linked List
-        // Q.8. What is the Extra Element Known as at the Head of the Node of the Linked List.?
+        // Topic : Trees
         {
-          q: "What is the Extra Element Known as at the Head of the Node of the Linked List.?",
-          options: [
-            "Bantinel",
-            "Cantinel",
-            "Sentinel",
-            "Both (1) and (2)",
-            "Both (2) and (3)",
-          ],
-          answer: 2,
-          exp: "The extra dummy node at the head is called a sentinel node.",
-        },
-        // Sentinel node =
-        {
-          q: "What is a sentinel node in a linked list?",
-          options: [
-            "A dummy node that does not contain data",
-            "The final node containing NULL",
-            "A node with two next pointers",
-            "A node used only for sorting",
-          ],
-          answer: 0,
-          exp: "The source defines a sentinel node as a dummy node that does not contain data.",
-        },
-        // Q.9. In a circular linked list.?
-        {
-          q: "In a circular linked list.?",
-          options: [
-            "Components are all linked together in some sequential manner.",
-            "There is no beginning and no end.",
-            "Components are arranged hierarchically.",
-            "Forward and backward traversal within the list is permitted.",
-            "None of these",
-          ],
+          q: "A tree is classified as which kind of data structure?",
+          options: ["Linear", "Non-linear", "Primitive", "Static"],
           answer: 1,
-          exp: "A circular linked list has no beginning and no end because its final link returns to the first node.",
+          exp: "The source identifies a tree as a non-linear data structure.",
         },
-        // Q.10. Linked lists are not suitable to for the implementation of.?
         {
-          q: "Linked lists are not suitable to for the implementation of.?",
-          options: [
-            "Insertion sort",
-            "Radix sort",
-            "Polynomial manipulation",
-            "Binary search",
-            "None of these",
-          ],
+          q: "A valid tree must be free from:",
+          options: ["nodes", "edges", "a root", "a closed loop"],
           answer: 3,
-          exp: "Typical linked lists do not offer random access, which binary search requires.",
-        },
-        // Q.11. In a Singly Linked List, what does the last node's next pointer point to.?
-        {
-          q: "In a Singly Linked List, what does the last node's next pointer point to.?",
-          options: [
-            "The first node ",
-            "The second last node ",
-            "Null ",
-            "Itself ",
-            "More than one of the above",
-          ],
-          answer: 2,
-          exp: "In a non-circular singly linked list, the last node's next pointer is NULL.",
-        },
-        // Q.12. In a Doubly Linked List, what does the first node's previous pointer point to.?
-        {
-          q: "In a Doubly Linked List, what does the first node's previous pointer point to.?",
-          options: [
-            "The first node ",
-            "The second last node ",
-            "Null ",
-            "Itself ",
-            "More than one of the above",
-          ],
-          answer: 2,
-          exp: "In a non-circular doubly linked list, the first node has no predecessor, so its previous pointer is NULL.",
-        },
-        // Q.13. Which of the following is not a type of Linked List.?
-        {
-          q: "Which of the following is not a type of Linked List.?",
-          options: [
-            "Singly linked list",
-            "Doubly linked list",
-            "Balanced linked list ",
-            "Circular linked list",
-            "Doubly circular linked list",
-          ],
-          answer: 2,
-          exp: "Balanced linked list is not among the standard linked-list types listed in the source.",
-        },
-        // Q.14. In which of the following scenarios is a Doubly Linked List most useful.?
-        {
-          q: "In which of the following scenarios is a Doubly Linked List most useful.?",
-          options: [
-            "When we need to frequently add new elements ",
-            "When we need to frequently delete elements ",
-            "When we need to frequently traverse the list in both directions ",
-            "When we need to frequently perform a binary search ",
-            "All of these",
-          ],
-          answer: 2,
-          exp: "A doubly linked list is most useful when traversal in both forward and backward directions is needed.",
-        },
-        // Q.15. How much extra memory does a doubly linked list need over a Singly Linked List per node.?
-        {
-          q: "How much extra memory does a doubly linked list need over a Singly Linked List per node.?",
-          options: [
-            "50% more ",
-            "Twice as much ",
-            "Depends on the size of the data ",
-            "No extra memory is needed",
-            "More than one of the above",
-          ],
-          answer: 2,
-          exp: "A doubly linked-list node has one additional pointer; its percentage overhead depends on the size of the data field.",
-        },
-        // Q.16. What does a Linked List node not contain.?
-        {
-          q: "What does a Linked List node not contain.?",
-          options: [
-            "A pointer to the next node ",
-            "A pointer to the previous node ",
-            "Data ",
-            "A pointer to the linked list ",
-            "All of these",
-          ],
-          answer: 3,
-          exp: "A node stores data and links to nodes; it does not normally store a pointer to the linked list itself.",
-        },
-        // Q.17. What is the disadvantage of a Linked List.?
-        {
-          q: "What is the disadvantage of a Linked List.?",
-          options: [
-            "Dynamic size ",
-            "Ease of insertion/deletion ",
-            "Random access is not allowed",
-            "All of these ",
-            "None of the above ",
-          ],
-          answer: 2,
-          exp: "A typical linked list does not permit random access.",
-        },
-        // Q.18. What is the disadvantage of a circular linked list?
-        {
-          q: "What is the disadvantage of a circular linked list?",
-          options: [
-            "It consumes more memory than a simple linked list ",
-            "It is complex to implement ",
-            "A simple loop through the list will never end ",
-            "None of these",
-            "All of the above ",
-          ],
-          answer: 2,
-          exp: "Without a stopping condition, traversal of a circular list repeats indefinitely.",
-        },
-        // Q.19. In a circular doubly linked list, what does the 'next' pointer of the last node point to?
-        {
-          q: "In a circular doubly linked list, what does the 'next' pointer of the last node point to?",
-          options: [
-            "The second last node ",
-            "The first node ",
-            "Null ",
-            "Itself ",
-            "All of these",
-          ],
-          answer: 1,
-          exp: "The last node's next pointer links back to the first node in a circular doubly linked list.",
-        },
-        // Q.20. Please choose the correct option about the Linked List compared with an array.?
-        {
-          q: "Please choose the correct option about the Linked List compared with an array.?",
-          options: [
-            "Arrays have a better cache locality to it will increase their performance. ",
-            "It is easy to insert and delete elements from the Linked List.",
-            "Random access is denied in a typical implementation of Linked Lists.",
-            "The size of an array is fixed; linked lists can change their size.",
-            "All of the above",
-          ],
-          answer: 4,
-          exp: "All four preceding statements correctly contrast typical arrays and linked lists.",
-        },
-        // Q.21. To insert a new node in the linked list free node will be available in .?
-        {
-          q: "To insert a new node in the linked list free node will be available in .?",
-          options: [
-            "Available list",
-            "Avail list",
-            "Free node list",
-            "Memory space list",
-            "All of these",
-          ],
-          answer: 1,
-          exp: "The list of free nodes is conventionally called the avail list.",
-        },
-        // Q.22. A singly linked list is also called as.?
-        {
-          q: "A singly linked list is also called as.?",
-          options: [
-            "linked list",
-            "one way chain",
-            "two way chain",
-            "right link",
-            "All of these",
-          ],
-          answer: 1,
-          exp: "A singly linked list permits traversal in one direction, hence it is called a one way chain.",
-        },
-        // Q.23. A doubly linked list is also called as.?
-        {
-          q: "A doubly linked list is also called as.?",
-          options: [
-            "linked list",
-            "one way chain",
-            "two way chain",
-            "right link",
-            "All of these",
-          ],
-          answer: 2,
-          exp: "A doubly linked list supports traversal in both directions, so it is called a two way chain.",
-        },
-        // Q.24. A doubly linked list has _____ pointers with each node.?
-        {
-          q: "A doubly linked list has _____ pointers with each node.?",
-          options: ["0", "1", "2", "3", "4"],
-          answer: 2,
-          exp: "Each node has a previous pointer and a next pointer.",
-        },
-        // Q.25. The list which has its own pointer is called.?
-        {
-          q: "The list which has its own pointer is called.?",
-          options: [
-            "pointer list",
-            "self pointer",
-            "free pool",
-            "own point",
-            "All of these",
-          ],
-          answer: 2,
-          exp: "The source identifies the free pool as the collection of free memory spaces.",
-        },
-        // Q.26. In a linked list, insertion can be done as.?
-        {
-          q: "In a linked list, insertion can be done as.?",
-          options: [
-            "beginning",
-            "end",
-            "middle",
-            "All of the above",
-            "None of these",
-          ],
-          answer: 3,
-          exp: "A node can be inserted at the beginning, in the middle, or at the end of a linked list.",
-        },
-        // Q.27. Which of the following conditions checks available free space in the avail list.?
-        {
-          q: "Which of the following conditions checks available free space in the avail list.?",
-          options: [
-            "Avail=Null",
-            "Null=Avail",
-            "Avail=Max stack",
-            "Avail=Top",
-            "All of these",
-          ],
-          answer: 0,
-          exp: "Avail = NULL indicates that the avail list contains no free node.",
-        },
-        // Q.28. A linear list in which each node has pointed to the predecessor and successors nodes is called.?
-        {
-          q: "A linear list in which each node has pointed to the predecessor and successors nodes is called.?",
-          options: [
-            "singly linked list",
-            "circular linked list",
-            "doubly linked list",
-            "linear linked list",
-            "More than one of the above",
-          ],
-          answer: 2,
-          exp: "A doubly linked list has pointers to both the predecessor and successor nodes.",
-        },
-        // Q.29. In ____ memory is assigned at compile time & in ____ memory is assigned at run time.?
-        {
-          q: "In ____ memory is assigned at compile time & in ____ memory is assigned at run time.?",
-          options: [
-            "Linked List, Array",
-            "Array, Linked List",
-            "Stack, Array",
-            "Queue, Array",
-            "None of these",
-          ],
-          answer: 1,
-          exp: "The source states that array memory is assigned at compile time and linked-list memory at run time.",
-        },
-        // Q.30. In Linked list elements are stored _____ and access in ____ fashion.?
-        {
-          q: "In Linked list elements are stored _____ and access in ____ fashion.?",
-          options: [
-            "Randomly, Sequentially",
-            "Sequentially, Randomly",
-            "Sequentially, Sequentially",
-            "Randomly, Randomly",
-            "None of these",
-          ],
-          answer: 0,
-          exp: "Linked-list nodes may be stored randomly in memory but are accessed sequentially.",
+          exp: "The source describes a tree as having no closed loop.",
         },
 
-        // Revision =  Linked List
+        // Trees
         {
-          q: "A linked list is classified in the revision slide as a:",
+          q: "Trees organize data in which fashion?",
           options: [
-            "dynamic data structure",
-            "static data structure",
-            "primitive-only structure",
-            "contiguous structure",
+            "Sequential only",
+            "Random-access only",
+            "Hierarchical or non-linear",
+            "Circular only",
           ],
-          answer: 0,
-          exp: "The revision slide identifies a linked list as a dynamic data structure.",
+          answer: 2,
+          exp: "The source states that trees organize data in a hierarchical or non-linear fashion.",
         },
         {
-          q: "How many fields does each basic linked-list node have according to the revision?",
-          options: ["Two", "One", "Three", "Four"],
-          answer: 0,
-          exp: "The revision lists two fields: data and pointer/reference/address.",
+          q: "All elements of a tree are represented as:",
+          options: ["Arrays", "Nodes", "Stacks", "Hash values"],
+          answer: 1,
+          exp: "The source states that all elements of a tree are represented as nodes.",
         },
         {
-          q: "The pointer/reference/address field in a basic linked-list node is its:",
+          q: "Why is the left graph in the source illustration not a tree?",
           options: [
-            "first field",
-            "second field",
-            "third field",
-            "optional data field",
+            "It has no nodes",
+            "It has no root",
+            "It has too many leaves",
+            "It contains a cycle",
+          ],
+          answer: 3,
+          exp: "The left graph contains a closed loop, whereas a tree cannot contain one.",
+        },
+
+        // Trees Terminology
+        // 1) Nodes = Contains data
+        {
+          q: "What does a node contain according to the source?",
+          options: [
+            "Only an edge",
+            "Only a child",
+            "Data",
+            "Only a level number",
+          ],
+          answer: 2,
+          exp: "The terminology slide states that nodes contain data.",
+        },
+        // 2) Root = Top Node
+        {
+          q: "The top node of a tree is called the:",
+          options: ["leaf", "root", "sibling", "edge"],
+          answer: 1,
+          exp: "The source defines the root as the top node.",
+        },
+        // 3) Parent Node = Have Child
+        {
+          q: "A node that has one or more child nodes is called a:",
+          options: [
+            "leaf node",
+            "parent node",
+            "sibling node",
+            "external node",
           ],
           answer: 1,
-          exp: "The source identifies data as the first field and pointer/reference/address as the second field.",
+          exp: "A parent node is defined as a node that has a child.",
         },
+        // 4) Child Node
         {
-          q: "What is the starting point of a linked list called?",
-          options: ["Tail", "Head", "Avail", "Sentinel"],
+          q: "A node directly below a parent node is called a:",
+          options: ["root node", "sibling group", "child node", "edge node"],
+          answer: 2,
+          exp: "A child node is directly connected below its parent.",
+        },
+        // 5) Siblings = Same Parent
+        {
+          q: "Two nodes having the same parent are called:",
+          options: ["leaves", "siblings", "roots", "edges"],
           answer: 1,
-          exp: "The revision slide states that Head is the starting point.",
+          exp: "Siblings are nodes that share the same parent.",
+        },
+        // 6) Leaf Node/ External Node = No child
+        {
+          q: "A node having no child is called a:",
+          options: [
+            "parent node",
+            "internal node",
+            "root node",
+            "leaf or external node",
+          ],
+          answer: 3,
+          exp: "The source defines a leaf node, also called an external node, as having no child.",
+        },
+        // 7) Internal Node = Minimum 1 child
+        {
+          q: "An internal node has at least:",
+          options: [
+            "zero children",
+            "one child",
+            "two children",
+            "three children",
+          ],
+          answer: 1,
+          exp: "An internal node has a minimum of one child.",
+        },
+        // 8) Edge = Connection b/w Nodes
+        {
+          q: "The connection between two nodes in a tree is called an:",
+          options: ["index", "array", "edge", "level"],
+          answer: 2,
+          exp: "An edge is the connection between nodes.",
+        },
+        // 9) Degree of Node = Number of child
+        {
+          q: "The degree of a node is the number of its:",
+          options: [
+            "parents",
+            "children",
+            "siblings",
+            "edges in the whole tree",
+          ],
+          answer: 1,
+          exp: "The source defines node degree as the number of children.",
         },
         {
-          q: "Compared with an array, accessing elements in a linked list is:",
+          q: "What is the degree of a leaf node?",
+          options: ["0", "1", "2", "It depends on the root"],
+          answer: 0,
+          exp: "A leaf has no child, so its degree is always 0.",
+        },
+        {
+          q: "In the degree example shown, what is the degree of node B?",
+          options: ["1", "2", "0", "3"],
+          answer: 3,
+          exp: "Node B has three children in the illustrated tree.",
+        },
+        {
+          q: "In the degree example shown, what is the degree of node G?",
+          options: ["0", "1", "2", "3"],
+          answer: 1,
+          exp: "Node G has one child, K, in the example.",
+        },
+        {
+          q: "The degree of a tree is determined by its:",
           options: [
-            "comparatively slower",
-            "always constant time",
-            "impossible",
-            "faster because nodes are random",
+            "minimum number of children",
+            "number of leaves",
+            "number of levels",
+            "maximum number of children of any node",
+          ],
+          answer: 3,
+          exp: "The source defines degree of a tree as the maximum number of children.",
+        },
+        {
+          q: "What is the degree of a binary tree?",
+          options: ["0", "1", "3", "2"],
+          answer: 3,
+          exp: "The source states that the degree of a binary tree is always 2.",
+        },
+        // 10) Depth of Node / Level = Total number of edges from root node to a particular node (Longest path)
+        {
+          q: "Depth (or level) of a node is measured by the total number of edges from the:",
+          options: [
+            "leaf to the node",
+            "root to the node",
+            "node to its sibling",
+            "node to every child",
+          ],
+          answer: 1,
+          exp: "The source defines depth as the number of edges from the root to a particular node.",
+        },
+        {
+          q: "What is the depth of the root node?",
+          options: ["0", "1", "2", "Equal to the number of children"],
+          answer: 0,
+          exp: "The source explicitly gives root depth as 0.",
+        },
+        {
+          q: "In the depth example, what is the depth of node E?",
+          options: ["0", "1", "3", "2"],
+          answer: 3,
+          exp: "The source lists the depth of node E as 2.",
+        },
+        {
+          q: "In the depth example, which nodes have depth 3?",
+          options: ["B and C", "D and E", "A only", "I, J, and K"],
+          answer: 3,
+          exp: "The source lists I, J, and K at depth 3.",
+        },
+        {
+          q: "What is the depth of the tree in the source example?",
+          options: ["1", "2", "3", "4"],
+          answer: 2,
+          exp: "The source gives the depth of the tree as 3.",
+        },
+        // 11) Height of tree =
+        {
+          q: "What is the height of the tree in the illustrated height example?",
+          options: ["0", "1", "2", "3"],
+          answer: 3,
+          exp: "The diagram labels the height of the tree as 3.",
+        },
+        // 11) Height of Node = longest path from the node to a leaf node
+        {
+          q: "The height of a node is the longest path from that node to a:",
+          options: ["root node", "sibling node", "leaf node", "parent node"],
+          answer: 2,
+          exp: "The source defines node height as the longest path from the node to a leaf node.",
+        },
+        {
+          q: "In the height illustration, what is the height of a leaf node?",
+          options: ["0", "1", "2", "It is undefined"],
+          answer: 0,
+          exp: "The diagram labels leaf nodes with height 0.",
+        },
+        {
+          q: "In the second height illustration, what is the height of node A?",
+          options: ["0", "1", "2", "3"],
+          answer: 2,
+          exp: "The diagram marks node A with height 2.",
+        },
+
+        // Types of Tree Data Structure = 4
+        {
+          q: "How many main tree data-structure types are listed in the source?",
+          options: ["2", "3", "4", "5"],
+          answer: 2,
+          exp: "The source heading states that there are four main tree data-structure types.",
+        },
+        {
+          q: "Which of the following is listed as a main tree data-structure type?",
+          options: [
+            "Binary search tree",
+            "Hash tree",
+            "Pointer tree",
+            "Linear tree",
           ],
           answer: 0,
-          exp: "The source states that linked-list element access is comparatively slower than array access.",
+          exp: "Binary search tree is one of the four main types listed.",
         },
         {
-          q: "Which linked-list type has one NULL link according to the revision slide?",
+          q: "Which tree is identified in the source as self-balanced?",
           options: [
-            "Singly Linked List",
-            "Doubly Linked List",
-            "Circular Linked List",
-            "Circular Doubly Linked List",
+            "B Tree",
+            "General tree",
+            "Degenerate tree",
+            "Complete tree",
           ],
           answer: 0,
-          exp: "The revision slide assigns one NULL link to a singly linked list.",
+          exp: "The source lists B Tree as a self-balanced tree.",
         },
+        // 1) General Tree = Parent node can have any number of child nodes.
         {
-          q: "Which linked-list type has two NULL links according to the revision slide?",
+          q: "In a general tree, a parent node can have:",
           options: [
-            "Singly Linked List",
-            "Doubly Linked List",
-            "Circular Linked List",
-            "Circular Doubly Linked List",
+            "only two children",
+            "any number of child nodes",
+            "only one child",
+            "no child nodes",
           ],
           answer: 1,
-          exp: "The revision slide assigns two NULL links to a doubly linked list.",
+          exp: "A general-tree parent can have any number of children.",
+        },
+        // 2) Binary Tree =
+        {
+          q: "A binary-tree node can have at most how many children?",
+          options: ["One", "Two", "Three", "Any number"],
+          answer: 1,
+          exp: "A binary tree has at most two children: left and right.",
         },
         {
-          q: "Which linked-list type has zero NULL links according to the revision slide?",
+          q: "Which child counts are possible for a binary-tree node according to the source?",
+          options: ["0, 1, or 2", "Only 0 or 2", "Only 1 or 2", "0 through 4"],
+          answer: 0,
+          exp: "A binary-tree node may have 0, 1, or 2 children.",
+        },
+        // Extended Binary Tree =
+        {
+          q: "In an extended binary tree, every node has:",
           options: [
-            "Singly Linked List",
-            "Doubly Linked List",
-            "Linear Linked List",
-            "Circular Linked List",
+            "either zero or two children",
+            "at most one child",
+            "exactly one child",
+            "at least three children",
           ],
-          answer: 3,
-          exp: "The revision slide assigns zero NULL links to a circular linked list.",
+          answer: 0,
+          exp: "The source defines an extended binary tree as having either zero or two children at every node.",
         },
         {
-          q: "What is the average-case time complexity of searching a linked list in the source table?",
-          options: ["O(1)", "O(log n)", "O(n log n)", "O(n)"],
-          answer: 3,
-          exp: "The time-complexity table gives O(n) for average-case search.",
+          q: "In an extended binary tree, a node with two children is an:",
+          options: [
+            "external node",
+            "internal node",
+            "leaf node",
+            "root-only node",
+          ],
+          answer: 1,
+          exp: "The source identifies two-child nodes as internal nodes.",
+        },
+        // 3) Binary Search Tree =
+        {
+          q: "In a binary search tree, the value in the left node is:",
+          options: [
+            "less than its parent",
+            "more than its parent",
+            "always equal to its parent",
+            "unrelated to its parent",
+          ],
+          answer: 0,
+          exp: "The source states that the left-node value is less than its parent.",
         },
         {
-          q: "What is the worst-case time complexity of searching a linked list in the source table?",
-          options: ["O(1)", "O(log n)", "O(n²)", "O(n)"],
-          answer: 3,
-          exp: "The time-complexity table gives O(n) for worst-case search.",
+          q: "In a binary search tree, the value in the right node is:",
+          options: [
+            "less than its parent",
+            "equal to its parent",
+            "more than its parent",
+            "always NULL",
+          ],
+          answer: 2,
+          exp: "The source states that the right-node value is more than its parent.",
+        },
+        // 4) Balanced Tree =
+        {
+          q: "A balanced tree has left and right subtree heights that are:",
+          options: [
+            "equal, or differ by no more than 1",
+            "always different",
+            "unrelated",
+            "both zero",
+          ],
+          answer: 0,
+          exp: "The source gives equality or a height difference of at most 1 as the balanced-tree condition.",
+        },
+
+        // 5 Types of Binary Tree
+        {
+          q: "How many types of binary tree are listed in the source?",
+          options: ["3", "4", "5", "6"],
+          answer: 2,
+          exp: "The source heading lists five types of binary tree.",
+        },
+        // 1- Full/Proper/Strict Binary Tree
+        {
+          q: "A full, proper, or strict binary tree has nodes with:",
+          options: [
+            "0 or 2 children",
+            "exactly 1 child",
+            "0, 1, or 2 children",
+            "at most 3 children",
+          ],
+          answer: 0,
+          exp: "The source defines full/proper/strict binary trees as having 0 or 2 children.",
+        },
+        // 2- Complete Binary Tree
+        {
+          q: "A complete binary tree has all levels filled completely except the:",
+          options: [
+            "root level",
+            "lowest level",
+            "second level",
+            "middle level",
+          ],
+          answer: 1,
+          exp: "The source says all levels are completely filled except the lowest level.",
         },
         {
-          q: "What time complexity is shown for insertion in both average and worst scenarios?",
-          options: ["O(n)", "O(log n)", "O(n²)", "O(1)"],
-          answer: 3,
-          exp: "The source table lists O(1) for insertion in both scenarios.",
+          q: "In the complete-tree illustration, nodes at the last level are filled from:",
+          options: [
+            "left to right",
+            "right to left",
+            "the middle outward",
+            "random positions",
+          ],
+          answer: 0,
+          exp: "The marked valid complete-tree diagram fills the final level from left to right.",
+        },
+        // 3- Perfect Binary Tree
+        {
+          q: "In a perfect binary tree, which levels are completely filled?",
+          options: [
+            "Only the lowest level",
+            "Only the root level",
+            "All levels",
+            "Only alternate levels",
+          ],
+          answer: 2,
+          exp: "The source defines a perfect binary tree as having all levels completely filled.",
+        },
+        // 4- Degenerate Binary Tree
+        {
+          q: "A degenerate binary tree is also called a:",
+          options: [
+            "complete tree",
+            "skewed binary tree",
+            "perfect tree",
+            "extended tree",
+          ],
+          answer: 1,
+          exp: "The source calls a degenerate binary tree a skewed binary tree.",
         },
         {
-          q: "What time complexity is shown for deletion in both average and worst scenarios?",
-          options: ["O(n)", "O(log n)", "O(n²)", "O(1)"],
-          answer: 3,
-          exp: "The source table lists O(1) for deletion in both scenarios.",
+          q: "A skewed binary tree may be skewed to the:",
+          options: ["left or right", "top only", "bottom only", "root only"],
+          answer: 0,
+          exp: "The source states that a skewed tree may be left- or right-skewed.",
+        },
+        // 5- Balanced Binary Tree
+        {
+          q: "A balanced binary tree permits the heights of its left and right subtrees to differ by at most:",
+          options: ["0", "1", "2", "3"],
+          answer: 1,
+          exp: "The source allows a maximum height difference of 1.",
         },
       ];
 
